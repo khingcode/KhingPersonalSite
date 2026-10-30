@@ -264,6 +264,10 @@
               <ellipse cx="369" cy="486" rx="20.5" ry="48.5" stroke="none"/>
               <path d="M508 506 Q530 456 552 506" fill="none" stroke-width="15" stroke-linecap="round"/>
             </g>
+            <g data-eye="angry" class="hidden">
+              <ellipse cx="369" cy="496" rx="19" ry="38" stroke="none"/><ellipse cx="530" cy="496" rx="19" ry="38" stroke="none"/>
+              <path d="M334 434 L398 464 M565 434 L501 464" fill="none" stroke-width="15" stroke-linecap="round"/>
+            </g>
             <g data-eye="sleepy" class="hidden" fill="none" stroke-width="14" stroke-linecap="round">
               <path d="M347 490 Q369 520 391 490"/><path d="M508 490 Q530 520 552 490"/>
             </g>
@@ -276,6 +280,7 @@
             </g>
             <ellipse data-mouth="o" class="hidden" cx="444" cy="592" rx="13" ry="17" fill="#2a1a28" stroke-width="9"/>
             <path data-mouth="cat" class="hidden" d="M408 580 Q426 602 444 581 Q462 602 480 580" fill="none" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+            <path data-mouth="frown" class="hidden" d="M416 600 Q445 572 474 600" fill="none" stroke-width="13" stroke-linecap="round"/>
             <path data-mouth="flat" class="hidden" d="M428 589 Q444 596 460 589" fill="none" stroke-width="11" stroke-linecap="round"/>
           </g>
         </svg>
@@ -355,6 +360,7 @@
       smug:      { eye: 'smug',   mouth: 'cat' },
       wink:      { eye: 'wink',   mouth: 'smile' },
       sleepy:    { eye: 'sleepy', mouth: 'flat' },
+      angry:     { eye: 'angry',  mouth: 'frown' },
     };
     const face = document.getElementById('face');
     const mascot = document.getElementById('mascot');
@@ -383,7 +389,37 @@
       ['happy', 'psst… check out the work window'],
     ];
     let n = 0;
+
+    // spam clicking makes the little guy angry: 5 clicks inside 2 seconds
+    const angryLines = ['hey!! 💢', 'stop poking me!', 'i said STOP 😠', 'that. is. enough!!', 'rude!! 💢💢', 'GRRR 😤'];
+    let clicks = [], a = 0, calmT;
+    function anger() {
+      busy = true;
+      clearTimeout(moodT);
+      mascot.classList.add('angry');
+      setMood('angry');
+      bubble.textContent = angryLines[a++ % angryLines.length];
+      bubble.classList.remove('hidden');
+      clearTimeout(hideT);
+      hideT = setTimeout(() => bubble.classList.add('hidden'), 3500);
+      clearTimeout(calmT);
+      calmT = setTimeout(calm, 3500);
+    }
+    function calm() {
+      mascot.classList.remove('angry');
+      clicks = [];
+      react('sleepy', 2800);
+      bubble.textContent = 'hmph… i\'m calm. i\'m calm.';
+      bubble.classList.remove('hidden');
+      clearTimeout(hideT);
+      hideT = setTimeout(() => bubble.classList.add('hidden'), 2800);
+    }
+
     mascot.addEventListener('click', () => {
+      const now = Date.now();
+      clicks = clicks.filter((t) => now - t < 2000);
+      clicks.push(now);
+      if (clicks.length >= 5 || mascot.classList.contains('angry')) { anger(); return; }
       const [mood, line] = script[n++ % script.length];
       busy = true;
       react(mood, 3200);
@@ -539,6 +575,7 @@
       open:  () => { blip(440, 660, 0.09, 'triangle', 0.12); blip(660, 990, 0.12, 'triangle', 0.1, 0.07); },
       close: () => blip(620, 300, 0.12, 'triangle', 0.13),
       boing: () => { blip(260, 620, 0.12, 'sine', 0.15); blip(620, 300, 0.18, 'sine', 0.12, 0.1); },
+      angry: () => { blip(190, 120, 0.16, 'sawtooth', 0.09); blip(170, 105, 0.16, 'sawtooth', 0.08, 0.1); },
       on:    () => { blip(523, 784, 0.12, 'sine', 0.12); blip(784, 1047, 0.14, 'sine', 0.1, 0.08); },
       day:   () => [988, 1318, 1568].forEach((f, i) => blip(f, f * 1.02, 0.14, 'sine', 0.07, i * 0.06)),
       night: () => [659, 523, 392].forEach((f, i) => blip(f, f * 0.98, 0.16, 'sine', 0.08, i * 0.07)),
@@ -556,7 +593,7 @@
       if (!t.closest) return;
       if (t.closest('.win-x')) sfx('close');
       else if (t.closest('[data-open]')) sfx('open');
-      else if (t.closest('#mascot')) sfx('boing');
+      else if (t.closest('#mascot')) sfx(t.closest('#mascot').classList.contains('angry') ? 'angry' : 'boing');
       else if (t.closest('#theme-toggle')) sfx(root.classList.contains('dark') ? 'night' : 'day');
       else if (t.closest('#music-btn')) return; // has its own sounds
       else if (t.closest('a, button, .sib, .tile')) sfx('pop');
