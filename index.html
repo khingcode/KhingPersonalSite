@@ -196,6 +196,10 @@
     <div class="win-body px-6 py-6">
       <p class="text-ink/70">leave a little note! it'll be dated and everything :)</p>
       <form id="gb-form" class="mt-4 grid gap-3" autocomplete="off">
+        <div id="gb-replying" class="hidden items-center justify-between gap-2 rounded-lg bg-violet-100 px-3 py-1.5 text-xs text-violet-900">
+          <span id="gb-replying-to"></span>
+          <button id="gb-cancel" type="button" class="link" aria-label="cancel reply">cancel</button>
+        </div>
         <input id="gb-name" class="gb-field" type="text" maxlength="30" required placeholder="your name">
         <textarea id="gb-msg" class="gb-field" rows="3" maxlength="200" required placeholder="your note (200 chars max)"></textarea>
         <div class="flex items-center gap-3">
@@ -625,6 +629,50 @@
       });
       unpick.addEventListener('click', clearPhoto);
 
+      let replyTo = null;
+      const replying = document.getElementById('gb-replying');
+      function setReply(n) {
+        replyTo = n ? n.id : null;
+        document.getElementById('gb-replying-to').textContent = n ? 'replying to ' + n.name : '';
+        replying.classList.toggle('hidden', !n);
+        replying.classList.toggle('flex', !!n);
+        if (n) { nameEl.focus(); form.scrollIntoView({ block: 'nearest' }); }
+      }
+      document.getElementById('gb-cancel').addEventListener('click', () => setReply(null));
+
+      function noteEl(n, isReply) {
+        const li = document.createElement('li');
+        li.className = 'gb-note' + (isReply ? ' gb-reply' : '');
+        const head = document.createElement('div');
+        head.className = 'flex items-baseline justify-between gap-3';
+        const who = document.createElement('b');
+        who.textContent = n.name;
+        const when = document.createElement('span');
+        when.className = 'shrink-0 font-mono text-xs text-ink/50';
+        when.textContent = fmt(n.created_at);
+        head.append(who, when);
+        const body = document.createElement('p');
+        body.className = 'mt-1 whitespace-pre-wrap break-words text-sm text-ink/80';
+        body.textContent = n.message;
+        li.append(head, body);
+        const src = photoSrc(n);
+        if (src) {
+          const a = document.createElement('a');
+          a.href = src; a.target = '_blank'; a.rel = 'noopener';
+          const img = document.createElement('img');
+          img.src = src; img.loading = 'lazy'; img.alt = 'photo from ' + n.name;
+          img.className = 'mt-2 max-h-48 rounded-lg border-2 border-violet-200 object-cover';
+          a.append(img); li.append(a);
+        }
+        if (!isReply && n.id != null) {
+          const r = document.createElement('button');
+          r.type = 'button'; r.className = 'link mt-2 text-xs'; r.textContent = 'reply';
+          r.addEventListener('click', () => setReply(n));
+          li.append(r);
+        }
+        return li;
+      }
+
       function render(notes) {
         list.replaceChildren();
         if (!notes.length) {
@@ -634,29 +682,24 @@
           list.append(li);
           return;
         }
+        // replies hang under their note (one level deep); anything whose parent is gone shows as a normal note
+        const ids = new Set(notes.map((n) => n.id));
+        const kids = new Map();
+        const tops = [];
         notes.forEach((n) => {
-          const li = document.createElement('li');
-          li.className = 'gb-note';
-          const head = document.createElement('div');
-          head.className = 'flex items-baseline justify-between gap-3';
-          const who = document.createElement('b');
-          who.textContent = n.name;
-          const when = document.createElement('span');
-          when.className = 'shrink-0 font-mono text-xs text-ink/50';
-          when.textContent = fmt(n.created_at);
-          head.append(who, when);
-          const body = document.createElement('p');
-          body.className = 'mt-1 whitespace-pre-wrap break-words text-sm text-ink/80';
-          body.textContent = n.message;
-          li.append(head, body);
-          const src = photoSrc(n);
-          if (src) {
-            const a = document.createElement('a');
-            a.href = src; a.target = '_blank'; a.rel = 'noopener';
-            const img = document.createElement('img');
-            img.src = src; img.loading = 'lazy'; img.alt = 'photo from ' + n.name;
-            img.className = 'mt-2 max-h-48 rounded-lg border-2 border-violet-200 object-cover';
-            a.append(img); li.append(a);
+          if (n.reply_to != null && ids.has(n.reply_to)) {
+            if (!kids.has(n.reply_to)) kids.set(n.reply_to, []);
+            kids.get(n.reply_to).push(n);
+          } else tops.push(n);
+        });
+        tops.forEach((n) => {
+          const li = noteEl(n, false);
+          const rs = (kids.get(n.id) || []).sort((x, y) => (x.created_at < y.created_at ? -1 : 1));
+          if (rs.length) {
+            const ul = document.createElement('ul');
+            ul.className = 'mt-3 grid gap-2';
+            rs.forEach((x) => ul.append(noteEl(x, true)));
+            li.append(ul);
           }
           list.append(li);
         });
@@ -665,9 +708,11 @@
       const store = {
         async load() {
           if (live) {
-            const q = (cols) => fetch(GB_URL + '/rest/v1/guestbook?select=' + cols + '&order=created_at.desc&limit=100', { headers: auth });
-            let r = await q('name,message,created_at,image_path');
-            if (!r.ok) r = await q('name,message,created_at'); // photo column not added yet
+            const q = (cols) => fetch(GB_URL + '/rest/v1/guestbook?select=' + cols + '&order=created_at.desc&limit=300', { headers: auth });
+            // older table setups lack some columns, so step down until one works
+            let r = await q('id,name,message,created_at,image_path,reply_to');
+            if (!r.ok) r = await q('id,name,message,created_at,image_path');
+            if (!r.ok) r = await q('name,message,created_at');
             if (!r.ok) throw new Error('load');
             return r.json();
           }
@@ -687,8 +732,8 @@
           }
           if (photo) note = { ...note, image_path: await new Promise((r) => { const f = new FileReader(); f.onload = () => r(f.result); f.readAsDataURL(photo.blob); }) };
           const all = await this.load();
-          all.unshift({ ...note, created_at: new Date().toISOString() });
-          try { localStorage.setItem('guestbook', JSON.stringify(all.slice(0, 100))); } catch (e) {}
+          all.unshift({ ...note, id: Date.now(), created_at: new Date().toISOString() });
+          try { localStorage.setItem('guestbook', JSON.stringify(all.slice(0, 300))); } catch (e) {}
         },
       };
 
@@ -726,12 +771,13 @@
         const last = +localStorage.getItem('gb-last') || 0;
         if (Date.now() - last < 30000) { say('easy there! wait a few seconds :)'); return; }
         const note = { name: nameEl.value.trim().slice(0, 30), message: msgEl.value.trim().slice(0, 200) };
+        if (replyTo != null) note.reply_to = replyTo;
         if (!note.name || !note.message) return;
         say('signing...');
         try {
           await store.add(note, picked);
           try { localStorage.setItem('gb-last', String(Date.now())); } catch (e) {}
-          form.reset(); clearPhoto();
+          form.reset(); clearPhoto(); setReply(null);
           say(live ? 'thanks for stopping by! ♥' : 'saved on this device only (demo mode)');
           await refresh();
         } catch (e) { say('oops, that didn\'t save. try again?'); }
