@@ -198,6 +198,12 @@
       <form id="gb-form" class="mt-4 grid gap-3" autocomplete="off">
         <input id="gb-name" class="gb-field" type="text" maxlength="30" required placeholder="your name">
         <textarea id="gb-msg" class="gb-field" rows="3" maxlength="200" required placeholder="your note (200 chars max)"></textarea>
+        <div class="flex items-center gap-3">
+          <label class="gb-btn gb-ghost cursor-pointer" for="gb-photo">+ photo</label>
+          <input id="gb-photo" class="sr-only" type="file" accept="image/*">
+          <img id="gb-prev" class="hidden h-12 w-12 rounded-lg border-2 border-ink object-cover" alt="photo preview">
+          <button id="gb-unpick" type="button" class="link hidden text-xs">remove</button>
+        </div>
         <input id="gb-site" class="hidden" type="text" tabindex="-1" aria-hidden="true" autocomplete="off">
         <div class="flex items-center justify-between gap-3">
           <span id="gb-status" class="text-xs text-ink/60" role="status"></span>
@@ -582,6 +588,42 @@
       const say = (t) => { status.textContent = t; };
       const fmt = (iso) => new Date(iso).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
 
+      const photoSrc = (n) => {
+        if (!n.image_path) return '';
+        if (!live) return /^data:image\/(webp|jpeg);base64,/.test(n.image_path) ? n.image_path : '';
+        return /^[\w-]+\.(webp|jpg)$/.test(n.image_path) ? GB_URL + '/storage/v1/object/public/guestbook/' + n.image_path : '';
+      };
+
+      // shrink to max 800px so uploads stay tiny
+      let picked = null;
+      const prev = document.getElementById('gb-prev');
+      const unpick = document.getElementById('gb-unpick');
+      const photoEl = document.getElementById('gb-photo');
+      function clearPhoto() { picked = null; photoEl.value = ''; prev.classList.add('hidden'); unpick.classList.add('hidden'); }
+      async function shrink(file) {
+        const bmp = await createImageBitmap(file);
+        const k = Math.min(1, 800 / Math.max(bmp.width, bmp.height));
+        const c = document.createElement('canvas');
+        c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k);
+        c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+        let blob = await new Promise((r) => c.toBlob(r, 'image/webp', 0.8));
+        let ext = 'webp';
+        if (!blob || blob.type !== 'image/webp') { blob = await new Promise((r) => c.toBlob(r, 'image/jpeg', 0.8)); ext = 'jpg'; }
+        return { blob, ext };
+      }
+      photoEl.addEventListener('change', async () => {
+        const f = photoEl.files[0];
+        if (!f) return clearPhoto();
+        if (!f.type.startsWith('image/')) { say('that needs to be an image :)'); return clearPhoto(); }
+        try {
+          picked = await shrink(f);
+          prev.src = URL.createObjectURL(picked.blob);
+          prev.classList.remove('hidden'); unpick.classList.remove('hidden');
+          say('');
+        } catch (e) { say('couldn\'t read that photo, try another?'); clearPhoto(); }
+      });
+      unpick.addEventListener('click', clearPhoto);
+
       function render(notes) {
         list.replaceChildren();
         if (!notes.length) {
@@ -606,6 +648,15 @@
           body.className = 'mt-1 whitespace-pre-wrap break-words text-sm text-ink/80';
           body.textContent = n.message;
           li.append(head, body);
+          const src = photoSrc(n);
+          if (src) {
+            const a = document.createElement('a');
+            a.href = src; a.target = '_blank'; a.rel = 'noopener';
+            const img = document.createElement('img');
+            img.src = src; img.loading = 'lazy'; img.alt = 'photo from ' + n.name;
+            img.className = 'mt-2 max-h-48 rounded-lg border-2 border-violet-200 object-cover';
+            a.append(img); li.append(a);
+          }
           list.append(li);
         });
       }
@@ -613,18 +664,27 @@
       const store = {
         async load() {
           if (live) {
-            const r = await fetch(GB_URL + '/rest/v1/guestbook?select=name,message,created_at&order=created_at.desc&limit=100', { headers: auth });
+            const q = (cols) => fetch(GB_URL + '/rest/v1/guestbook?select=' + cols + '&order=created_at.desc&limit=100', { headers: auth });
+            let r = await q('name,message,created_at,image_path');
+            if (!r.ok) r = await q('name,message,created_at'); // photo column not added yet
             if (!r.ok) throw new Error('load');
             return r.json();
           }
           try { return JSON.parse(localStorage.getItem('guestbook') || '[]'); } catch (e) { return []; }
         },
-        async add(note) {
+        async add(note, photo) {
           if (live) {
+            if (photo) {
+              const path = (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(36).slice(2)) + '.' + photo.ext;
+              const up = await fetch(GB_URL + '/storage/v1/object/guestbook/' + path, { method: 'POST', headers: { ...auth, 'Content-Type': photo.blob.type }, body: photo.blob });
+              if (!up.ok) throw new Error('upload');
+              note = { ...note, image_path: path };
+            }
             const r = await fetch(GB_URL + '/rest/v1/guestbook', { method: 'POST', headers: { ...auth, 'Content-Type': 'application/json', Prefer: 'return=minimal' }, body: JSON.stringify(note) });
             if (!r.ok) throw new Error('save');
             return;
           }
+          if (photo) note = { ...note, image_path: await new Promise((r) => { const f = new FileReader(); f.onload = () => r(f.result); f.readAsDataURL(photo.blob); }) };
           const all = await this.load();
           all.unshift({ ...note, created_at: new Date().toISOString() });
           try { localStorage.setItem('guestbook', JSON.stringify(all.slice(0, 100))); } catch (e) {}
@@ -644,9 +704,9 @@
         if (!note.name || !note.message) return;
         say('signing...');
         try {
-          await store.add(note);
+          await store.add(note, picked);
           try { localStorage.setItem('gb-last', String(Date.now())); } catch (e) {}
-          form.reset();
+          form.reset(); clearPhoto();
           say(live ? 'thanks for stopping by! ♥' : 'saved on this device only (demo mode)');
           await refresh();
         } catch (e) { say('oops, that didn\'t save. try again?'); }
