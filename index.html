@@ -57,6 +57,10 @@
             <svg class="ico" viewBox="0 0 64 64"><path d="M10 16 Q10 8 18 8 H46 Q54 8 54 16 V34 Q54 42 46 42 H30 L18 54 V42 Q10 42 10 34 Z"/><circle cx="32" cy="18" r="2" fill="currentColor"/><path d="M32 25 V35"/></svg>
             <span>about</span>
           </button>
+          <button class="icon-btn" data-open="siblings">
+            <svg class="ico" viewBox="0 0 64 64"><circle cx="22" cy="21" r="9"/><path d="M6 54 V48 Q6 36 22 36 Q38 36 38 48 V54 Z"/><circle cx="44" cy="26" r="8"/><path d="M30 54 V50 Q30 41 44 41 Q58 41 58 50 V54 Z"/></svg>
+            <span>siblings</span>
+          </button>
           <button class="icon-btn" data-open="links">
             <svg class="ico" viewBox="0 0 64 64"><rect x="6" y="22" width="30" height="16" rx="8" transform="rotate(-35 21 30)"/><rect x="28" y="26" width="30" height="16" rx="8" transform="rotate(-35 43 34)"/></svg>
             <span>links</span>
@@ -98,6 +102,32 @@
           <li>Purple Fanta</li>
         </ul>
         <p>want to say hi? send me a message in <button class="link" data-open="contact">contact</button> :)</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- placeholder avatar (swap each <svg> for an <img> when you have photos) -->
+  <svg width="0" height="0" class="absolute" aria-hidden="true"><symbol id="avatar" viewBox="0 0 64 64">
+    <circle cx="32" cy="32" r="27" fill="var(--c)" stroke="#4b3f72" stroke-width="3"/>
+    <circle cx="23" cy="29" r="3" fill="#4b3f72"/><circle cx="41" cy="29" r="3" fill="#4b3f72"/>
+    <ellipse cx="17" cy="38" rx="4.5" ry="3" fill="#ff9fc4" opacity=".7"/><ellipse cx="47" cy="38" rx="4.5" ry="3" fill="#ff9fc4" opacity=".7"/>
+    <path d="M25 39 Q32 46 39 39" fill="none" stroke="#4b3f72" stroke-width="3" stroke-linecap="round"/>
+  </symbol></svg>
+
+  <!-- siblings -->
+  <section id="win-siblings" class="win" role="dialog" aria-label="siblings" hidden>
+    <div class="win-bar"><span>siblings</span><button class="win-x" aria-label="close siblings">[x]</button></div>
+    <div class="win-body px-6 py-6">
+      <p class="mb-4 text-ink/70">my favorite people in the world 💜</p>
+      <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <figure class="sib"><svg class="avatar" viewBox="0 0 64 64" style="--c:#ffd9ea" aria-hidden="true"><use href="#avatar"/></svg><figcaption>Izeck</figcaption></figure>
+        <figure class="sib"><svg class="avatar" viewBox="0 0 64 64" style="--c:#d9c9ff" aria-hidden="true"><use href="#avatar"/></svg><figcaption>Nicey</figcaption></figure>
+        <figure class="sib"><svg class="avatar" viewBox="0 0 64 64" style="--c:#cfe8ff" aria-hidden="true"><use href="#avatar"/></svg><figcaption>Adam</figcaption></figure>
+        <figure class="sib"><svg class="avatar" viewBox="0 0 64 64" style="--c:#ffe9c7" aria-hidden="true"><use href="#avatar"/></svg><figcaption>Christine</figcaption></figure>
+        <figure class="sib"><svg class="avatar" viewBox="0 0 64 64" style="--c:#d6f5e3" aria-hidden="true"><use href="#avatar"/></svg><figcaption>Catherine</figcaption></figure>
+        <figure class="sib"><svg class="avatar" viewBox="0 0 64 64" style="--c:#fff3b8" aria-hidden="true"><use href="#avatar"/></svg><figcaption>Mark</figcaption></figure>
+        <figure class="sib"><svg class="avatar" viewBox="0 0 64 64" style="--c:#f5d0fe" aria-hidden="true"><use href="#avatar"/></svg><figcaption>Ezra</figcaption></figure>
+        <figure class="sib"><svg class="avatar" viewBox="0 0 64 64" style="--c:#c7d2fe" aria-hidden="true"><use href="#avatar"/></svg><figcaption>Esther</figcaption></figure>
       </div>
     </div>
   </section>
