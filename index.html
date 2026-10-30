@@ -89,6 +89,10 @@
             <svg class="ico" viewBox="0 0 64 64"><rect x="6" y="14" width="52" height="38" rx="4"/><path d="M6 18 L32 38 L58 18"/></svg>
             <span>contact</span>
           </button>
+          <button class="icon-btn" data-open="devlog">
+            <svg class="ico" viewBox="0 0 64 64"><path d="M14 8 H40 L52 20 V56 H14Z"/><path d="M40 8 V20 H52"/><path d="M22 32 H44 M22 40 H44 M22 48 H35"/></svg>
+            <span>devlog</span>
+          </button>
         </nav>
         <p class="mt-10 text-sm text-ink/50">psst. try clicking the little guy in the corner →</p>
       </div>
@@ -221,6 +225,104 @@
         </div>
       </form>
       <ul id="gb-list" class="scroll-thin mt-5 grid max-h-64 gap-3 overflow-y-auto pr-1"></ul>
+    </div>
+  </section>
+
+  <!-- devlog -->
+  <section id="win-devlog" class="win" role="dialog" aria-label="devlog" hidden>
+    <div class="win-bar"><span>devlog</span><button class="win-x" aria-label="close devlog">[x]</button></div>
+    <div class="win-body px-6 py-6">
+      <p class="text-ink/70">everything i've added to this site, newest first.</p>
+      <p class="mt-1 font-mono text-xs text-ink/50">last updated oct 30, 2026</p>
+      <ol class="dl-timeline mt-5">
+        <li>
+          <details class="dl" open>
+            <summary><span class="dl-v">v1.7</span><span class="dl-t"><span class="dl-row"><b>devlog</b><span class="dl-new">latest</span></span><small>you're looking at it</small></span></summary>
+            <ul class="dl-list">
+              <li>a new <b>devlog</b> icon on the home screen</li>
+              <li>a simple list of everything added to the site, newest first</li>
+              <li>tap a version to open or close it</li>
+            </ul>
+          </details>
+        </li>
+        <li>
+          <details class="dl">
+            <summary><span class="dl-v">v1.6</span><span class="dl-t"><b>seasons</b><small>the site dresses up for the holidays</small></span></summary>
+            <ul class="dl-list">
+            <li><b>christmas</b> (dec 1&ndash;26): falling snow and a santa hat on the little guy</li>
+            <li><b>valentine's</b> (feb 10&ndash;14): floating hearts</li>
+            <li><b>spring</b> (mar 20&ndash;apr 20): drifting blossom petals and a flower clip</li>
+            <li><b>my birthday</b> (jun 13&ndash;15): confetti, balloons and a party hat</li>
+            <li>each one switches on by itself, then goes away after</li>
+            </ul>
+          </details>
+        </li>
+        <li>
+          <details class="dl">
+            <summary><span class="dl-v">v1.5</span><span class="dl-t"><b>the little guy has feelings</b><small>he reacts when you poke him a lot</small></span></summary>
+            <ul class="dl-list">
+            <li>click him too fast and he gets <b>angry</b>: he turns red, shakes and grumbles</li>
+            <li>keep going&hellip; and something else might happen &#128064;</li>
+            <li>he calms down on his own and says sorry</li>
+            </ul>
+          </details>
+        </li>
+        <li>
+          <details class="dl">
+            <summary><span class="dl-v">v1.4</span><span class="dl-t"><b>guestbook</b><small>leave a note for me and everyone else</small></span></summary>
+            <ul class="dl-list">
+            <li>new <b>book icon</b> in the bottom-right corner, above the piano</li>
+            <li>sign with your name; every note is <b>dated automatically</b></li>
+            <li>attach a <b>photo</b> to your note (it's shrunk automatically)</li>
+            <li><b>reply</b> to other people's notes</li>
+            <li>notes are saved online, so everyone sees the same guestbook</li>
+            </ul>
+          </details>
+        </li>
+        <li>
+          <details class="dl">
+            <summary><span class="dl-v">v1.3</span><span class="dl-t"><b>tab icon &amp; sharing</b><small>nicer when you save or send the link</small></span></summary>
+            <ul class="dl-list">
+            <li>new tab icon, and the tab now reads &ldquo;khing's safe space&rdquo;</li>
+            <li>a preview card shows up when you share the link in chat apps</li>
+            <li>works on phones too</li>
+            </ul>
+          </details>
+        </li>
+        <li>
+          <details class="dl">
+            <summary><span class="dl-v">v1.2</span><span class="dl-t"><b>music &amp; sound</b><small>the site has a soundtrack</small></span></summary>
+            <ul class="dl-list">
+            <li>background piano music, with the <b>piano icon</b> as the mute / unmute button</li>
+            <li>small sound effects when you click things and close windows</li>
+            <li>music pauses when you switch to another tab</li>
+            </ul>
+          </details>
+        </li>
+        <li>
+          <details class="dl">
+            <summary><span class="dl-v">v1.1</span><span class="dl-t"><b>more about me</b><small>new windows and details</small></span></summary>
+            <ul class="dl-list">
+            <li><b>about</b>: where i'm from, where i live now, things i like, education and languages</li>
+            <li><b>siblings</b>: a window with all 8 of them, photos included</li>
+            <li><b>links</b>: youtube, instagram, ko-fi and github</li>
+            <li><b>contact</b>: how to reach me</li>
+            </ul>
+          </details>
+        </li>
+        <li>
+          <details class="dl">
+            <summary><span class="dl-v">v1.0</span><span class="dl-t"><b>launch</b><small>the site goes live</small></span></summary>
+            <ul class="dl-list">
+            <li>a casual retro-desktop look in soft pastel purple</li>
+            <li>gently moving waves in the background</li>
+            <li><b>light / dark mode</b> button in the top-left corner</li>
+            <li>the little chibi in the bottom-right corner: he blinks, follows your cursor and changes expressions</li>
+            </ul>
+          </details>
+        </li>
+      </ol>
+      <p class="mt-6 rounded-xl border-2 border-violet-200 px-4 py-3 text-sm text-ink/70"><b>on the list:</b> instagram and ko-fi links, and real projects in the work window.</p>
     </div>
   </section>
 
@@ -650,7 +752,7 @@
       else if (t.closest('#mascot')) sfx(t.closest('#mascot').classList.contains('dark') ? 'dark' : t.closest('#mascot').classList.contains('angry') ? 'angry' : 'boing');
       else if (t.closest('#theme-toggle')) sfx(root.classList.contains('dark') ? 'night' : 'day');
       else if (t.closest('#music-btn')) return; // has its own sounds
-      else if (t.closest('a, button, .sib, .tile')) sfx('pop');
+      else if (t.closest('a, button, .sib, .tile, summary')) sfx('pop');
     });
 
     // links that aren't filled in yet (href="#") shouldn't jump the page: the little guy says so instead
