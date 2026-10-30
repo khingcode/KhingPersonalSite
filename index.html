@@ -569,8 +569,10 @@
     // guestbook: notes live in a free Supabase table (see README-guestbook.md).
     // with no keys set it runs in demo mode and only saves in this browser.
     (() => {
-      const GB_URL = '';
-      const GB_KEY = '';
+      const GB_URL = 'https://wecbthkbjftpxonlqfee.supabase.co';
+      const GB_KEY = 'sb_publishable_TDtPkQL28bG6wrHR9Fz4pA_L3_6fPpL';
+      // publishable keys aren't JWTs, so they go in apikey only
+      const auth = { apikey: GB_KEY };
       const live = !!(GB_URL && GB_KEY);
       const form = document.getElementById('gb-form');
       const list = document.getElementById('gb-list');
@@ -611,7 +613,7 @@
       const store = {
         async load() {
           if (live) {
-            const r = await fetch(GB_URL + '/rest/v1/guestbook?select=name,message,created_at&order=created_at.desc&limit=100', { headers: { apikey: GB_KEY, Authorization: 'Bearer ' + GB_KEY } });
+            const r = await fetch(GB_URL + '/rest/v1/guestbook?select=name,message,created_at&order=created_at.desc&limit=100', { headers: auth });
             if (!r.ok) throw new Error('load');
             return r.json();
           }
@@ -619,7 +621,7 @@
         },
         async add(note) {
           if (live) {
-            const r = await fetch(GB_URL + '/rest/v1/guestbook', { method: 'POST', headers: { apikey: GB_KEY, Authorization: 'Bearer ' + GB_KEY, 'Content-Type': 'application/json', Prefer: 'return=minimal' }, body: JSON.stringify(note) });
+            const r = await fetch(GB_URL + '/rest/v1/guestbook', { method: 'POST', headers: { ...auth, 'Content-Type': 'application/json', Prefer: 'return=minimal' }, body: JSON.stringify(note) });
             if (!r.ok) throw new Error('save');
             return;
           }
