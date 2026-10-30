@@ -36,10 +36,12 @@
     <span class="twinkle absolute left-[8%] top-[22%] text-2xl text-white">✦</span>
     <span class="twinkle absolute right-[12%] top-[16%] text-xl text-pink-200 [animation-delay:-1s]">✦</span>
     <span class="twinkle absolute right-[22%] top-[48%] text-lg text-white [animation-delay:-2s]">✦</span>
-    <svg class="absolute inset-x-0 bottom-0 h-[34vh] w-full" viewBox="0 0 1440 320" preserveAspectRatio="none">
-      <path class="hill-a" d="M0 120 Q300 40 620 100 T1440 80 V320 H0 Z" fill="#d6c6ff"/>
-      <path class="hill-b" d="M0 200 Q360 130 760 190 T1440 170 V320 H0 Z" fill="#c8b4ff"/>
-    </svg>
+    <!-- rolling waves: each layer is 2 periods wide and slides one period, so the loop is seamless -->
+    <div class="waves absolute inset-x-0 bottom-0 h-[34vh] overflow-hidden">
+      <svg class="wave wave-c" viewBox="0 0 2880 320" preserveAspectRatio="none"><path class="hill-c" d="M0 80 Q360 10 720 80 T1440 80 T2160 80 T2880 80 V320 H0Z"/></svg>
+      <svg class="wave wave-a" viewBox="0 0 2880 320" preserveAspectRatio="none"><path class="hill-a" d="M0 125 Q360 55 720 125 T1440 125 T2160 125 T2880 125 V320 H0Z"/></svg>
+      <svg class="wave wave-b" viewBox="0 0 2880 320" preserveAspectRatio="none"><path class="hill-b" d="M0 195 Q360 140 720 195 T1440 195 T2160 195 T2880 195 V320 H0Z"/></svg>
+    </div>
   </div>
 
   <!-- home window -->
