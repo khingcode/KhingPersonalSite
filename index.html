@@ -85,6 +85,10 @@
             <svg class="ico" viewBox="0 0 64 64"><path d="M6 14 H24 L30 20 H54 V52 H6 Z"/><path d="M6 52 L12 30 H60 L54 52"/></svg>
             <span>work</span>
           </button>
+          <button class="icon-btn" data-open="guestbook">
+            <svg class="ico" viewBox="0 0 64 64"><path d="M32 16 Q20 8 6 12 V50 Q20 46 32 54 Q44 46 58 50 V12 Q44 8 32 16 Z"/><path d="M32 16 V54"/><path d="M42 36 L36.5 30.5 C34 28 35 24 38.5 24 C40 24 41.3 24.8 42 26 C42.7 24.8 44 24 45.5 24 C49 24 50 28 47.5 30.5 Z" fill="currentColor" stroke-width="2"/><path d="M13 22 H25 M13 29 H25 M13 36 H22" stroke-width="2.5"/></svg>
+            <span>guestbook</span>
+          </button>
           <button class="icon-btn" data-open="contact">
             <svg class="ico" viewBox="0 0 64 64"><rect x="6" y="14" width="52" height="38" rx="4"/><path d="M6 18 L32 38 L58 18"/></svg>
             <span>contact</span>
@@ -187,6 +191,24 @@
         <a href="#" class="tile"><span class="tile-tag">project</span><b>project three</b><span class="text-sm text-ink/60">a tiny description of what it is.</span></a>
         <a href="#" class="tile"><span class="tile-tag">project</span><b>project four</b><span class="text-sm text-ink/60">a tiny description of what it is.</span></a>
       </div>
+    </div>
+  </section>
+
+  <!-- guestbook -->
+  <section id="win-guestbook" class="win" role="dialog" aria-label="guestbook" hidden>
+    <div class="win-bar"><span>guestbook</span><button class="win-x" aria-label="close guestbook">[x]</button></div>
+    <div class="win-body px-6 py-6">
+      <p class="text-ink/70">leave a little note! it'll be dated and everything :)</p>
+      <form id="gb-form" class="mt-4 grid gap-3" autocomplete="off">
+        <input id="gb-name" class="gb-field" type="text" maxlength="30" required placeholder="your name">
+        <textarea id="gb-msg" class="gb-field" rows="3" maxlength="200" required placeholder="your note (200 chars max)"></textarea>
+        <input id="gb-site" class="hidden" type="text" tabindex="-1" aria-hidden="true" autocomplete="off">
+        <div class="flex items-center justify-between gap-3">
+          <span id="gb-status" class="text-xs text-ink/60" role="status"></span>
+          <button class="gb-btn" type="submit">sign it</button>
+        </div>
+      </form>
+      <ul id="gb-list" class="scroll-thin mt-5 grid max-h-64 gap-3 overflow-y-auto pr-1"></ul>
     </div>
   </section>
 
@@ -541,6 +563,98 @@
       clearTimeout(hideT);
       hideT = setTimeout(() => bubble.classList.add('hidden'), 2200);
     });
+  </script>
+
+  <script>
+    // guestbook: notes live in a free Supabase table (see README-guestbook.md).
+    // with no keys set it runs in demo mode and only saves in this browser.
+    (() => {
+      const GB_URL = '';
+      const GB_KEY = '';
+      const live = !!(GB_URL && GB_KEY);
+      const form = document.getElementById('gb-form');
+      const list = document.getElementById('gb-list');
+      const status = document.getElementById('gb-status');
+      const nameEl = document.getElementById('gb-name');
+      const msgEl = document.getElementById('gb-msg');
+      const say = (t) => { status.textContent = t; };
+      const fmt = (iso) => new Date(iso).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+
+      function render(notes) {
+        list.replaceChildren();
+        if (!notes.length) {
+          const li = document.createElement('li');
+          li.className = 'text-sm text-ink/50';
+          li.textContent = 'no notes yet. be the first!';
+          list.append(li);
+          return;
+        }
+        notes.forEach((n) => {
+          const li = document.createElement('li');
+          li.className = 'gb-note';
+          const head = document.createElement('div');
+          head.className = 'flex items-baseline justify-between gap-3';
+          const who = document.createElement('b');
+          who.textContent = n.name;
+          const when = document.createElement('span');
+          when.className = 'shrink-0 font-mono text-xs text-ink/50';
+          when.textContent = fmt(n.created_at);
+          head.append(who, when);
+          const body = document.createElement('p');
+          body.className = 'mt-1 whitespace-pre-wrap break-words text-sm text-ink/80';
+          body.textContent = n.message;
+          li.append(head, body);
+          list.append(li);
+        });
+      }
+
+      const store = {
+        async load() {
+          if (live) {
+            const r = await fetch(GB_URL + '/rest/v1/guestbook?select=name,message,created_at&order=created_at.desc&limit=100', { headers: { apikey: GB_KEY, Authorization: 'Bearer ' + GB_KEY } });
+            if (!r.ok) throw new Error('load');
+            return r.json();
+          }
+          try { return JSON.parse(localStorage.getItem('guestbook') || '[]'); } catch (e) { return []; }
+        },
+        async add(note) {
+          if (live) {
+            const r = await fetch(GB_URL + '/rest/v1/guestbook', { method: 'POST', headers: { apikey: GB_KEY, Authorization: 'Bearer ' + GB_KEY, 'Content-Type': 'application/json', Prefer: 'return=minimal' }, body: JSON.stringify(note) });
+            if (!r.ok) throw new Error('save');
+            return;
+          }
+          const all = await this.load();
+          all.unshift({ ...note, created_at: new Date().toISOString() });
+          try { localStorage.setItem('guestbook', JSON.stringify(all.slice(0, 100))); } catch (e) {}
+        },
+      };
+
+      async function refresh() {
+        try { render(await store.load()); } catch (e) { say('couldn\'t load notes right now :('); }
+      }
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (document.getElementById('gb-site').value) return;
+        const last = +localStorage.getItem('gb-last') || 0;
+        if (Date.now() - last < 30000) { say('easy there! wait a few seconds :)'); return; }
+        const note = { name: nameEl.value.trim().slice(0, 30), message: msgEl.value.trim().slice(0, 200) };
+        if (!note.name || !note.message) return;
+        say('signing...');
+        try {
+          await store.add(note);
+          try { localStorage.setItem('gb-last', String(Date.now())); } catch (e) {}
+          form.reset();
+          say(live ? 'thanks for stopping by! ♥' : 'saved on this device only (demo mode)');
+          await refresh();
+        } catch (e) { say('oops, that didn\'t save. try again?'); }
+      });
+
+      document.addEventListener('click', (e) => {
+        const o = e.target.closest('[data-open="guestbook"]');
+        if (o) { say(live ? '' : 'demo mode: notes only show on this device'); refresh(); }
+      });
+    })();
   </script>
 </body>
 </html>
