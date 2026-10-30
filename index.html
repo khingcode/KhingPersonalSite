@@ -227,6 +227,8 @@
     </div>
   </section>
 
+  <div id="creep" class="creep" aria-hidden="true"></div>
+
   <!-- mascot -->
   <div class="fixed right-3 bottom-3 z-30 flex flex-col items-end sm:right-8 sm:bottom-5">
     <!-- guestbook book -->
@@ -268,6 +270,10 @@
               <ellipse cx="369" cy="496" rx="19" ry="38" stroke="none"/><ellipse cx="530" cy="496" rx="19" ry="38" stroke="none"/>
               <path d="M334 434 L398 464 M565 434 L501 464" fill="none" stroke-width="15" stroke-linecap="round"/>
             </g>
+            <g data-eye="dark" class="hidden">
+              <circle cx="369" cy="486" r="50" fill="#050505" stroke="#fff" stroke-width="9"/><circle cx="369" cy="486" r="33" fill="none" stroke="#8a8a8a" stroke-width="4"/>
+              <circle cx="530" cy="486" r="50" fill="#050505" stroke="#fff" stroke-width="9"/><circle cx="530" cy="486" r="33" fill="none" stroke="#8a8a8a" stroke-width="4"/>
+            </g>
             <g data-eye="sleepy" class="hidden" fill="none" stroke-width="14" stroke-linecap="round">
               <path d="M347 490 Q369 520 391 490"/><path d="M508 490 Q530 520 552 490"/>
             </g>
@@ -280,6 +286,7 @@
             </g>
             <ellipse data-mouth="o" class="hidden" cx="444" cy="592" rx="13" ry="17" fill="#2a1a28" stroke-width="9"/>
             <path data-mouth="cat" class="hidden" d="M408 580 Q426 602 444 581 Q462 602 480 580" fill="none" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+            <path data-mouth="dark" class="hidden" d="M372 566 Q444 560 516 566 Q500 640 444 642 Q388 640 372 566Z" fill="#050505" stroke="#bdbdbd" stroke-width="5" stroke-linejoin="round"/>
             <path data-mouth="frown" class="hidden" d="M416 600 Q445 572 474 600" fill="none" stroke-width="13" stroke-linecap="round"/>
             <path data-mouth="flat" class="hidden" d="M428 589 Q444 596 460 589" fill="none" stroke-width="11" stroke-linecap="round"/>
           </g>
@@ -361,6 +368,7 @@
       wink:      { eye: 'wink',   mouth: 'smile' },
       sleepy:    { eye: 'sleepy', mouth: 'flat' },
       angry:     { eye: 'angry',  mouth: 'frown' },
+      dark:      { eye: 'dark',   mouth: 'dark' },
     };
     const face = document.getElementById('face');
     const mascot = document.getElementById('mascot');
@@ -392,34 +400,52 @@
 
     // spam clicking makes the little guy angry: 5 clicks inside 2 seconds
     const angryLines = ['hey!! 💢', 'stop poking me!', 'i said STOP 😠', 'that. is. enough!!', 'rude!! 💢💢', 'GRRR 😤'];
-    let clicks = [], a = 0, calmT;
+    // keep going after it's angry and it shows its dark side
+    const darkLines = ['…', 'you shouldn\'t have done that.', 'i see you.', 'ehehehe…', 'keep clicking. i dare you.', 'why are you still here 🙂'];
+    let clicks = [], a = 0, d = 0, rage = 0, calmT;
+    const page = document.documentElement;
+    function say(text, ms) {
+      bubble.textContent = text;
+      bubble.classList.remove('hidden');
+      clearTimeout(hideT);
+      hideT = setTimeout(() => bubble.classList.add('hidden'), ms);
+    }
     function anger() {
+      rage++;
+      if (rage >= 9 || mascot.classList.contains('dark')) return darken();
       busy = true;
       clearTimeout(moodT);
       mascot.classList.add('angry');
       setMood('angry');
-      bubble.textContent = angryLines[a++ % angryLines.length];
-      bubble.classList.remove('hidden');
-      clearTimeout(hideT);
-      hideT = setTimeout(() => bubble.classList.add('hidden'), 3500);
+      say(angryLines[a++ % angryLines.length], 3500);
       clearTimeout(calmT);
       calmT = setTimeout(calm, 3500);
     }
-    function calm() {
+    function darken() {
+      busy = true;
+      clearTimeout(moodT);
       mascot.classList.remove('angry');
-      clicks = [];
-      react('sleepy', 2800);
-      bubble.textContent = 'hmph… i\'m calm. i\'m calm.';
-      bubble.classList.remove('hidden');
-      clearTimeout(hideT);
-      hideT = setTimeout(() => bubble.classList.add('hidden'), 2800);
+      mascot.classList.add('dark');
+      page.classList.add('creepy');
+      setMood('dark');
+      say(darkLines[d++ % darkLines.length], 4000);
+      clearTimeout(calmT);
+      calmT = setTimeout(calm, 5000);
+    }
+    function calm() {
+      const wasDark = mascot.classList.contains('dark');
+      mascot.classList.remove('angry', 'dark');
+      page.classList.remove('creepy');
+      clicks = []; rage = 0;
+      react('sleepy', 3200);
+      say(wasDark ? '…did i scare you? sorry 🥺' : 'hmph… i\'m calm. i\'m calm.', 3200);
     }
 
     mascot.addEventListener('click', () => {
       const now = Date.now();
       clicks = clicks.filter((t) => now - t < 2000);
       clicks.push(now);
-      if (clicks.length >= 5 || mascot.classList.contains('angry')) { anger(); return; }
+      if (clicks.length >= 5 || mascot.classList.contains('angry') || mascot.classList.contains('dark')) { anger(); return; }
       const [mood, line] = script[n++ % script.length];
       busy = true;
       react(mood, 3200);
@@ -576,6 +602,7 @@
       close: () => blip(620, 300, 0.12, 'triangle', 0.13),
       boing: () => { blip(260, 620, 0.12, 'sine', 0.15); blip(620, 300, 0.18, 'sine', 0.12, 0.1); },
       angry: () => { blip(190, 120, 0.16, 'sawtooth', 0.09); blip(170, 105, 0.16, 'sawtooth', 0.08, 0.1); },
+      dark:  () => { blip(80, 45, 0.5, 'sawtooth', 0.1); blip(85, 50, 0.5, 'square', 0.05, 0.05); },
       on:    () => { blip(523, 784, 0.12, 'sine', 0.12); blip(784, 1047, 0.14, 'sine', 0.1, 0.08); },
       day:   () => [988, 1318, 1568].forEach((f, i) => blip(f, f * 1.02, 0.14, 'sine', 0.07, i * 0.06)),
       night: () => [659, 523, 392].forEach((f, i) => blip(f, f * 0.98, 0.16, 'sine', 0.08, i * 0.07)),
@@ -593,7 +620,7 @@
       if (!t.closest) return;
       if (t.closest('.win-x')) sfx('close');
       else if (t.closest('[data-open]')) sfx('open');
-      else if (t.closest('#mascot')) sfx(t.closest('#mascot').classList.contains('angry') ? 'angry' : 'boing');
+      else if (t.closest('#mascot')) sfx(t.closest('#mascot').classList.contains('dark') ? 'dark' : t.closest('#mascot').classList.contains('angry') ? 'angry' : 'boing');
       else if (t.closest('#theme-toggle')) sfx(root.classList.contains('dark') ? 'night' : 'day');
       else if (t.closest('#music-btn')) return; // has its own sounds
       else if (t.closest('a, button, .sib, .tile')) sfx('pop');
