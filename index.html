@@ -85,10 +85,6 @@
             <svg class="ico" viewBox="0 0 64 64"><path d="M6 14 H24 L30 20 H54 V52 H6 Z"/><path d="M6 52 L12 30 H60 L54 52"/></svg>
             <span>work</span>
           </button>
-          <button class="icon-btn" data-open="guestbook">
-            <svg class="ico" viewBox="0 0 64 64"><path d="M32 16 Q20 8 6 12 V50 Q20 46 32 54 Q44 46 58 50 V12 Q44 8 32 16 Z"/><path d="M32 16 V54"/><path d="M42 36 L36.5 30.5 C34 28 35 24 38.5 24 C40 24 41.3 24.8 42 26 C42.7 24.8 44 24 45.5 24 C49 24 50 28 47.5 30.5 Z" fill="currentColor" stroke-width="2"/><path d="M13 22 H25 M13 29 H25 M13 36 H22" stroke-width="2.5"/></svg>
-            <span>guestbook</span>
-          </button>
           <button class="icon-btn" data-open="contact">
             <svg class="ico" viewBox="0 0 64 64"><rect x="6" y="14" width="52" height="38" rx="4"/><path d="M6 18 L32 38 L58 18"/></svg>
             <span>contact</span>
@@ -223,6 +219,10 @@
 
   <!-- mascot -->
   <div class="fixed right-3 bottom-3 z-30 flex flex-col items-end sm:right-8 sm:bottom-5">
+    <!-- guestbook book -->
+    <button id="book-btn" class="book mb-1 mr-1" data-open="guestbook" aria-label="open guestbook" title="guestbook">
+      <img src="assets/guestbook.webp" width="400" height="325" alt="" class="block w-12 select-none sm:w-16" draggable="false" />
+    </button>
     <!-- piano = music mute / unmute -->
     <button id="music-btn" class="piano mb-1" aria-label="play music" aria-pressed="false" title="music on / off">
       <img src="assets/piano.webp" width="400" height="354" alt="" class="block w-16 select-none sm:w-20" draggable="false" />
