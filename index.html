@@ -227,6 +227,7 @@
   <div class="fixed right-3 bottom-3 z-30 flex flex-col items-end sm:right-8 sm:bottom-5">
     <!-- guestbook book -->
     <button id="book-btn" class="book mb-1 mr-1" data-open="guestbook" aria-label="open guestbook" title="guestbook">
+      <span id="gb-badge" class="gb-badge" hidden aria-live="polite"></span>
       <img src="assets/guestbook.webp" width="400" height="325" alt="" class="block w-12 select-none sm:w-16" draggable="false" />
     </button>
     <!-- piano = music mute / unmute -->
@@ -692,8 +693,32 @@
       };
 
       async function refresh() {
-        try { render(await store.load()); } catch (e) { say('couldn\'t load notes right now :('); }
+        try { const notes = await store.load(); render(notes); return notes; } catch (e) { say('couldn\'t load notes right now :('); return null; }
       }
+
+      // red "new notes" badge: only for the owner's browser. visit the site once with #owner on the end to turn it on.
+      let owner = false;
+      try {
+        if (location.hash === '#owner') { localStorage.setItem('gb-owner', '1'); history.replaceState(null, '', location.pathname + location.search); }
+        owner = localStorage.getItem('gb-owner') === '1';
+      } catch (e) {}
+      const badge = document.getElementById('gb-badge');
+      const seenAt = () => { try { return localStorage.getItem('gb-seen') || ''; } catch (e) { return ''; } };
+      function showBadge(notes) {
+        const n = notes.filter((x) => x.created_at > seenAt()).length;
+        badge.textContent = n > 99 ? '99+' : String(n);
+        badge.hidden = n === 0;
+      }
+      function markSeen(notes) {
+        if (notes && notes[0]) { try { localStorage.setItem('gb-seen', notes[0].created_at); } catch (e) {} }
+        badge.hidden = true;
+      }
+      async function checkNew() {
+        if (!owner || !live || document.hidden || !document.getElementById('win-guestbook').hidden) return;
+        try { showBadge(await store.load()); } catch (e) {}
+      }
+      checkNew();
+      setInterval(checkNew, 120000);
 
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -714,7 +739,7 @@
 
       document.addEventListener('click', (e) => {
         const o = e.target.closest('[data-open="guestbook"]');
-        if (o) { say(live ? '' : 'demo mode: notes only show on this device'); refresh(); }
+        if (o) { say(live ? '' : 'demo mode: notes only show on this device'); refresh().then((notes) => { if (owner) markSeen(notes); }); }
       });
     })();
   </script>
