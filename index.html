@@ -236,8 +236,6 @@
   <div id="fx" aria-hidden="true"></div>
   <div id="creep" class="creep" aria-hidden="true"></div>
 
-  <button id="season-btn" class="season-btn fixed bottom-3 left-3 z-30 sm:bottom-5 sm:left-5" hidden aria-label="preview seasonal look" title="seasonal look (only you see this button)"></button>
-
   <!-- mascot -->
   <div class="fixed right-3 bottom-3 z-30 flex flex-col items-end sm:right-8 sm:bottom-5">
     <!-- guestbook book -->
@@ -299,12 +297,6 @@
               <path d="M410 168 L520 -40 L640 150 Q530 190 410 168Z" fill="#9b6dff"/>
               <path d="M452 108 L476 130 M500 62 L544 88 M556 110 L586 124" stroke="#fff" stroke-width="14" fill="none"/>
               <circle cx="520" cy="-44" r="26" fill="#ffd54a"/>
-            </g>
-            <g data-deco="witch" class="hidden" transform="rotate(-6 480 150)">
-              <path d="M392 168 Q430 60 520 -20 Q548 -50 600 -70 Q590 -20 596 40 Q640 110 650 170Z" fill="#35294f"/>
-              <path d="M398 150 Q520 186 646 146 L650 176 Q520 214 394 184Z" fill="#ff8a3d"/>
-              <path d="M250 186 Q480 150 720 180 Q760 196 720 214 Q480 240 250 214 Q210 200 250 186Z" fill="#35294f"/>
-              <rect x="498" y="148" width="40" height="44" rx="6" fill="#ffd54a" transform="rotate(-4 518 170)"/>
             </g>
             <g data-deco="sakura" class="hidden">
               <g transform="translate(640 176)" fill="#ffb7d0">
@@ -890,20 +882,15 @@
   </script>
 
   <script>
-    // seasonal touches. SEASON_AUTO is off: for now only the owner's button (bottom-left) turns them on.
-    // flip it to true and each look switches itself on during its dates.
+    // seasonal touches: each look switches itself on only during its own dates (visitor's local date).
     (() => {
-      const SEASON_AUTO = false;
       const SEASONS = {
-        halloween: { label: '🎃 halloween', deco: 'witch', hi: 'boo! 🎃 happy halloween' },
         christmas: { label: '🎄 christmas', deco: 'santa', hi: 'merry christmas! 🎄' },
         valentines: { label: '💖 valentine\'s', deco: null, hi: 'happy valentine\'s! 💖' },
         birthday: { label: '🎂 birthday', deco: 'party', hi: 'it\'s khing\'s birthday! 🎂' },
         sakura: { label: '🌸 spring', deco: 'sakura', hi: 'spring is here 🌸' },
       };
-      const ORDER = [null, 'halloween', 'christmas', 'valentines', 'birthday', 'sakura'];
       const fx = document.getElementById('fx');
-      const btn = document.getElementById('season-btn');
       const root = document.documentElement;
       const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
       const small = innerWidth < 640;
@@ -911,7 +898,6 @@
 
       function autoSeason() {
         const d = new Date(), k = (d.getMonth() + 1) * 100 + d.getDate();
-        if (k >= 1024 && k <= 1031) return 'halloween';
         if (k >= 1201 && k <= 1226) return 'christmas';
         if (k >= 210 && k <= 214) return 'valentines';
         if (k >= 613 && k <= 615) return 'birthday';
@@ -938,11 +924,6 @@
       }
       const scale = small ? .5 : 1;
       const MAKE = {
-        halloween() {
-          spawn('bat', Math.round(6 * scale + 1), { cls: () => 'fx-fly fx-bat', size: () => rnd(28, 46), top: () => rnd(4, 40) + 'vh', dur: () => rnd(10, 18) });
-          spawn('ghost', Math.round(5 * scale + 1), { cls: () => 'fx-rise fx-ghost', size: () => rnd(30, 44), dur: () => rnd(16, 26) });
-          spawn('pumpkin', Math.round(5 * scale + 1), { cls: () => 'fx-fall fx-pumpkin', size: () => rnd(24, 38), dur: () => rnd(14, 22) });
-        },
         christmas() {
           spawn('flake', Math.round(44 * scale), { cls: () => 'fx-fall fx-flake', size: () => rnd(4, 10), dur: () => rnd(8, 16) });
         },
@@ -973,17 +954,10 @@
           hideT = setTimeout(() => bubble.classList.add('hidden'), 3200);
           if (typeof react === 'function') react('happy', 2400);
         }
-        btn.textContent = name ? SEASONS[name].label : '✨ seasons: off';
       }
 
-      let owner = false;
-      try { owner = localStorage.getItem('gb-owner') === '1'; } catch (e) {}
-      if (owner) {
-        btn.hidden = false;
-        btn.textContent = '✨ seasons: off';
-        btn.addEventListener('click', () => apply(ORDER[(ORDER.indexOf(current) + 1) % ORDER.length]));
-      }
-      if (SEASON_AUTO) { const a = autoSeason(); if (a) apply(a, true); }
+      const a = autoSeason();
+      if (a) apply(a, false);
     })();
   </script>
 </body>
