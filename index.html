@@ -127,16 +127,46 @@
 
   <!-- mascot -->
   <div class="fixed right-3 bottom-3 z-30 flex items-end gap-2 sm:right-8 sm:bottom-5">
-    <p id="bubble" class="mb-14 hidden max-w-[11rem] rounded-2xl rounded-br-sm border-2 border-ink bg-white px-3 py-2 text-sm font-semibold shadow-md" role="status"></p>
+    <p id="bubble" class="mb-24 hidden max-w-[11rem] rounded-2xl rounded-br-sm border-2 border-ink bg-white px-3 py-2 text-sm font-semibold shadow-md" role="status"></p>
     <button id="mascot" class="mascot" aria-label="say hi to the little guy">
-      <svg viewBox="0 0 100 100" class="h-20 w-20 sm:h-24 sm:w-24">
-        <path d="M50 30 Q46 16 58 11" fill="none" stroke="#4b3f72" stroke-width="3" stroke-linecap="round"/>
-        <circle cx="59" cy="10" r="5.5" fill="#ffd1e8" stroke="#4b3f72" stroke-width="3"/>
-        <ellipse cx="50" cy="62" rx="35" ry="30" fill="#c9b6ff" stroke="#4b3f72" stroke-width="3"/>
-        <circle cx="38" cy="58" r="3.5" fill="#4b3f72"/><circle cx="62" cy="58" r="3.5" fill="#4b3f72"/>
-        <path d="M44 68 Q50 75 56 68" fill="none" stroke="#4b3f72" stroke-width="3" stroke-linecap="round"/>
-        <ellipse cx="30" cy="68" rx="6" ry="4" fill="#ff9fc4" opacity=".8"/><ellipse cx="70" cy="68" rx="6" ry="4" fill="#ff9fc4" opacity=".8"/>
-      </svg>
+      <span class="sprite relative block w-28 sm:w-36">
+        <img src="assets/mascot.webp" width="500" height="500" alt="" class="block w-full select-none" draggable="false" />
+        <!-- face is drawn on top of the blank-faced art, in the same 1000x1000 space as the original -->
+        <svg id="face" viewBox="0 0 1000 1000" class="pointer-events-none absolute inset-0 h-full w-full" fill="#000" stroke="#000" aria-hidden="true">
+          <g id="eyes">
+            <g data-eye="open"><g class="blinker">
+              <ellipse cx="369" cy="486" rx="20.5" ry="48.5" stroke="none"/><ellipse cx="530" cy="486" rx="20.5" ry="48.5" stroke="none"/>
+            </g></g>
+            <g data-eye="wide" class="hidden" stroke="none">
+              <ellipse cx="369" cy="484" rx="25" ry="56"/><ellipse cx="530" cy="484" rx="25" ry="56"/>
+              <circle cx="377" cy="462" r="9" fill="#fff"/><circle cx="538" cy="462" r="9" fill="#fff"/>
+            </g>
+            <g data-eye="happy" class="hidden" fill="none" stroke-width="15" stroke-linecap="round">
+              <path d="M347 508 Q369 456 391 508"/><path d="M508 508 Q530 456 552 508"/>
+            </g>
+            <g data-eye="smug" class="hidden" stroke-width="6" stroke-linejoin="round">
+              <path d="M346 492 H392 Q392 534 369 534 Q346 534 346 492Z"/><path d="M507 492 H553 Q553 534 530 534 Q507 534 507 492Z"/>
+            </g>
+            <g data-eye="wink" class="hidden">
+              <ellipse cx="369" cy="486" rx="20.5" ry="48.5" stroke="none"/>
+              <path d="M508 506 Q530 456 552 506" fill="none" stroke-width="15" stroke-linecap="round"/>
+            </g>
+            <g data-eye="sleepy" class="hidden" fill="none" stroke-width="14" stroke-linecap="round">
+              <path d="M347 490 Q369 520 391 490"/><path d="M508 490 Q530 520 552 490"/>
+            </g>
+          </g>
+          <g id="mouth">
+            <path data-mouth="smile" d="M416 577 Q445 601 473 578" fill="none" stroke-width="13" stroke-linecap="round"/>
+            <g data-mouth="grin" class="hidden" stroke-linejoin="round">
+              <path d="M408 570 Q444 578 480 570 Q474 616 444 616 Q414 616 408 570Z" fill="#2a1a28" stroke-width="9"/>
+              <path d="M426 604 Q444 590 462 604 Q454 614 444 614 Q434 614 426 604Z" fill="#ff8fb3" stroke="none"/>
+            </g>
+            <ellipse data-mouth="o" class="hidden" cx="444" cy="592" rx="13" ry="17" fill="#2a1a28" stroke-width="9"/>
+            <path data-mouth="cat" class="hidden" d="M408 580 Q426 602 444 581 Q462 602 480 580" fill="none" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+            <path data-mouth="flat" class="hidden" d="M428 589 Q444 596 460 589" fill="none" stroke-width="11" stroke-linecap="round"/>
+          </g>
+        </svg>
+      </span>
     </button>
   </div>
 
@@ -203,16 +233,89 @@
       });
     });
 
-    // mascot
-    const lines = ['hi!! 👋', 'you found me :)', 'thanks for visiting!', 'drink some water 💧', 'you look nice today', 'psst… check out the work window'];
+    // mascot: moods = which eyes + which mouth to show
+    const moods = {
+      neutral:   { eye: 'open',   mouth: 'smile' },
+      happy:     { eye: 'happy',  mouth: 'grin' },
+      surprised: { eye: 'wide',   mouth: 'o' },
+      smug:      { eye: 'smug',   mouth: 'cat' },
+      wink:      { eye: 'wink',   mouth: 'smile' },
+      sleepy:    { eye: 'sleepy', mouth: 'flat' },
+    };
+    const face = document.getElementById('face');
+    const mascot = document.getElementById('mascot');
     const bubble = document.getElementById('bubble');
-    let n = 0, hideT;
-    document.getElementById('mascot').addEventListener('click', () => {
-      bubble.textContent = lines[n++ % lines.length];
+    const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let moodT, hideT, busy = false;
+
+    function setMood(name) {
+      const m = moods[name] || moods.neutral;
+      face.querySelectorAll('[data-eye]').forEach((el) => el.classList.toggle('hidden', el.dataset.eye !== m.eye));
+      face.querySelectorAll('[data-mouth]').forEach((el) => el.classList.toggle('hidden', el.dataset.mouth !== m.mouth));
+    }
+    function react(name, ms = 2400) {
+      setMood(name);
+      clearTimeout(moodT);
+      moodT = setTimeout(() => { setMood('neutral'); busy = false; }, ms);
+    }
+
+    // click: cycle through moods with a line each
+    const script = [
+      ['happy', 'hi!! 👋'],
+      ['surprised', 'ooh! you found me!'],
+      ['smug', 'heh. nice site, right?'],
+      ['wink', 'thanks for visiting ;)'],
+      ['sleepy', 'zzz… five more minutes'],
+      ['happy', 'psst… check out the work window'],
+    ];
+    let n = 0;
+    mascot.addEventListener('click', () => {
+      const [mood, line] = script[n++ % script.length];
+      busy = true;
+      react(mood, 3200);
+      bubble.textContent = line;
       bubble.classList.remove('hidden');
       clearTimeout(hideT);
-      hideT = setTimeout(() => bubble.classList.add('hidden'), 2600);
+      hideT = setTimeout(() => bubble.classList.add('hidden'), 3200);
+      mascot.classList.remove('boing'); void mascot.offsetWidth; mascot.classList.add('boing');
     });
+
+    // react when a window opens
+    document.addEventListener('click', (e) => { if (!busy && e.target.closest('[data-open]')) react('happy', 1600); });
+
+    if (!reduceMotion) {
+      // blink at random
+      const blinkers = face.querySelectorAll('.blinker');
+      (function blink() {
+        setTimeout(() => {
+          blinkers.forEach((b) => b.classList.add('shut'));
+          setTimeout(() => { blinkers.forEach((b) => b.classList.remove('shut')); blink(); }, 130);
+        }, 2000 + Math.random() * 3500);
+      })();
+
+      // eyes (and mouth, a little) follow the cursor
+      const eyes = document.getElementById('eyes'), mouth = document.getElementById('mouth');
+      let raf;
+      addEventListener('pointermove', (e) => {
+        cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(() => {
+          const r = mascot.getBoundingClientRect();
+          const vx = (e.clientX - (r.left + r.width / 2)) / innerWidth;
+          const vy = (e.clientY - (r.top + r.height / 3)) / innerHeight;
+          const dx = Math.max(-1, Math.min(1, vx * 2.5)), dy = Math.max(-1, Math.min(1, vy * 2.5));
+          eyes.style.transform = `translate(${dx * 16}px, ${dy * 12}px)`;
+          mouth.style.transform = `translate(${dx * 6}px, ${dy * 3}px)`;
+        });
+      }, { passive: true });
+
+      // now and then, make a face on its own
+      (function idle() {
+        setTimeout(() => {
+          if (!busy) react(['happy', 'smug', 'wink', 'surprised'][Math.floor(Math.random() * 4)], 1800);
+          idle();
+        }, 9000 + Math.random() * 9000);
+      })();
+    }
   </script>
 </body>
 </html>
