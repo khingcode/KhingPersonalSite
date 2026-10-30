@@ -162,7 +162,13 @@
   </section>
 
   <!-- mascot -->
-  <div class="fixed right-3 bottom-3 z-30 flex items-end gap-2 sm:right-8 sm:bottom-5">
+  <div class="fixed right-3 bottom-3 z-30 flex flex-col items-end sm:right-8 sm:bottom-5">
+    <!-- piano = music mute / unmute -->
+    <button id="music-btn" class="piano mb-1" aria-label="play music" aria-pressed="false" title="music on / off">
+      <img src="assets/piano.webp" width="400" height="354" alt="" class="block w-16 select-none sm:w-20" draggable="false" />
+      <span class="note n1" aria-hidden="true">♪</span><span class="note n2" aria-hidden="true">♫</span>
+    </button>
+    <div class="flex items-end gap-2">
     <p id="bubble" class="mb-12 hidden max-w-[11rem] rounded-2xl rounded-br-sm border-2 border-ink bg-paper px-3 py-2 text-sm font-semibold shadow-md" role="status"></p>
     <button id="mascot" class="mascot" aria-label="say hi to the little guy">
       <span class="sprite relative block w-16 sm:w-20">
@@ -204,6 +210,7 @@
         </svg>
       </span>
     </button>
+    </div>
   </div>
 
   <footer class="fixed inset-x-0 bottom-1 z-10 text-center text-xs text-ink/60">
@@ -377,6 +384,69 @@
       clearTimeout(hideT);
       hideT = setTimeout(() => bubble.classList.add('hidden'), 2600);
     });
+
+    // background music: browsers block sound until the visitor interacts, so it starts on the first click / tap / key.
+    // the piano button mutes and unmutes it, and the choice is remembered.
+    const bgm = new Audio('assets/shelter-piano.mp3');
+    bgm.loop = true; bgm.preload = 'none'; bgm.volume = 0;
+    const musicBtn = document.getElementById('music-btn');
+    const MUSIC_VOL = 0.35;
+    let wantMusic = true, resumeAfterHidden = false, fadeT;
+    try { wantMusic = localStorage.getItem('music') !== 'off'; } catch (e) {}
+
+    function paintMusic() {
+      const on = !bgm.paused;
+      musicBtn.classList.toggle('playing', on);
+      musicBtn.classList.toggle('muted', !on && !wantMusic);
+      musicBtn.setAttribute('aria-pressed', on);
+      musicBtn.setAttribute('aria-label', on ? 'mute music' : 'play music');
+    }
+    function fadeIn() {
+      clearInterval(fadeT);
+      fadeT = setInterval(() => {
+        bgm.volume = Math.min(MUSIC_VOL, bgm.volume + 0.02);
+        if (bgm.volume >= MUSIC_VOL) clearInterval(fadeT);
+      }, 60);
+    }
+    function startMusic() {
+      return bgm.play().then(() => { fadeIn(); paintMusic(); return true; }).catch(() => false);
+    }
+    function announceMusic() {
+      busy = true;
+      react('happy', 2600);
+      bubble.textContent = '♪ shelter (piano) · porter robinson & madeon';
+      bubble.classList.remove('hidden');
+      clearTimeout(hideT);
+      hideT = setTimeout(() => bubble.classList.add('hidden'), 4200);
+    }
+
+    const kickEvents = ['pointerup', 'click', 'touchend', 'keydown'];
+    function kick(e) {
+      if (!wantMusic) return stopKick();
+      if (e.target.closest && e.target.closest('#music-btn')) return; // the button handles itself
+      startMusic().then((ok) => { if (ok) { stopKick(); announceMusic(); } });
+    }
+    function stopKick() { kickEvents.forEach((ev) => removeEventListener(ev, kick, true)); }
+    kickEvents.forEach((ev) => addEventListener(ev, kick, true));
+
+    musicBtn.addEventListener('click', () => {
+      if (!bgm.paused) {
+        bgm.pause(); wantMusic = false;
+        try { localStorage.setItem('music', 'off'); } catch (e) {}
+        paintMusic();
+      } else {
+        wantMusic = true;
+        try { localStorage.setItem('music', 'on'); } catch (e) {}
+        stopKick();
+        startMusic().then((ok) => { if (ok) announceMusic(); });
+      }
+    });
+    // pause while the tab is hidden, pick up again when it's back
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) { if (!bgm.paused) { resumeAfterHidden = true; bgm.pause(); } }
+      else if (resumeAfterHidden) { resumeAfterHidden = false; bgm.play().then(paintMusic).catch(() => {}); }
+    });
+    paintMusic();
   </script>
 </body>
 </html>
