@@ -233,7 +233,10 @@
     </div>
   </section>
 
+  <div id="fx" aria-hidden="true"></div>
   <div id="creep" class="creep" aria-hidden="true"></div>
+
+  <button id="season-btn" class="season-btn fixed bottom-3 left-3 z-30 sm:bottom-5 sm:left-5" hidden aria-label="preview seasonal look" title="seasonal look (only you see this button)"></button>
 
   <!-- mascot -->
   <div class="fixed right-3 bottom-3 z-30 flex flex-col items-end sm:right-8 sm:bottom-5">
@@ -253,7 +256,7 @@
       <span class="sprite relative block w-16 sm:w-20">
         <img src="assets/mascot.webp" width="500" height="500" alt="" class="block w-full select-none" draggable="false" />
         <!-- face is drawn on top of the blank-faced art, in the same 1000x1000 space as the original -->
-        <svg id="face" viewBox="0 0 1000 1000" class="pointer-events-none absolute inset-0 h-full w-full" fill="#000" stroke="#000" aria-hidden="true">
+        <svg id="face" viewBox="0 0 1000 1000" class="pointer-events-none absolute inset-0 h-full w-full overflow-visible" fill="#000" stroke="#000" aria-hidden="true">
           <g id="eyes">
             <g data-eye="open"><g class="blinker">
               <ellipse cx="369" cy="486" rx="20.5" ry="48.5" stroke="none"/><ellipse cx="530" cy="486" rx="20.5" ry="48.5" stroke="none"/>
@@ -282,6 +285,32 @@
             </g>
             <g data-eye="sleepy" class="hidden" fill="none" stroke-width="14" stroke-linecap="round">
               <path d="M347 490 Q369 520 391 490"/><path d="M508 490 Q530 520 552 490"/>
+            </g>
+          </g>
+
+          <g id="decos" stroke="#1d1318" stroke-width="9" stroke-linejoin="round" stroke-linecap="round">
+            <g data-deco="santa" class="hidden" transform="rotate(-8 480 150)">
+              <path d="M300 214 Q312 96 470 58 Q600 30 690 110 Q724 142 700 188 Q500 144 300 214Z" fill="#e63946"/>
+              <path d="M330 170 Q400 110 520 100" fill="none" stroke="#ff8a93" stroke-width="14" opacity=".8"/>
+              <path d="M268 206 Q480 140 726 190 Q740 232 706 246 Q480 196 290 262 Q254 244 268 206Z" fill="#fff"/>
+              <circle cx="716" cy="132" r="38" fill="#fff"/>
+            </g>
+            <g data-deco="party" class="hidden" transform="rotate(8 520 140)">
+              <path d="M410 168 L520 -40 L640 150 Q530 190 410 168Z" fill="#9b6dff"/>
+              <path d="M452 108 L476 130 M500 62 L544 88 M556 110 L586 124" stroke="#fff" stroke-width="14" fill="none"/>
+              <circle cx="520" cy="-44" r="26" fill="#ffd54a"/>
+            </g>
+            <g data-deco="witch" class="hidden" transform="rotate(-6 480 150)">
+              <path d="M392 168 Q430 60 520 -20 Q548 -50 600 -70 Q590 -20 596 40 Q640 110 650 170Z" fill="#35294f"/>
+              <path d="M398 150 Q520 186 646 146 L650 176 Q520 214 394 184Z" fill="#ff8a3d"/>
+              <path d="M250 186 Q480 150 720 180 Q760 196 720 214 Q480 240 250 214 Q210 200 250 186Z" fill="#35294f"/>
+              <rect x="498" y="148" width="40" height="44" rx="6" fill="#ffd54a" transform="rotate(-4 518 170)"/>
+            </g>
+            <g data-deco="sakura" class="hidden">
+              <g transform="translate(640 176)" fill="#ffb7d0">
+                <ellipse cx="0" cy="-30" rx="20" ry="28" transform="rotate(0)"/><ellipse cx="0" cy="-30" rx="20" ry="28" transform="rotate(72)"/><ellipse cx="0" cy="-30" rx="20" ry="28" transform="rotate(144)"/><ellipse cx="0" cy="-30" rx="20" ry="28" transform="rotate(216)"/><ellipse cx="0" cy="-30" rx="20" ry="28" transform="rotate(288)"/>
+                <circle r="11" fill="#ffd54a" stroke-width="6"/>
+              </g>
             </g>
           </g>
           <g id="mouth">
@@ -857,6 +886,104 @@
         const o = e.target.closest('[data-open="guestbook"]');
         if (o) { say(live ? '' : 'demo mode: notes only show on this device'); refresh().then((notes) => { if (owner) markSeen(notes); }); }
       });
+    })();
+  </script>
+
+  <script>
+    // seasonal touches. SEASON_AUTO is off: for now only the owner's button (bottom-left) turns them on.
+    // flip it to true and each look switches itself on during its dates.
+    (() => {
+      const SEASON_AUTO = false;
+      const SEASONS = {
+        halloween: { label: '🎃 halloween', deco: 'witch', hi: 'boo! 🎃 happy halloween' },
+        christmas: { label: '🎄 christmas', deco: 'santa', hi: 'merry christmas! 🎄' },
+        valentines: { label: '💖 valentine\'s', deco: null, hi: 'happy valentine\'s! 💖' },
+        birthday: { label: '🎂 birthday', deco: 'party', hi: 'it\'s khing\'s birthday! 🎂' },
+        sakura: { label: '🌸 spring', deco: 'sakura', hi: 'spring is here 🌸' },
+      };
+      const ORDER = [null, 'halloween', 'christmas', 'valentines', 'birthday', 'sakura'];
+      const fx = document.getElementById('fx');
+      const btn = document.getElementById('season-btn');
+      const root = document.documentElement;
+      const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const small = innerWidth < 640;
+      const rnd = (a, b) => a + Math.random() * (b - a);
+
+      function autoSeason() {
+        const d = new Date(), k = (d.getMonth() + 1) * 100 + d.getDate();
+        if (k >= 1024 && k <= 1031) return 'halloween';
+        if (k >= 1201 && k <= 1226) return 'christmas';
+        if (k >= 210 && k <= 214) return 'valentines';
+        if (k >= 613 && k <= 615) return 'birthday';
+        if (k >= 320 && k <= 420) return 'sakura';
+        return null;
+      }
+
+      function spawn(kind, n, cfg) {
+        for (let i = 0; i < n; i++) {
+          const e = document.createElement('i');
+          e.className = 'fx-p ' + cfg.cls(kind, i);
+          const s = cfg.size();
+          e.style.width = s + 'px'; e.style.height = (cfg.h ? cfg.h(s) : s) + 'px';
+          e.style.left = cfg.left ? cfg.left(i) : rnd(0, 100) + 'vw';
+          if (cfg.top) e.style.top = cfg.top();
+          e.style.setProperty('--dx', rnd(-90, 90) + 'px');
+          e.style.setProperty('--dy', rnd(-60, 60) + 'px');
+          e.style.setProperty('--rot', rnd(-360, 360) + 'deg');
+          e.style.animationDuration = cfg.dur() + 's';
+          e.style.animationDelay = -rnd(0, cfg.dur()) + 's';
+          if (cfg.color) e.style.background = cfg.color();
+          fx.append(e);
+        }
+      }
+      const scale = small ? .5 : 1;
+      const MAKE = {
+        halloween() {
+          spawn('bat', Math.round(6 * scale + 1), { cls: () => 'fx-fly fx-bat', size: () => rnd(28, 46), top: () => rnd(4, 40) + 'vh', dur: () => rnd(10, 18) });
+          spawn('ghost', Math.round(5 * scale + 1), { cls: () => 'fx-rise fx-ghost', size: () => rnd(30, 44), dur: () => rnd(16, 26) });
+          spawn('pumpkin', Math.round(5 * scale + 1), { cls: () => 'fx-fall fx-pumpkin', size: () => rnd(24, 38), dur: () => rnd(14, 22) });
+        },
+        christmas() {
+          spawn('flake', Math.round(44 * scale), { cls: () => 'fx-fall fx-flake', size: () => rnd(4, 10), dur: () => rnd(8, 16) });
+        },
+        valentines() {
+          spawn('heart', Math.round(16 * scale + 2), { cls: () => 'fx-rise fx-heart', size: () => rnd(18, 36), dur: () => rnd(10, 18) });
+        },
+        birthday() {
+          const cols = ['#ff7aa8', '#ffd54a', '#7ad6c8', '#9b6dff', '#ff9a5c'];
+          spawn('conf', Math.round(46 * scale), { cls: () => 'fx-fall fx-conf', size: () => rnd(7, 12), h: (s) => s * 1.6, dur: () => rnd(5, 10), color: () => cols[Math.floor(rnd(0, cols.length))] });
+          spawn('balloon', Math.round(5 * scale + 1), { cls: () => 'fx-rise fx-balloon', size: () => rnd(36, 52), h: (s) => s * 1.33, dur: () => rnd(14, 22) });
+        },
+        sakura() {
+          spawn('petal', Math.round(26 * scale + 2), { cls: () => 'fx-fall fx-petal', size: () => rnd(12, 22), dur: () => rnd(9, 16) });
+        },
+      };
+
+      let current = null;
+      function apply(name, quiet) {
+        current = name;
+        fx.replaceChildren();
+        if (name) root.dataset.season = name; else delete root.dataset.season;
+        document.querySelectorAll('[data-deco]').forEach((g) => g.classList.toggle('hidden', !(name && SEASONS[name].deco === g.dataset.deco)));
+        if (name && !still) MAKE[name]();
+        if (name && !quiet && typeof bubble !== 'undefined') {
+          bubble.textContent = SEASONS[name].hi;
+          bubble.classList.remove('hidden');
+          clearTimeout(hideT);
+          hideT = setTimeout(() => bubble.classList.add('hidden'), 3200);
+          if (typeof react === 'function') react('happy', 2400);
+        }
+        btn.textContent = name ? SEASONS[name].label : '✨ seasons: off';
+      }
+
+      let owner = false;
+      try { owner = localStorage.getItem('gb-owner') === '1'; } catch (e) {}
+      if (owner) {
+        btn.hidden = false;
+        btn.textContent = '✨ seasons: off';
+        btn.addEventListener('click', () => apply(ORDER[(ORDER.indexOf(current) + 1) % ORDER.length]));
+      }
+      if (SEASON_AUTO) { const a = autoSeason(); if (a) apply(a, true); }
     })();
   </script>
 </body>
