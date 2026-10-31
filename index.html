@@ -27,7 +27,7 @@
   <link rel="stylesheet" href="styles.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
 </head>
 <body class="min-h-screen overflow-x-hidden font-sans text-ink antialiased selection:bg-pink-200">
 
@@ -106,7 +106,7 @@
     <div class="win-body">
       <div class="flex flex-col items-center gap-6 border-b border-violet-100 px-6 py-6 sm:flex-row">
         <div class="h-32 w-32 shrink-0 overflow-hidden rounded-full border-4 border-violet-200 shadow-md">
-          <img src="assets/khing.webp" width="160" height="160" alt="khing smiling in a red patterned shirt" class="h-full w-full origin-[51%_33%] scale-[2.1] object-cover" />
+          <img src="assets/khing.webp" width="160" height="160" loading="lazy" decoding="async" alt="khing smiling in a red patterned shirt" class="h-full w-full origin-[51%_33%] scale-[2.1] object-cover" />
         </div>
         <div class="text-center sm:text-left">
           <h2 class="text-3xl font-bold text-violet-500">khing dave laurente</h2>
@@ -231,7 +231,7 @@
       <section aria-labelledby="dev-h">
         <h3 id="dev-h" class="font-mono text-xl font-bold uppercase tracking-tight text-ink">development</h3>
         <article class="mt-4 grid items-center gap-5 sm:grid-cols-[11rem_1fr]">
-          <img src="assets/hamster.webp" width="640" height="640" alt="a cute hamster wearing a hard hat and working on a laptop, with an in development label" class="w-full max-w-[11rem] justify-self-center rounded-2xl border-2 border-violet-200 sm:max-w-none" loading="lazy" />
+          <img src="assets/hamster.webp" width="400" height="400" decoding="async" alt="a cute hamster wearing a hard hat and working on a laptop, with an in development label" class="w-full max-w-[11rem] justify-self-center rounded-2xl border-2 border-violet-200 sm:max-w-none" loading="lazy" />
           <div class="text-center sm:text-left">
             <h4 class="text-2xl font-bold text-violet-500">a little hamster project</h4>
             <p class="mt-2">something cozy i'm still working on. more soon!</p>
@@ -404,7 +404,7 @@
       <p class="mx-auto mt-3 max-w-sm">wanna chat, collab, or just say hi? the easiest way to reach me is email. i'd love to hear from you :)</p>
 
       <div class="relative mx-auto -my-2 w-60 sm:w-72">
-        <img src="assets/mascot.webp" width="500" height="500" alt="" class="block w-full select-none" draggable="false" />
+        <img src="assets/mascot.webp" loading="lazy" decoding="async" width="500" height="500" alt="" class="block w-full select-none" draggable="false" />
         <svg viewBox="0 0 1000 1000" class="pointer-events-none absolute inset-0 h-full w-full overflow-visible" aria-label="the little chibi smiling and holding out a letter" role="img">
           <g fill="none" stroke="#000" stroke-width="15" stroke-linecap="round"><path d="M347 508 Q369 456 391 508"/><path d="M508 508 Q530 456 552 508"/></g>
           <g stroke="#000" stroke-linejoin="round"><path d="M408 570 Q444 578 480 570 Q474 616 444 616 Q414 616 408 570Z" fill="#2a1a28" stroke-width="9"/><path d="M426 604 Q444 590 462 604 Q454 614 444 614 Q434 614 426 604Z" fill="#ff8fb3" stroke="none"/></g>
@@ -435,11 +435,11 @@
     <!-- guestbook book -->
     <button id="book-btn" class="book mb-1 mr-1" data-open="guestbook" aria-label="open guestbook" title="guestbook">
       <span id="gb-badge" class="gb-badge" hidden aria-live="polite"></span>
-      <img src="assets/guestbook.webp" width="400" height="325" alt="" class="block w-12 select-none sm:w-16" draggable="false" />
+      <img src="assets/guestbook.webp" width="240" height="195" decoding="async" alt="" class="block w-12 select-none sm:w-16" draggable="false" />
     </button>
     <!-- piano = music mute / unmute -->
     <button id="music-btn" class="piano mb-1" aria-label="play music" aria-pressed="false" title="music on / off">
-      <img src="assets/piano.webp" width="400" height="354" alt="" class="block w-16 select-none sm:w-20" draggable="false" />
+      <img src="assets/piano.webp" width="260" height="230" decoding="async" alt="" class="block w-16 select-none sm:w-20" draggable="false" />
       <span class="note n1" aria-hidden="true">♪</span><span class="note n2" aria-hidden="true">♫</span>
     </button>
     <div class="flex items-end gap-2">
@@ -1177,6 +1177,17 @@
         rows.slice(0, unseen).forEach((r) => r.classList.add('is-new'));
         badge.hidden = true;
         try { localStorage.setItem(KEY, latest); } catch (err) {}
+      });
+    })();
+  </script>
+
+  <script>
+    // once the page has settled, quietly fetch the images hidden windows will need so they open instantly
+    (() => {
+      const later = window.requestIdleCallback || ((f) => setTimeout(f, 1500));
+      later(() => {
+        ['khing', 'hamster'].forEach((n) => { new Image().src = 'assets/' + n + '.webp'; });
+        ['izeck', 'nicey', 'adam', 'christine', 'catherine', 'mark', 'ezra', 'esther'].forEach((n) => { new Image().src = 'assets/siblings/' + n + '.webp'; });
       });
     })();
   </script>
