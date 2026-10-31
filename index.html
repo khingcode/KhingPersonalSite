@@ -427,6 +427,12 @@
   <div id="fx" aria-hidden="true"></div>
   <div id="creep" class="creep" aria-hidden="true"></div>
 
+  <!-- the moon (night mode only). it hides a secret once the little guy is gone -->
+  <button id="moon" class="moon" tabindex="-1" aria-label="the moon">
+    <svg viewBox="0 0 64 64" aria-hidden="true"><path d="M40 6A28 28 0 1 0 58 44A23 23 0 0 1 40 6Z" fill="#fff3c4"/></svg>
+  </button>
+  <div id="boom" class="boom" aria-hidden="true"></div>
+
   <!-- mascot -->
   <div class="fixed right-3 bottom-3 z-30 flex flex-col items-end sm:right-8 sm:bottom-5">
     <!-- guestbook book -->
@@ -510,6 +516,18 @@
           </g>
         </svg>
       </span>
+    </button>
+    <button id="coffin" class="coffin" aria-label="a coffin with a skull on it">
+      <svg viewBox="0 0 80 112" class="block w-14 select-none sm:w-[4.5rem]" aria-hidden="true">
+        <path d="M27 4 H53 L73 35 L59 108 H21 L7 35 Z" fill="#3d3160" stroke="#1b1438" stroke-width="4" stroke-linejoin="round"/>
+        <path d="M30 13 H50 L64 37 L53 98 H27 L16 37 Z" fill="none" stroke="#6b5aa6" stroke-width="2.5" stroke-linejoin="round"/>
+        <path d="M31 40 Q31 24 40 24 Q49 24 49 40 Q49 47 45 49 V55 H35 V49 Q31 47 31 40Z" fill="#f4efff" stroke="#1b1438" stroke-width="2.5" stroke-linejoin="round"/>
+        <ellipse cx="35.5" cy="38" rx="3.4" ry="4.2" fill="#1b1438"/><ellipse cx="44.5" cy="38" rx="3.4" ry="4.2" fill="#1b1438"/>
+        <path d="M40 43 L38.2 47 H41.8Z" fill="#1b1438"/>
+        <path d="M38 55 V50.5 M42 55 V50.5" stroke="#1b1438" stroke-width="1.8"/>
+        <path d="M27 66 L53 86 M53 66 L27 86" stroke="#1b1438" stroke-width="9" stroke-linecap="round"/>
+        <path d="M27 66 L53 86 M53 66 L27 86" stroke="#f4efff" stroke-width="5" stroke-linecap="round"/>
+      </svg>
     </button>
     </div>
   </div>
@@ -616,7 +634,7 @@
     const angryLines = ['hey!! 💢', 'stop poking me!', 'i said STOP 😠', 'that. is. enough!!', 'rude!! 💢💢', 'GRRR 😤'];
     // keep going after it's angry and it shows its dark side
     const darkLines = ['…', 'you shouldn\'t have done that.', 'i see you.', 'ehehehe…', 'keep clicking. i dare you.', 'why are you still here 🙂'];
-    let clicks = [], a = 0, d = 0, rage = 0, calmT;
+    let clicks = [], a = 0, d = 0, rage = 0, dk = 0, dead = false, calmT;
     const page = document.documentElement;
     function say(text, ms) {
       bubble.textContent = text;
@@ -636,6 +654,7 @@
       calmT = setTimeout(calm, 3500);
     }
     function darken() {
+      if (++dk >= 6) return explode(); // keep spamming the dark side and he blows up
       busy = true;
       clearTimeout(moodT);
       mascot.classList.remove('angry');
@@ -650,10 +669,159 @@
       const wasDark = mascot.classList.contains('dark');
       mascot.classList.remove('angry', 'dark');
       page.classList.remove('creepy');
-      clicks = []; rage = 0;
+      clicks = []; rage = 0; dk = 0;
       react('sleepy', 3200);
       say(wasDark ? '…did i scare you? sorry 🥺' : 'hmph… i\'m calm. i\'m calm.', 3200);
     }
+
+
+    // ---- the explosion, the coffin, and the purple flower that brings him back ----
+    const coffin = document.getElementById('coffin');
+    const moon = document.getElementById('moon');
+    const boomBox = document.getElementById('boom');
+    let flowerEl = null;
+    const FLOWER_SVG = '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 40 V62" stroke="#3f8f4f" stroke-width="4" stroke-linecap="round"/><path d="M32 54 Q22 52 18 44 Q28 44 32 52Z" fill="#4fae62"/>' +
+      '<g fill="#a855f7" stroke="#5b21b6" stroke-width="2.5" stroke-linejoin="round"><ellipse cx="32" cy="14" rx="9" ry="12"/><ellipse cx="32" cy="14" rx="9" ry="12" transform="rotate(72 32 28)"/><ellipse cx="32" cy="14" rx="9" ry="12" transform="rotate(144 32 28)"/><ellipse cx="32" cy="14" rx="9" ry="12" transform="rotate(216 32 28)"/><ellipse cx="32" cy="14" rx="9" ry="12" transform="rotate(288 32 28)"/></g>' +
+      '<circle cx="32" cy="28" r="6.5" fill="#fde68a" stroke="#b45309" stroke-width="2"/></svg>';
+    const coffinHints = ['…he\'s gone 💀', 'a purple flower could bring him back…', 'flowers love the moonlight 🌙', 'have you looked up at night?'];
+    let hintN = 0;
+
+    function burst(cx, cy, colors, count, power) {
+      if (reduceMotion) return;
+      for (let i = 0; i < count; i++) {
+        const el = document.createElement('i');
+        const size = 6 + Math.random() * 12;
+        const ang = Math.random() * Math.PI * 2, dist = (0.4 + Math.random()) * power;
+        const smoke = Math.random() < 0.25;
+        el.style.cssText = `position:absolute;left:${cx - size / 2}px;top:${cy - size / 2}px;width:${size}px;height:${size}px;background:${smoke ? '#555' : colors[i % colors.length]};border-radius:${Math.random() < 0.5 ? '50%' : '2px'};`;
+        boomBox.append(el);
+        const dx = Math.cos(ang) * dist, dy = Math.sin(ang) * dist - 20;
+        el.animate(
+          [{ transform: 'translate(0,0) scale(1) rotate(0)', opacity: 1 }, { transform: `translate(${dx}px,${dy + 40}px) scale(${smoke ? 2.4 : 0.2}) rotate(${Math.random() * 540}deg)`, opacity: 0 }],
+          { duration: 600 + Math.random() * 700, easing: 'cubic-bezier(.1,.8,.3,1)' }
+        ).onfinish = () => el.remove();
+      }
+    }
+    function flash(cx, cy, color) {
+      const el = document.createElement('i');
+      el.style.cssText = `position:absolute;left:${cx - 40}px;top:${cy - 40}px;width:80px;height:80px;border-radius:50%;background:radial-gradient(circle,#fff 0%,${color} 45%,transparent 70%);`;
+      boomBox.append(el);
+      el.animate([{ transform: 'scale(.3)', opacity: 1 }, { transform: 'scale(4.5)', opacity: 0 }], { duration: 650, easing: 'ease-out' }).onfinish = () => el.remove();
+    }
+
+    function setDead(on) {
+      dead = on;
+      page.classList.toggle('rip', on);
+      moon.classList.toggle('rip', on);
+      moon.tabIndex = on ? 0 : -1;
+    }
+    function explode() {
+      clearTimeout(calmT); clearTimeout(moodT); clearTimeout(hideT);
+      busy = true;
+      bubble.classList.add('hidden');
+      const r = mascot.getBoundingClientRect();
+      const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+      sfx('boom');
+      mascot.classList.remove('angry', 'dark');
+      mascot.classList.add('boom');
+      page.classList.remove('creepy');
+      flash(cx, cy, '#ff9d2e');
+      burst(cx, cy, ['#ff4d2e', '#ff9d2e', '#ffd23e', '#fff3b0'], 34, 190);
+      if (!reduceMotion) { page.classList.add('quake'); setTimeout(() => page.classList.remove('quake'), 520); }
+      setTimeout(() => {
+        mascot.classList.remove('boom');
+        setDead(true);
+        try { localStorage.setItem('chibi-dead', '1'); } catch (e) {}
+        coffin.classList.remove('drop'); void coffin.offsetWidth; coffin.classList.add('drop');
+        setTimeout(() => say('oh no… he blew up 💀', 4200), 900);
+        setTimeout(() => say('a purple flower could bring him back…', 4500), 5400);
+      }, 650);
+    }
+
+    coffin.addEventListener('click', () => {
+      coffin.classList.remove('wobble'); void coffin.offsetWidth; coffin.classList.add('wobble');
+      say(coffinHints[hintN++ % coffinHints.length], 3600);
+    });
+
+    function overCoffin(f) {
+      const c = coffin.getBoundingClientRect(), b = f.getBoundingClientRect();
+      const x = b.left + b.width / 2, y = b.top + b.height / 2;
+      return x > c.left - 28 && x < c.right + 28 && y > c.top - 28 && y < c.bottom + 28;
+    }
+    function giveFlower() {
+      if (!dead) return;
+      if (flowerEl) { flowerEl.classList.remove('pop'); void flowerEl.offsetWidth; flowerEl.classList.add('pop'); return; }
+      const m = moon.getBoundingClientRect();
+      const f = flowerEl = document.createElement('div');
+      f.className = 'flower pop';
+      f.tabIndex = 0;
+      f.setAttribute('role', 'img');
+      f.setAttribute('aria-label', 'a purple flower. drag it onto the coffin (or press enter)');
+      f.innerHTML = FLOWER_SVG;
+      const size = 60;
+      f.style.left = (m.left + m.width / 2 - size / 2) + 'px';
+      f.style.top = (m.top + m.height / 2 - size / 2) + 'px';
+      document.body.append(f);
+      sfx('on');
+      burst(m.left + m.width / 2, m.top + m.height / 2, ['#e9d5ff', '#c084fc', '#fff6d6'], 12, 70);
+      requestAnimationFrame(() => {
+        f.style.transition = 'left .7s cubic-bezier(.2,.9,.3,1.25), top .7s cubic-bezier(.2,.9,.3,1.25)';
+        f.style.left = Math.max(8, Math.min(innerWidth - size - 8, m.left + m.width / 2 - size / 2 - 60)) + 'px';
+        f.style.top = Math.min(innerHeight - size - 8, m.bottom + 18) + 'px';
+        setTimeout(() => { f.style.transition = ''; }, 760);
+      });
+      say('a purple flower! 🌸 take it to the coffin', 4200);
+      let ox = 0, oy = 0, drag = false;
+      f.addEventListener('pointerdown', (e) => {
+        drag = true; f.setPointerCapture(e.pointerId); f.classList.add('drag');
+        f.style.transition = '';
+        const b = f.getBoundingClientRect(); ox = e.clientX - b.left; oy = e.clientY - b.top;
+        e.preventDefault();
+      });
+      f.addEventListener('pointermove', (e) => {
+        if (!drag) return;
+        f.style.left = Math.max(0, Math.min(innerWidth - size, e.clientX - ox)) + 'px';
+        f.style.top = Math.max(0, Math.min(innerHeight - size, e.clientY - oy)) + 'px';
+        coffin.classList.toggle('ready', overCoffin(f));
+      });
+      const drop = () => {
+        if (!drag) return;
+        drag = false; f.classList.remove('drag'); coffin.classList.remove('ready');
+        if (overCoffin(f)) revive();
+      };
+      f.addEventListener('pointerup', drop);
+      f.addEventListener('pointercancel', drop);
+      f.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); revive(); } });
+    }
+    moon.addEventListener('click', giveFlower);
+
+    function revive() {
+      if (!dead) return;
+      dead = false; // guard against a double drop
+      const c = coffin.getBoundingClientRect();
+      const cx = c.left + c.width / 2, cy = c.top + c.height / 2;
+      if (flowerEl) {
+        const f = flowerEl; flowerEl = null;
+        f.style.transition = 'left .35s ease-in, top .35s ease-in, transform .35s ease-in, opacity .35s';
+        f.style.left = (cx - 30) + 'px'; f.style.top = (cy - 30) + 'px'; f.style.transform = 'scale(.2) rotate(120deg)'; f.style.opacity = '0';
+        setTimeout(() => f.remove(), 380);
+      }
+      sfx('revive');
+      coffin.classList.remove('wobble'); void coffin.offsetWidth; coffin.classList.add('wobble');
+      setTimeout(() => {
+        burst(cx, cy, ['#e9d5ff', '#c084fc', '#a855f7', '#fff6d6', '#fde68a'], 30, 150);
+        flash(cx, cy, '#c084fc');
+        setDead(false);
+        try { localStorage.removeItem('chibi-dead'); } catch (e) {}
+        clicks = []; rage = 0; dk = 0;
+        mascot.classList.remove('angry', 'dark', 'boom');
+        mascot.classList.remove('boing'); void mascot.offsetWidth; mascot.classList.add('boing');
+        busy = true;
+        react('surprised', 3600);
+        say('I\'M ALIVE?! 💜 thank you!', 4200);
+      }, 380);
+    }
+    try { if (localStorage.getItem('chibi-dead') === '1') setDead(true); } catch (e) {}
 
     mascot.addEventListener('click', () => {
       const now = Date.now();
@@ -701,7 +869,7 @@
       // now and then, make a face on its own
       (function idle() {
         setTimeout(() => {
-          if (!busy) react(['happy', 'smug', 'wink', 'surprised'][Math.floor(Math.random() * 4)], 1800);
+          if (!busy && !dead) react(['happy', 'smug', 'wink', 'surprised'][Math.floor(Math.random() * 4)], 1800);
           idle();
         }, 9000 + Math.random() * 9000);
       })();
@@ -820,6 +988,8 @@
       on:    () => { blip(523, 784, 0.12, 'sine', 0.12); blip(784, 1047, 0.14, 'sine', 0.1, 0.08); },
       day:   () => [988, 1318, 1568].forEach((f, i) => blip(f, f * 1.02, 0.14, 'sine', 0.07, i * 0.06)),
       night: () => [659, 523, 392].forEach((f, i) => blip(f, f * 0.98, 0.16, 'sine', 0.08, i * 0.07)),
+      boom:  () => { blip(160, 28, 0.7, 'sawtooth', 0.16); blip(90, 24, 0.8, 'square', 0.1, 0.02); blip(420, 60, 0.35, 'sawtooth', 0.08); },
+      revive: () => [392, 523, 659, 784, 1047].forEach((f, i) => blip(f, f * 1.01, 0.18, 'sine', 0.1, i * 0.09)),
     };
     function sfx(name) {
       if (!wantMusic) return; // muted via the piano
@@ -1190,7 +1360,7 @@
         if (name) root.dataset.season = name; else delete root.dataset.season;
         document.querySelectorAll('[data-deco]').forEach((g) => g.classList.toggle('hidden', !(name && SEASONS[name].deco === g.dataset.deco)));
         if (name && !still) MAKE[name]();
-        if (name && !quiet && typeof bubble !== 'undefined') {
+        if (name && !quiet && typeof bubble !== 'undefined' && !dead) {
           bubble.textContent = SEASONS[name].hi;
           bubble.classList.remove('hidden');
           clearTimeout(hideT);
@@ -1262,7 +1432,7 @@
         const wait = first ? 2200 : 25000 + Math.random() * 45000; // then every 25-70s at random
         setTimeout(() => {
           // only when the tab is open and he isn't busy (talking, angry or dark), so nothing gets talked over
-          const calm = !busy && bubble.classList.contains('hidden') && !document.hidden &&
+          const calm = !busy && !dead && bubble.classList.contains('hidden') && !document.hidden &&
             !mascot.classList.contains('angry') && !mascot.classList.contains('dark');
           if (calm) say();
           next(false);
