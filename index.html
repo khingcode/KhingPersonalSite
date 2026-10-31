@@ -1181,28 +1181,33 @@
   </script>
 
   <script>
-    // the little guy greets you based on the visitor's own clock (once per visit)
+    // the little guy greets you from time to time while you're on the page (based on the visitor's own clock)
     (() => {
-      let done = false;
-      try { done = sessionStorage.getItem('greeted') === '1'; } catch (e) {}
-      if (done) return;
-      const h = new Date().getHours();
-      const [mood, line] =
-        h >= 5 && h < 12 ? ['happy', 'good morning! ☀️'] :
-        h >= 12 && h < 17 ? ['happy', 'good afternoon! 👋'] :
-        h >= 17 && h < 21 ? ['wink', 'good evening! 🌆'] :
-        ['sleepy', 'it\'s late… go get some sleep 😴'];
-      setTimeout(() => {
-        // skip if he's already talking (a seasonal hello, a click) so nothing gets talked over
-        if (busy || !bubble.classList.contains('hidden')) return;
-        try { sessionStorage.setItem('greeted', '1'); } catch (e) {}
+      const say = () => {
+        const h = new Date().getHours();
+        const [mood, line] =
+          h >= 5 && h < 12 ? ['happy', 'good morning! ☀️'] :
+          h >= 12 && h < 17 ? ['happy', 'good afternoon! 👋'] :
+          h >= 17 && h < 21 ? ['wink', 'good evening! 🌆'] :
+          ['sleepy', 'it\'s late… go get some sleep 😴'];
         busy = true;
         react(mood, 3600);
         bubble.textContent = line;
         bubble.classList.remove('hidden');
         clearTimeout(hideT);
         hideT = setTimeout(() => bubble.classList.add('hidden'), 3600);
-      }, 2200);
+      };
+      const next = (first) => {
+        const wait = first ? 2200 : 25000 + Math.random() * 45000; // then every 25-70s at random
+        setTimeout(() => {
+          // only when the tab is open and he isn't busy (talking, angry or dark), so nothing gets talked over
+          const calm = !busy && bubble.classList.contains('hidden') && !document.hidden &&
+            !mascot.classList.contains('angry') && !mascot.classList.contains('dark');
+          if (calm) say();
+          next(false);
+        }, wait);
+      };
+      next(true);
     })();
   </script>
 </body>
