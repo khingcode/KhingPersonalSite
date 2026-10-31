@@ -25,6 +25,7 @@
   <link rel="apple-touch-icon" href="apple-touch-icon.png" />
   <script>try{if(localStorage.getItem("theme")==="dark")document.documentElement.classList.add("dark")}catch(e){}</script>
   <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://wecbthkbjftpxonlqfee.supabase.co" crossorigin />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
@@ -1295,8 +1296,23 @@
         },
       };
 
+      // notes are fetched ahead of time and remembered on this device, so the window opens already full
+      let sig = '', lastNotes = null, lastFetch = 0;
       async function refresh() {
-        try { const notes = await store.load(); render(notes); return notes; } catch (e) { say('couldn\'t load notes right now :('); return null; }
+        try {
+          const notes = await store.load();
+          lastNotes = notes; lastFetch = Date.now();
+          const s = JSON.stringify(notes);
+          if (s !== sig) { // only redraw when something changed, so scroll position and open song players stay put
+            sig = s; render(notes);
+            if (live) { try { localStorage.setItem('gb-cache', JSON.stringify(notes.slice(0, 60))); } catch (e) {} }
+          }
+          return notes;
+        } catch (e) { say('couldn\'t load notes right now :('); return null; }
+      }
+      if (live) {
+        try { const c = JSON.parse(localStorage.getItem('gb-cache') || 'null'); if (Array.isArray(c) && c.length) { lastNotes = c; render(c); } } catch (e) {}
+        (window.requestIdleCallback || ((f) => setTimeout(f, 600)))(() => { refresh(); }, { timeout: 2500 });
       }
 
       // red "new notes" badge: only for the owner's browser. visit the site once with #owner on the end to turn it on.
@@ -1346,7 +1362,13 @@
 
       document.addEventListener('click', (e) => {
         const o = e.target.closest('[data-open="guestbook"]');
-        if (o) { say(live ? '' : 'demo mode: notes only show on this device'); refresh().then((notes) => { if (owner) markSeen(notes); }); }
+        if (o) {
+          say(live ? '' : 'demo mode: notes only show on this device');
+          // fresh enough from the head start? then there's nothing to wait for
+          const fresh = live && lastNotes && Date.now() - lastFetch < 15000;
+          if (fresh) { if (owner) markSeen(lastNotes); return; }
+          refresh().then((notes) => { if (owner) markSeen(notes); });
+        }
       });
     })();
   </script>
