@@ -766,7 +766,7 @@
     const kickEvents = ['pointerup', 'click', 'touchend', 'keydown'];
     function kick(e) {
       if (!wantMusic) return stopKick();
-      if (e.target.closest && e.target.closest('#music-btn')) return; // the button handles itself
+      if (e.target.closest && e.target.closest('#music-btn, .gb-songbtn')) return; // the button handles itself
       startMusic().then((ok) => { if (ok) { stopKick(); announceMusic(); } });
     }
     function stopKick() { kickEvents.forEach((ev) => removeEventListener(ev, kick, true)); }
@@ -904,7 +904,7 @@
           b.addEventListener('click', () => {
             if (openSong && openSong !== wrap) openSong.reset();
             // pause the background piano so the two don't talk over each other
-            try { if (typeof bgm !== 'undefined' && !bgm.paused) { bgm.pause(); resumeAfterHidden = false; paintMusic(); } } catch (e) {}
+            try { bgm.pause(); wantMusic = false; resumeAfterHidden = false; stopKick(); paintMusic(); } catch (e) {} // shows as muted on the piano icon (not saved, so next visit is normal)
             const f = document.createElement('iframe');
             f.className = 'gb-frame';
             f.title = 'song player';
