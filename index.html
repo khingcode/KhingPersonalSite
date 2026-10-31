@@ -189,14 +189,38 @@
   <!-- work -->
   <section id="win-work" class="win" role="dialog" aria-label="work" hidden>
     <div class="win-bar"><span>work</span><button class="win-x" aria-label="close work">[x]</button></div>
-    <div class="win-body px-6 py-6">
-      <p class="mb-4 text-ink/70">some stuff i've made:</p>
-      <div class="grid gap-4 sm:grid-cols-2">
-        <a href="#" class="tile"><span class="tile-tag">project</span><b>project one</b><span class="text-sm text-ink/60">a tiny description of what it is.</span></a>
-        <a href="#" class="tile"><span class="tile-tag">project</span><b>project two</b><span class="text-sm text-ink/60">a tiny description of what it is.</span></a>
-        <a href="#" class="tile"><span class="tile-tag">project</span><b>project three</b><span class="text-sm text-ink/60">a tiny description of what it is.</span></a>
-        <a href="#" class="tile"><span class="tile-tag">project</span><b>project four</b><span class="text-sm text-ink/60">a tiny description of what it is.</span></a>
-      </div>
+    <div class="win-body space-y-7 px-6 py-6 text-ink/80">
+      <section aria-labelledby="tools-h">
+        <h3 id="tools-h" class="font-mono text-xl font-bold uppercase tracking-tight text-ink">tools</h3>
+        <ul class="mt-3 flex flex-wrap gap-2">
+          <li class="tool">Figma</li>
+          <li class="tool">Milanote</li>
+          <li class="tool">DaVinci Resolve</li>
+          <li class="tool">Canva</li>
+          <li class="tool">CapCut</li>
+          <li class="tool">Adobe Premiere Pro</li>
+          <li class="tool">Adobe Photoshop</li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="dev-h">
+        <h3 id="dev-h" class="font-mono text-xl font-bold uppercase tracking-tight text-ink">development</h3>
+        <ul class="mt-3 flex flex-wrap gap-2">
+          <li class="tool">JavaScript</li>
+          <li class="tool">HTML</li>
+          <li class="tool">CSS</li>
+          <li class="tool">Tailwind CSS</li>
+        </ul>
+
+        <article class="mt-5 grid items-center gap-5 sm:grid-cols-[11rem_1fr]">
+          <img src="assets/hamster.webp" width="640" height="640" alt="a cute hamster holding a sunflower seed, with an in development label" class="w-full max-w-[11rem] justify-self-center rounded-2xl border-2 border-violet-200 sm:max-w-none" loading="lazy" />
+          <div class="text-center sm:text-left">
+            <h4 class="text-2xl font-bold text-violet-500">a little hamster project</h4>
+            <p class="mt-2">something cozy i'm still working on. more soon!</p>
+            <span class="soon mt-4" aria-disabled="true">coming soon</span>
+          </div>
+        </article>
+      </section>
     </div>
   </section>
 
@@ -237,7 +261,17 @@
       <ol class="dl-timeline mt-5">
         <li>
           <details class="dl" open>
-            <summary><span class="dl-v">v1.8</span><span class="dl-t"><span class="dl-row"><b>contact makeover</b><span class="dl-new">latest</span></span><small>a friendlier way to reach me</small></span></summary>
+            <summary><span class="dl-v">v1.9</span><span class="dl-t"><span class="dl-row"><b>work window</b><span class="dl-new">latest</span></span><small>tools, skills and a new project</small></span></summary>
+            <ul class="dl-list">
+              <li>a <b>tools</b> list: the apps i use to design and edit</li>
+              <li>a <b>development</b> list with the languages i build with</li>
+              <li>a first project card, coming soon</li>
+            </ul>
+          </details>
+        </li>
+        <li>
+          <details class="dl">
+            <summary><span class="dl-v">v1.8</span><span class="dl-t"><b>contact makeover</b><small>a friendlier way to reach me</small></span></summary>
             <ul class="dl-list">
               <li>the little guy now holds out a <b>letter</b> in the contact window</li>
               <li>a big <b>send me an email</b> button that opens your mail app</li>
