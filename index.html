@@ -247,7 +247,8 @@
     <div class="win-bar"><span>guestbook</span><button class="win-x" aria-label="close guestbook">[x]</button></div>
     <div class="win-body px-6 py-6">
       <p class="text-ink/70">leave a little note! it'll be dated and everything :)</p>
-      <form id="gb-form" class="mt-4 grid gap-3" autocomplete="off">
+      <div class="gb-cols mt-4">
+      <form id="gb-form" class="grid content-start gap-3" autocomplete="off">
         <div id="gb-replying" class="hidden items-center justify-between gap-2 rounded-lg bg-violet-100 px-3 py-1.5 text-xs text-violet-900">
           <span id="gb-replying-to"></span>
           <button id="gb-cancel" type="button" class="link" aria-label="cancel reply">cancel</button>
@@ -267,7 +268,8 @@
           <button class="gb-btn" type="submit">sign it</button>
         </div>
       </form>
-      <ul id="gb-list" class="scroll-thin mt-5 grid max-h-64 gap-3 overflow-y-auto pr-1"></ul>
+      <ul id="gb-list" class="scroll-thin grid content-start gap-3 overflow-y-auto pr-1"></ul>
+      </div>
     </div>
   </section>
 
