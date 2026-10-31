@@ -248,6 +248,7 @@
     <div class="win-bar"><span>guestbook</span><button class="win-x" aria-label="close guestbook">[x]</button></div>
     <div class="win-body px-6 py-6">
       <p class="text-ink/70">leave a little note! it'll be dated and everything :)</p>
+      <button id="gb-write" type="button" class="gb-btn gb-write" aria-expanded="false" aria-controls="gb-form">✎ write a note</button>
       <div class="gb-cols mt-4">
       <form id="gb-form" class="grid content-start gap-3" autocomplete="off">
         <div id="gb-replying" class="hidden items-center justify-between gap-2 rounded-lg bg-violet-100 px-3 py-1.5 text-xs text-violet-900">
@@ -448,7 +449,7 @@
   <div id="boom" class="boom" aria-hidden="true"></div>
 
   <!-- mascot -->
-  <div class="fixed right-3 bottom-3 z-30 flex flex-col items-end sm:right-8 sm:bottom-5">
+  <div id="corner" class="fixed right-3 bottom-3 z-30 flex flex-col items-end sm:right-8 sm:bottom-5">
     <!-- guestbook book -->
     <button id="book-btn" class="book mb-1 mr-1" data-open="guestbook" aria-label="open guestbook" title="guestbook">
       <span id="gb-badge" class="gb-badge" hidden aria-live="polite"></span>
@@ -570,7 +571,7 @@
         const w = win.offsetWidth;
         const off = (opened++ % 5) * 28;
         win.style.left = (small ? Math.max(8, (innerWidth - w) / 2) : Math.max(8, (innerWidth - w) / 2 + off - 40)) + 'px';
-        win.style.top = (small ? 70 + off / 2 : 90 + off) + 'px';
+        win.style.top = (small ? 70 : 90 + off) + 'px';
       }
       front(win);
     }
@@ -1148,9 +1149,18 @@
         document.getElementById('gb-replying-to').textContent = n ? 'replying to ' + n.name : '';
         replying.classList.toggle('hidden', !n);
         replying.classList.toggle('flex', !!n);
-        if (n) { nameEl.focus(); form.scrollIntoView({ block: 'nearest' }); }
+        if (n) { openForm(true); nameEl.focus(); form.scrollIntoView({ block: 'nearest' }); }
       }
       document.getElementById('gb-cancel').addEventListener('click', () => setReply(null));
+
+      // on phones the form stays tucked away behind a button so the notes are the first thing you see
+      const writeBtn = document.getElementById('gb-write');
+      function openForm(on) {
+        form.classList.toggle('open', on);
+        writeBtn.setAttribute('aria-expanded', on);
+        writeBtn.textContent = on ? '× close' : '✎ write a note';
+      }
+      writeBtn.addEventListener('click', () => { const on = !form.classList.contains('open'); openForm(on); if (on) nameEl.focus({ preventScroll: true }); });
 
       // note colors and stickers: visitors choose from a fixed set, and only the key is stored
       const COLORS = { pink: 'pink', peach: 'peach', butter: 'butter', mint: 'mint', sky: 'sky', lilac: 'lilac' };
@@ -1239,13 +1249,6 @@
           a.append(img); li.append(a);
         }
         if (n.color && COLORS[n.color]) li.classList.add('gb-c-' + n.color);
-        if (n.sticker && STICKERS[n.sticker]) {
-          li.classList.add('has-sticker');
-          const st = document.createElement('span');
-          st.className = 'gb-sticker'; st.setAttribute('aria-hidden', 'true');
-          st.textContent = STICKERS[n.sticker];
-          li.append(st);
-        }
         const sg = songEl(n.song);
         if (sg) li.append(sg);
         if (n.id != null) {
@@ -1257,6 +1260,12 @@
             r.type = 'button'; r.className = 'link text-xs'; r.textContent = 'reply';
             r.addEventListener('click', () => setReply(n));
             row.append(r);
+          }
+          if (n.sticker && STICKERS[n.sticker]) {
+            const st = document.createElement('span');
+            st.className = 'gb-sticker'; st.setAttribute('aria-hidden', 'true');
+            st.textContent = STICKERS[n.sticker];
+            row.append(st);
           }
           li.append(row);
         }
@@ -1404,7 +1413,7 @@ const send = (body) => fetch(GB_URL + '/rest/v1/guestbook', { method: 'POST', he
         try {
           await store.add(note, picked);
           try { localStorage.setItem('gb-last', String(Date.now())); } catch (e) {}
-          form.reset(); clearPhoto(); setReply(null); pickColor = ''; pickSticker = ''; syncColors(); syncStickers();
+          form.reset(); clearPhoto(); setReply(null); pickColor = ''; pickSticker = ''; syncColors(); syncStickers(); openForm(false);
           say(live ? 'thanks for stopping by! ♥' : 'saved on this device only (demo mode)');
           await refresh();
         } catch (e) { say('oops, that didn\'t save. try again?'); }
