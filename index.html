@@ -116,7 +116,7 @@
         </div>
       </div>
       <div class="space-y-4 px-6 py-6 leading-relaxed text-ink/80">
-        <p>hi! i'm khing, <span data-age>25</span> years old. i was born on june 14.</p>
+        <p>hi! i'm khing, a cinematographer and web developer.</p>
         <p>things i like:</p>
         <ul class="list-disc space-y-1 pl-6 marker:text-violet-400">
           <li>Hanging out with my siblings</li>
@@ -517,11 +517,6 @@
   </footer>
 
   <script>
-    // age from birthday (june 14, 2001)
-    const now = new Date();
-    let age = now.getFullYear() - 2001;
-    if (now < new Date(now.getFullYear(), 5, 14)) age--;
-    document.querySelectorAll('[data-age]').forEach((el) => (el.textContent = age));
     document.getElementById('year').textContent = now.getFullYear();
 
     // windows
