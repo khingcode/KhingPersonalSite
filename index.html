@@ -89,7 +89,8 @@
             <svg class="ico" viewBox="0 0 64 64"><rect x="6" y="14" width="52" height="38" rx="4"/><path d="M6 18 L32 38 L58 18"/></svg>
             <span>contact</span>
           </button>
-          <button class="icon-btn" data-open="devlog">
+          <button class="icon-btn relative" data-open="devlog">
+            <span id="dl-badge" class="gb-badge nav-badge" hidden aria-live="polite"></span>
             <svg class="ico" viewBox="0 0 64 64"><path d="M14 8 H40 L52 20 V56 H14Z"/><path d="M40 8 V20 H52"/><path d="M22 32 H44 M22 40 H44 M22 48 H35"/></svg>
             <span>devlog</span>
           </button>
@@ -263,7 +264,16 @@
       <ol class="dl-timeline mt-5">
         <li>
           <details class="dl" open>
-            <summary><span class="dl-v">v1.9</span><span class="dl-t"><span class="dl-row"><b>work window</b><span class="dl-new">latest</span></span><small>tools, skills and a new project</small></span></summary>
+            <summary><span class="dl-v">v2.0</span><span class="dl-t"><span class="dl-row"><b>update alerts</b><span class="dl-new">latest</span></span><small>never miss what's new</small></span></summary>
+            <ul class="dl-list">
+              <li>a small red number on the <b>devlog</b> icon when there's something new</li>
+              <li>new updates get a <b>new</b> tag the next time you open the devlog</li>
+            </ul>
+          </details>
+        </li>
+        <li>
+          <details class="dl">
+            <summary><span class="dl-v">v1.9</span><span class="dl-t"><b>work window</b><small>tools, skills and a new project</small></span></summary>
             <ul class="dl-list">
               <li>a <b>tools</b> list: the apps i use to design and edit</li>
               <li>a <b>development</b> list with the languages i build with</li>
@@ -1127,6 +1137,32 @@
 
       const a = autoSeason();
       if (a) apply(a, false);
+    })();
+  </script>
+
+  <script>
+    // devlog alerts: each visitor's browser remembers the last update they saw.
+    // new versions added at the top of the devlog show up as a red number on the icon.
+    (() => {
+      const KEY = 'devlog-seen';
+      const vers = [...document.querySelectorAll('#win-devlog .dl-v')].map((e) => e.textContent.trim());
+      const rows = [...document.querySelectorAll('#win-devlog .dl')];
+      const badge = document.getElementById('dl-badge');
+      if (!vers.length || !badge) return;
+      const latest = vers[0];
+      let seen = null;
+      try { seen = localStorage.getItem(KEY); } catch (e) {}
+      // first visit: everything is new to them, so don't nag. start counting from now.
+      if (seen === null) { try { localStorage.setItem(KEY, latest); } catch (e) {} seen = latest; }
+      const idx = vers.indexOf(seen);
+      const unseen = idx === -1 ? 1 : idx;
+      if (unseen > 0) { badge.textContent = unseen > 9 ? '9+' : String(unseen); badge.hidden = false; }
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('[data-open="devlog"]')) return;
+        rows.slice(0, unseen).forEach((r) => r.classList.add('is-new'));
+        badge.hidden = true;
+        try { localStorage.setItem(KEY, latest); } catch (err) {}
+      });
     })();
   </script>
 </body>
