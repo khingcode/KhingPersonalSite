@@ -1139,6 +1139,41 @@
       }
       document.getElementById('gb-cancel').addEventListener('click', () => setReply(null));
 
+      // hearts: one per browser per note. the browser remembers which ones it has given.
+      const voter = (() => {
+        try {
+          let v = localStorage.getItem('gb-voter');
+          if (!v) { v = crypto.randomUUID ? crypto.randomUUID() : 'v' + Date.now() + Math.random().toString(36).slice(2); localStorage.setItem('gb-voter', v); }
+          return v;
+        } catch (e) { return 'v' + Math.random().toString(36).slice(2) + Date.now(); }
+      })();
+      const hearted = (() => { try { return new Set(JSON.parse(localStorage.getItem('gb-hearted') || '[]')); } catch (e) { return new Set(); } })();
+      const saveHearted = () => { try { localStorage.setItem('gb-hearted', JSON.stringify([...hearted].slice(-500))); } catch (e) {} };
+      const HEART = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.2 3 4.5 6.7 4.5c2.2 0 3.7 1.2 5.3 3.2 1.6-2 3.1-3.2 5.3-3.2 3.7 0 5.8 3.7 4.3 7.2C19.5 16.4 12 21 12 21Z"/></svg>';
+      function heartBtn(n) {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'gb-heart';
+        let count = +n.hearts || 0;
+        const paint = () => {
+          const on = hearted.has(n.id);
+          b.classList.toggle('on', on);
+          b.setAttribute('aria-pressed', on);
+          b.setAttribute('aria-label', (on ? 'you hearted this note' : 'heart this note') + ', ' + count + ' hearts');
+          b.innerHTML = HEART + '<span></span>';
+          b.lastChild.textContent = count;
+        };
+        paint();
+        b.addEventListener('click', async () => {
+          if (hearted.has(n.id)) return; // one heart each
+          hearted.add(n.id); count++; paint(); saveHearted();
+          b.classList.remove('pop'); void b.offsetWidth; b.classList.add('pop');
+          try { await store.heart(n); }
+          catch (e) { hearted.delete(n.id); count--; paint(); saveHearted(); say('couldn\'t send that heart right now :('); }
+        });
+        return b;
+      }
+
       function noteEl(n, isReply) {
         const li = document.createElement('li');
         li.className = 'gb-note' + (isReply ? ' gb-reply' : '');
@@ -1165,11 +1200,17 @@
         }
         const sg = songEl(n.song);
         if (sg) li.append(sg);
-        if (!isReply && n.id != null) {
-          const r = document.createElement('button');
-          r.type = 'button'; r.className = 'link mt-2 text-xs'; r.textContent = 'reply';
-          r.addEventListener('click', () => setReply(n));
-          li.append(r);
+        if (n.id != null) {
+          const row = document.createElement('div');
+          row.className = 'mt-2 flex items-center gap-4';
+          row.append(heartBtn(n));
+          if (!isReply) {
+            const r = document.createElement('button');
+            r.type = 'button'; r.className = 'link text-xs'; r.textContent = 'reply';
+            r.addEventListener('click', () => setReply(n));
+            row.append(r);
+          }
+          li.append(row);
         }
         return li;
       }
@@ -1211,14 +1252,26 @@
           if (live) {
             const q = (cols) => fetch(GB_URL + '/rest/v1/guestbook?select=' + cols + '&order=created_at.desc&limit=300', { headers: auth });
             // older table setups lack some columns, so step down until one works
-            let r = await q('id,name,message,created_at,image_path,reply_to,song');
+            let r = await q('id,name,message,created_at,image_path,reply_to,song,guestbook_hearts(count)');
+            if (!r.ok) r = await q('id,name,message,created_at,image_path,reply_to,song');
             if (!r.ok) r = await q('id,name,message,created_at,image_path,reply_to');
             if (!r.ok) r = await q('id,name,message,created_at,image_path');
             if (!r.ok) r = await q('name,message,created_at');
             if (!r.ok) throw new Error('load');
-            return r.json();
+            return (await r.json()).map((n) => ({ ...n, hearts: (n.guestbook_hearts && n.guestbook_hearts[0] && n.guestbook_hearts[0].count) || 0 }));
           }
           try { return JSON.parse(localStorage.getItem('guestbook') || '[]'); } catch (e) { return []; }
+        },
+        async heart(n) {
+          if (live) {
+            const r = await fetch(GB_URL + '/rest/v1/guestbook_hearts', { method: 'POST', headers: { ...auth, 'Content-Type': 'application/json', Prefer: 'return=minimal' }, body: JSON.stringify({ note_id: n.id, voter }) });
+            if (!r.ok && r.status !== 409) throw new Error('heart');
+            return;
+          }
+          const all = await this.load();
+          const it = all.find((x) => x.id === n.id);
+          if (it) it.hearts = (+it.hearts || 0) + 1;
+          try { localStorage.setItem('guestbook', JSON.stringify(all)); } catch (e) {}
         },
         async add(note, photo) {
           if (live) {
