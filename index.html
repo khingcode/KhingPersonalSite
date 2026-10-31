@@ -233,11 +233,20 @@
     <div class="win-bar"><span>devlog</span><button class="win-x" aria-label="close devlog">[x]</button></div>
     <div class="win-body px-6 py-6">
       <p class="text-ink/70">everything i've added to this site, newest first.</p>
-      <p class="mt-1 font-mono text-xs text-ink/50">last updated oct 30, 2026</p>
+      <p class="mt-1 font-mono text-xs text-ink/50">last updated oct 31, 2026</p>
       <ol class="dl-timeline mt-5">
         <li>
           <details class="dl" open>
-            <summary><span class="dl-v">v1.7</span><span class="dl-t"><span class="dl-row"><b>devlog</b><span class="dl-new">latest</span></span><small>you're looking at it</small></span></summary>
+            <summary><span class="dl-v">v1.8</span><span class="dl-t"><span class="dl-row"><b>contact makeover</b><span class="dl-new">latest</span></span><small>a friendlier way to reach me</small></span></summary>
+            <ul class="dl-list">
+              <li>the little guy now holds out a <b>letter</b> in the contact window</li>
+              <li>a big <b>send me an email</b> button that opens your mail app</li>
+            </ul>
+          </details>
+        </li>
+        <li>
+          <details class="dl">
+            <summary><span class="dl-v">v1.7</span><span class="dl-t"><b>devlog</b><small>you're looking at it</small></span></summary>
             <ul class="dl-list">
               <li>a new <b>devlog</b> icon on the home screen</li>
               <li>a simple list of everything added to the site, newest first</li>
@@ -329,9 +338,31 @@
   <!-- contact -->
   <section id="win-contact" class="win" role="dialog" aria-label="contact" hidden>
     <div class="win-bar"><span>contact</span><button class="win-x" aria-label="close contact">[x]</button></div>
-    <div class="win-body px-6 py-6 leading-relaxed text-ink/80">
-      <p>wanna chat, collab, or just say hi? i'd love to hear from you!</p>
-      <p class="mt-4">email me at <a class="link" href="mailto:khingcoding@gmail.com">khingcoding@gmail.com</a> :)</p>
+    <div class="win-body px-6 py-7 text-center leading-relaxed text-ink/80">
+      <h2 class="font-mono text-3xl font-bold tracking-tight text-ink">yayy mail!</h2>
+      <p class="mx-auto mt-3 max-w-sm">wanna chat, collab, or just say hi? the easiest way to reach me is email. i'd love to hear from you :)</p>
+
+      <div class="relative mx-auto -my-2 w-60 sm:w-72">
+        <img src="assets/mascot.webp" width="500" height="500" alt="" class="block w-full select-none" draggable="false" />
+        <svg viewBox="0 0 1000 1000" class="pointer-events-none absolute inset-0 h-full w-full overflow-visible" aria-label="the little chibi smiling and holding out a letter" role="img">
+          <g fill="none" stroke="#000" stroke-width="15" stroke-linecap="round"><path d="M347 508 Q369 456 391 508"/><path d="M508 508 Q530 456 552 508"/></g>
+          <g stroke="#000" stroke-linejoin="round"><path d="M408 570 Q444 578 480 570 Q474 616 444 616 Q414 616 408 570Z" fill="#2a1a28" stroke-width="9"/><path d="M426 604 Q444 590 462 604 Q454 614 444 614 Q434 614 426 604Z" fill="#ff8fb3" stroke="none"/></g>
+          <g class="mail">
+            <g transform="rotate(-9 420 770)" stroke="#1d1318" stroke-width="9" stroke-linejoin="round" stroke-linecap="round">
+              <rect x="300" y="690" width="240" height="160" rx="12" fill="#fff4d8"/>
+              <path d="M300 700 L420 790 L540 700" fill="none"/>
+              <path d="M300 840 L390 770 M540 840 L450 770" fill="none" stroke-width="6" opacity=".55"/>
+              <path d="M420 826 C393 804 396 780 411 778 C417 778 420 782 420 785 C420 782 423 778 429 778 C444 780 447 804 420 826Z" fill="#ff5c92" stroke-width="6" transform="translate(0 -22) scale(1)"/>
+              <ellipse cx="292" cy="790" rx="32" ry="28" fill="#f6ecea"/>
+              <ellipse cx="548" cy="768" rx="32" ry="28" fill="#f6ecea"/>
+            </g>
+          </g>
+        </svg>
+      </div>
+
+      <p>email me at: <a class="link" href="mailto:khingcoding@gmail.com">khingcoding@gmail.com</a></p>
+      <p class="text-sm text-ink/60">or press the button below to open your mail app.</p>
+      <a href="mailto:khingcoding@gmail.com" class="mail-btn mt-4">send me an email!</a>
     </div>
   </section>
 
