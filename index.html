@@ -260,6 +260,7 @@
           <img id="gb-prev" class="hidden h-12 w-12 rounded-lg border-2 border-ink object-cover" alt="photo preview">
           <button id="gb-unpick" type="button" class="link hidden text-xs">remove</button>
         </div>
+        <input id="gb-song" class="gb-field" type="url" maxlength="200" inputmode="url" placeholder="♪ song link, spotify or youtube (optional)" aria-label="song link (optional)">
         <input id="gb-site" class="hidden" type="text" tabindex="-1" aria-hidden="true" autocomplete="off">
         <div class="flex items-center justify-between gap-3">
           <span id="gb-status" class="text-xs text-ink/60" role="status"></span>
@@ -872,6 +873,56 @@
         return /^[\w-]+\.(webp|jpg)$/.test(n.image_path) ? GB_URL + '/storage/v1/object/public/guestbook/' + n.image_path : '';
       };
 
+      // songs: only spotify / youtube track links are accepted. we keep just the id ("sp:ID" or "yt:ID") and build the player ourselves
+      const parseSong = (raw) => {
+        raw = (raw || '').trim();
+        if (!raw) return '';
+        let u;
+        try { u = new URL(/^https?:\/\//i.test(raw) ? raw : 'https://' + raw); } catch (e) { return null; }
+        const host = u.hostname.replace(/^(www|m|music)\./, '');
+        let m;
+        if (host === 'open.spotify.com' && (m = u.pathname.match(/\/track\/([A-Za-z0-9]{22})(?:$|\/)/))) return 'sp:' + m[1];
+        if (host === 'youtu.be' && (m = u.pathname.match(/^\/([\w-]{11})(?:$|\/)/))) return 'yt:' + m[1];
+        if (host === 'youtube.com') {
+          const v = u.searchParams.get('v');
+          if (u.pathname === '/watch' && v && /^[\w-]{11}$/.test(v)) return 'yt:' + v;
+          if ((m = u.pathname.match(/^\/(?:shorts|embed|live)\/([\w-]{11})(?:$|\/)/))) return 'yt:' + m[1];
+        }
+        return null;
+      };
+      let openSong = null; // only one song plays at a time
+      const songEl = (code) => {
+        const m = /^(sp|yt):([\w-]+)$/.exec(code || '');
+        if (!m || (m[1] === 'sp' && m[2].length !== 22) || (m[1] === 'yt' && m[2].length !== 11)) return null;
+        const wrap = document.createElement('div');
+        wrap.className = 'gb-song';
+        const card = () => {
+          const b = document.createElement('button');
+          b.type = 'button'; b.className = 'gb-songbtn';
+          b.innerHTML = '<span class="gb-play" aria-hidden="true">▶</span><span></span>';
+          b.lastChild.textContent = (m[1] === 'sp' ? 'play song · spotify' : 'play song · youtube');
+          b.addEventListener('click', () => {
+            if (openSong && openSong !== wrap) openSong.reset();
+            // pause the background piano so the two don't talk over each other
+            try { if (typeof bgm !== 'undefined' && !bgm.paused) { bgm.pause(); resumeAfterHidden = false; paintMusic(); } } catch (e) {}
+            const f = document.createElement('iframe');
+            f.className = 'gb-frame';
+            f.title = 'song player';
+            f.loading = 'lazy';
+            f.allow = 'autoplay; encrypted-media; clipboard-write';
+            f.referrerPolicy = 'strict-origin-when-cross-origin';
+            if (m[1] === 'sp') { f.src = 'https://open.spotify.com/embed/track/' + m[2]; f.height = '152'; }
+            else { f.src = 'https://www.youtube-nocookie.com/embed/' + m[2] + '?autoplay=1&rel=0&playsinline=1'; f.height = '180'; f.allowFullscreen = true; }
+            wrap.replaceChildren(f);
+            openSong = wrap;
+          });
+          return b;
+        };
+        wrap.reset = () => { wrap.replaceChildren(card()); if (openSong === wrap) openSong = null; };
+        wrap.append(card());
+        return wrap;
+      };
+
       // shrink to max 800px so uploads stay tiny
       let picked = null;
       const prev = document.getElementById('gb-prev');
@@ -937,6 +988,8 @@
           img.className = 'mt-2 max-h-48 rounded-lg border-2 border-violet-200 object-cover';
           a.append(img); li.append(a);
         }
+        const sg = songEl(n.song);
+        if (sg) li.append(sg);
         if (!isReply && n.id != null) {
           const r = document.createElement('button');
           r.type = 'button'; r.className = 'link mt-2 text-xs'; r.textContent = 'reply';
@@ -983,7 +1036,8 @@
           if (live) {
             const q = (cols) => fetch(GB_URL + '/rest/v1/guestbook?select=' + cols + '&order=created_at.desc&limit=300', { headers: auth });
             // older table setups lack some columns, so step down until one works
-            let r = await q('id,name,message,created_at,image_path,reply_to');
+            let r = await q('id,name,message,created_at,image_path,reply_to,song');
+            if (!r.ok) r = await q('id,name,message,created_at,image_path,reply_to');
             if (!r.ok) r = await q('id,name,message,created_at,image_path');
             if (!r.ok) r = await q('name,message,created_at');
             if (!r.ok) throw new Error('load');
@@ -1046,6 +1100,9 @@
         const note = { name: nameEl.value.trim().slice(0, 30), message: msgEl.value.trim().slice(0, 200) };
         if (replyTo != null) note.reply_to = replyTo;
         if (!note.name || !note.message) return;
+        const song = parseSong(document.getElementById('gb-song').value);
+        if (song === null) { say('that doesn\'t look like a spotify or youtube song link :('); return; }
+        if (song) note.song = song;
         say('signing...');
         try {
           await store.add(note, picked);
