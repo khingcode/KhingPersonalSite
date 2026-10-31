@@ -279,7 +279,16 @@
       <ol class="dl-timeline mt-5">
         <li>
           <details class="dl" open>
-            <summary><span class="dl-v">v2.0</span><span class="dl-t"><span class="dl-row"><b>update alerts</b><span class="dl-new">latest</span></span><small>never miss what's new</small></span></summary>
+            <summary><span class="dl-v">v2.1</span><span class="dl-t"><span class="dl-row"><b>hello, little guy</b><span class="dl-new">latest</span></span><small>he greets you by the time of day</small></span></summary>
+            <ul class="dl-list">
+              <li>he says good morning, afternoon or evening, or tells you to get some sleep, based on <b>your</b> clock</li>
+              <li>a new thing to say when you click him</li>
+            </ul>
+          </details>
+        </li>
+        <li>
+          <details class="dl">
+            <summary><span class="dl-v">v2.0</span><span class="dl-t"><b>update alerts</b><small>never miss what's new</small></span></summary>
             <ul class="dl-list">
               <li>a small red number on the <b>devlog</b> icon when there's something new</li>
               <li>new updates get a <b>new</b> tag the next time you open the devlog</li>
@@ -613,6 +622,7 @@
       ['happy', 'hi!! 👋'],
       ['surprised', 'ooh! you found me!'],
       ['smug', 'heh. nice site, right?'],
+      ['smug', 'I\'m the Supreme Leader!'],
       ['wink', 'thanks for visiting ;)'],
       ['sleepy', 'zzz… five more minutes'],
       ['happy', 'psst… check out the work window'],
@@ -1189,6 +1199,32 @@
         ['khing', 'hamster'].forEach((n) => { new Image().src = 'assets/' + n + '.webp'; });
         ['izeck', 'nicey', 'adam', 'christine', 'catherine', 'mark', 'ezra', 'esther'].forEach((n) => { new Image().src = 'assets/siblings/' + n + '.webp'; });
       });
+    })();
+  </script>
+
+  <script>
+    // the little guy greets you based on the visitor's own clock (once per visit)
+    (() => {
+      let done = false;
+      try { done = sessionStorage.getItem('greeted') === '1'; } catch (e) {}
+      if (done) return;
+      const h = new Date().getHours();
+      const [mood, line] =
+        h >= 5 && h < 12 ? ['happy', 'good morning! ☀️'] :
+        h >= 12 && h < 17 ? ['happy', 'good afternoon! 👋'] :
+        h >= 17 && h < 21 ? ['wink', 'good evening! 🌆'] :
+        ['sleepy', 'it\'s late… go get some sleep 😴'];
+      setTimeout(() => {
+        // skip if he's already talking (a seasonal hello, a click) so nothing gets talked over
+        if (busy || !bubble.classList.contains('hidden')) return;
+        try { sessionStorage.setItem('greeted', '1'); } catch (e) {}
+        busy = true;
+        react(mood, 3600);
+        bubble.textContent = line;
+        bubble.classList.remove('hidden');
+        clearTimeout(hideT);
+        hideT = setTimeout(() => bubble.classList.add('hidden'), 3600);
+      }, 2200);
     })();
   </script>
 </body>
