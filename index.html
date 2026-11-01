@@ -1543,10 +1543,13 @@ const send = (body) => fetch(GB_URL + '/rest/v1/guestbook', { method: 'POST', he
       async function load() {
         try {
           const r = await fetch(URL_ + '/rest/v1/domain_vote_counts?select=choice,votes&order=votes.desc&limit=60', { headers: auth });
-          if (!r.ok) throw new Error('load');
+          if (!r.ok) { let m = ''; try { m = (await r.json()).message || ''; } catch (x) {} const err = new Error('load'); err.code = r.status; err.msg = m; throw err; }
           tally = new Map((await r.json()).map((x) => [x.choice, +x.votes || 0]));
           loaded = true;
-        } catch (e) { loaded = false; say('voting isn\'t open just yet. check back soon!'); }
+        } catch (e) {
+          loaded = false;
+          say('voting isn\'t open just yet. check back soon!' + (e && e.code ? ' (error ' + e.code + (e.msg ? ': ' + e.msg.slice(0, 90) : '') + ')' : ' (no connection?)'));
+        }
         render();
       }
 

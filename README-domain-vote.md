@@ -18,3 +18,6 @@ grant select on domain_vote_counts to anon;
 -- one vote per browser (the primary key blocks a second one).
 -- suggestions are free text, so look at them now and then; to remove one:
 --   delete from domain_votes where choice = 'whatever.com';
+
+-- if the site still says voting isn't open after running the above, run this once so the API notices the new table and view:
+notify pgrst, 'reload schema';
