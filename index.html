@@ -711,15 +711,22 @@
     }
 
 
-    // ---- the explosion, the coffin, and the purple flower that brings him back ----
+    // ---- the explosion, the coffin, and the purple fanta that brings him back ----
     const coffin = document.getElementById('coffin');
     const moon = document.getElementById('moon');
     const boomBox = document.getElementById('boom');
     let flowerEl = null;
-    const FLOWER_SVG = '<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 40 V62" stroke="#3f8f4f" stroke-width="4" stroke-linecap="round"/><path d="M32 54 Q22 52 18 44 Q28 44 32 52Z" fill="#4fae62"/>' +
-      '<g fill="#a855f7" stroke="#5b21b6" stroke-width="2.5" stroke-linejoin="round"><ellipse cx="32" cy="14" rx="9" ry="12"/><ellipse cx="32" cy="14" rx="9" ry="12" transform="rotate(72 32 28)"/><ellipse cx="32" cy="14" rx="9" ry="12" transform="rotate(144 32 28)"/><ellipse cx="32" cy="14" rx="9" ry="12" transform="rotate(216 32 28)"/><ellipse cx="32" cy="14" rx="9" ry="12" transform="rotate(288 32 28)"/></g>' +
-      '<circle cx="32" cy="28" r="6.5" fill="#fde68a" stroke="#b45309" stroke-width="2"/></svg>';
-    const coffinHints = ['…he\'s gone 💀', 'a purple flower could bring him back…', 'flowers love the moonlight 🌙', 'have you looked up at night?'];
+    const FLOWER_SVG = '<svg viewBox="0 0 64 64" aria-hidden="true">' + // a little purple soda can (my own drawing, not the real logo)
+      '<ellipse cx="32" cy="60" rx="14" ry="3" fill="rgba(0,0,0,.18)"/>' +
+      '<path d="M20 12 H44 L45 54 Q45 58 41 58 H23 Q19 58 19 54 Z" fill="#8b3fd0" stroke="#3b1470" stroke-width="3" stroke-linejoin="round"/>' +
+      '<path d="M22 14 H27 L26 56 H22Z" fill="#b57af0" opacity=".55"/>' +
+      '<path d="M20.5 22 H43.5 M20.5 48 H43.5" stroke="#3b1470" stroke-width="2.2"/>' +
+      '<path d="M19.5 22 Q32 16 44.5 22 L44.5 48 Q32 54 19.5 48 Z" fill="#a855f7" stroke="#3b1470" stroke-width="2.2" stroke-linejoin="round"/>' +
+      '<circle cx="32" cy="35" r="7.5" fill="#fde68a" stroke="#3b1470" stroke-width="2"/><path d="M32 27.5 V42.5 M24.5 35 H39.5 M26.7 29.7 L37.3 40.3 M37.3 29.7 L26.7 40.3" stroke="#f59e0b" stroke-width="1.2"/>' +
+      '<path d="M20 12 Q20 8.5 24 8.5 H40 Q44 8.5 44 12 Z" fill="#d4d4d8" stroke="#3b1470" stroke-width="3" stroke-linejoin="round"/>' +
+      '<path d="M32 9.5 H39" stroke="#3b1470" stroke-width="2" stroke-linecap="round"/>' +
+      '<circle cx="48" cy="20" r="2.2" fill="#e9d5ff" opacity=".9"/><circle cx="52" cy="28" r="1.5" fill="#e9d5ff" opacity=".8"/><circle cx="14" cy="18" r="1.7" fill="#e9d5ff" opacity=".8"/></svg>';
+    const coffinHints = ['…he\'s gone 💀', 'a purple fanta could bring him back…', 'something fizzy hides in the moonlight 🌙', 'have you looked up at night?'];
     let hintN = 0;
 
     function burst(cx, cy, colors, count, power) {
@@ -770,7 +777,7 @@
         try { localStorage.setItem('chibi-dead', '1'); } catch (e) {}
         coffin.classList.remove('drop'); void coffin.offsetWidth; coffin.classList.add('drop');
         setTimeout(() => say('oh no… he blew up 💀', 4200), 900);
-        setTimeout(() => say('a purple flower could bring him back…', 4500), 5400);
+        setTimeout(() => say('a purple fanta could bring him back…', 4500), 5400);
       }, 650);
     }
 
@@ -792,9 +799,9 @@
       f.className = 'flower pop';
       f.tabIndex = 0;
       f.setAttribute('role', 'img');
-      f.setAttribute('aria-label', 'a purple flower. drag it onto the coffin (or press enter)');
+      f.setAttribute('aria-label', 'a purple fanta. drag it onto the coffin (or press enter)');
       f.innerHTML = FLOWER_SVG;
-      const size = 60;
+      const size = 76;
       f.style.left = (m.left + m.width / 2 - size / 2) + 'px';
       f.style.top = (m.top + m.height / 2 - size / 2) + 'px';
       document.body.append(f);
@@ -806,7 +813,7 @@
         f.style.top = Math.min(innerHeight - size - 8, m.bottom + 18) + 'px';
         setTimeout(() => { f.style.transition = ''; }, 760);
       });
-      say('a purple flower! 🌸 take it to the coffin', 4200);
+      say('a purple fanta! 🍇 take it to the coffin', 4200);
       let ox = 0, oy = 0, drag = false;
       f.addEventListener('pointerdown', (e) => {
         drag = true; f.setPointerCapture(e.pointerId); f.classList.add('drag');
@@ -839,7 +846,7 @@
       if (flowerEl) {
         const f = flowerEl; flowerEl = null;
         f.style.transition = 'left .35s ease-in, top .35s ease-in, transform .35s ease-in, opacity .35s';
-        f.style.left = (cx - 30) + 'px'; f.style.top = (cy - 30) + 'px'; f.style.transform = 'scale(.2) rotate(120deg)'; f.style.opacity = '0';
+        f.style.left = (cx - 38) + "px"; f.style.top = (cy - 38) + "px"; f.style.transform = 'scale(.2) rotate(120deg)'; f.style.opacity = '0';
         setTimeout(() => f.remove(), 380);
       }
       sfx('revive');
@@ -854,7 +861,7 @@
         mascot.classList.remove('boing'); void mascot.offsetWidth; mascot.classList.add('boing');
         busy = true;
         react('surprised', 3600);
-        say('I\'M ALIVE?! 💜 thank you!', 4200);
+        say('I\'M ALIVE?! 💜 purple fanta, my favorite!', 4500);
       }, 380);
     }
     try { if (localStorage.getItem('chibi-dead') === '1') setDead(true); } catch (e) {}
