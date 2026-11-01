@@ -249,7 +249,10 @@
           <div class="text-center sm:text-left">
             <h4 class="text-2xl font-bold text-violet-500">the full launch</h4>
             <p class="mt-2">a custom domain for this site, plus more updates and a few surprises. stay tuned!</p>
-            <span class="soon mt-4" aria-disabled="true">coming soon</span>
+            <div class="mt-4 flex flex-wrap items-center justify-center gap-3 sm:justify-start">
+              <span class="soon" aria-disabled="true">coming soon</span>
+              <button type="button" class="gb-btn" data-open="vote">🗳 vote on the domain</button>
+            </div>
           </div>
         </article>
         <article class="mt-8 grid items-center gap-5 sm:grid-cols-[11rem_1fr]">
@@ -261,6 +264,25 @@
           </div>
         </article>
       </section>
+    </div>
+  </section>
+
+  <!-- domain vote -->
+  <section id="win-vote" class="win" role="dialog" aria-label="vote on the domain" hidden>
+    <div class="win-bar"><span>vote</span><button class="win-x" aria-label="close vote">[x]</button></div>
+    <div class="win-body px-6 py-6">
+      <h3 class="text-2xl font-bold text-violet-500">pick my domain!</h3>
+      <p class="mt-1 text-ink/70">the full launch is getting a custom address. choose your favorite, or suggest one of your own. one vote each :)</p>
+      <ul id="vote-list" class="mt-4 grid gap-2"></ul>
+      <form id="vote-form" class="mt-5 grid gap-2" autocomplete="off">
+        <label for="vote-sug" class="font-mono text-xs font-bold uppercase tracking-wide text-ink/60">suggest another</label>
+        <div class="flex gap-2">
+          <input id="vote-sug" class="gb-field" type="text" maxlength="45" inputmode="url" autocapitalize="none" spellcheck="false" placeholder="e.g. khing.dev">
+          <button class="gb-btn shrink-0" type="submit">suggest</button>
+        </div>
+        <input id="vote-site" class="hidden" type="text" tabindex="-1" aria-hidden="true" autocomplete="off">
+      </form>
+      <p id="vote-status" class="mt-3 min-h-[1.25rem] text-xs text-ink/60" role="status"></p>
     </div>
   </section>
 
@@ -1456,6 +1478,108 @@ const send = (body) => fetch(GB_URL + '/rest/v1/guestbook', { method: 'POST', he
           if (fresh) { if (owner) markSeen(lastNotes); return; }
           refresh().then((notes) => { if (owner) markSeen(notes); });
         }
+      });
+    })();
+  </script>
+
+  <script>
+    // domain vote: one vote per browser, one row per vote in Supabase (see README-domain-vote.md)
+    (() => {
+      const URL_ = 'https://wecbthkbjftpxonlqfee.supabase.co';
+      const auth = { apikey: 'sb_publishable_TDtPkQL28bG6wrHR9Fz4pA_L3_6fPpL' };
+      const MAIN = ['khingkong.com', 'supremekhing.com'];
+      const list = document.getElementById('vote-list');
+      const form = document.getElementById('vote-form');
+      const input = document.getElementById('vote-sug');
+      const status = document.getElementById('vote-status');
+      const say = (t) => { status.textContent = t; };
+      const voter = (() => {
+        try {
+          let v = localStorage.getItem('gb-voter');
+          if (!v) { v = crypto.randomUUID ? crypto.randomUUID() : 'v' + Date.now() + Math.random().toString(36).slice(2); localStorage.setItem('gb-voter', v); }
+          return v;
+        } catch (e) { return 'v' + Math.random().toString(36).slice(2) + Date.now(); }
+      })();
+      let mine = '';
+      try { mine = localStorage.getItem('domain-voted') || ''; } catch (e) {}
+      let tally = new Map(), loaded = false, busy = false;
+
+      const clean = (raw) => {
+        let d = (raw || '').trim().toLowerCase().replace(/^[a-z]+:\/\//, '').replace(/^www\./, '').replace(/[\/?#].*$/, '');
+        return /^[a-z0-9][a-z0-9-]{0,40}\.[a-z]{2,12}$/.test(d) ? d : '';
+      };
+
+      function render() {
+        list.replaceChildren();
+        const extra = [...tally.entries()].filter(([c]) => !MAIN.includes(c)).sort((a, b) => b[1] - a[1]).slice(0, 6).map(([c]) => c);
+        if (mine && !MAIN.includes(mine) && !extra.includes(mine)) extra.push(mine);
+        const total = [...tally.values()].reduce((a, b) => a + b, 0);
+        [...MAIN, ...extra].forEach((c) => {
+          const n = tally.get(c) || 0;
+          const li = document.createElement('li');
+          const b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'vote-opt' + (mine === c ? ' mine' : '') + (mine ? ' voted' : '');
+          b.disabled = !!mine || !loaded;
+          const name = document.createElement('span');
+          name.className = 'vote-name';
+          name.textContent = (mine === c ? '✓ ' : '') + c;
+          b.append(name);
+          if (mine) { // results are shown once you've voted, so nobody just follows the crowd
+            const pct = total ? Math.round((n / total) * 100) : 0;
+            b.style.setProperty('--pct', pct + '%');
+            const cnt = document.createElement('span');
+            cnt.className = 'vote-count';
+            cnt.textContent = n + (n === 1 ? ' vote' : ' votes') + ' · ' + pct + '%';
+            b.append(cnt);
+          }
+          b.addEventListener('click', () => cast(c));
+          li.append(b);
+          list.append(li);
+        });
+        form.classList.toggle('hidden', !!mine || !loaded);
+      }
+
+      async function load() {
+        try {
+          const r = await fetch(URL_ + '/rest/v1/domain_votes?select=choice&limit=5000', { headers: auth });
+          if (!r.ok) { let m = ''; try { m = (await r.json()).message || ''; } catch (x) {} const err = new Error('load'); err.code = r.status; err.msg = m; throw err; }
+          tally = new Map();
+          (await r.json()).forEach((x) => tally.set(x.choice, (tally.get(x.choice) || 0) + 1));
+          loaded = true;
+        } catch (e) {
+          loaded = false;
+          say('voting isn\'t open just yet. check back soon!' + (e && e.code ? ' (error ' + e.code + (e.msg ? ': ' + e.msg.slice(0, 90) : '') + ')' : ' (no connection?)'));
+        }
+        render();
+      }
+
+      async function cast(choice) {
+        if (mine || busy) return;
+        busy = true; say('sending your vote…');
+        try {
+          const r = await fetch(URL_ + '/rest/v1/domain_votes', { method: 'POST', headers: { ...auth, 'Content-Type': 'application/json', Prefer: 'return=minimal' }, body: JSON.stringify({ voter, choice }) });
+          if (!r.ok && r.status !== 409) { const err = new Error('vote'); err.code = r.status; throw err; }
+          mine = choice;
+          try { localStorage.setItem('domain-voted', choice); } catch (e) {}
+          tally.set(choice, (tally.get(choice) || 0) + (r.status === 409 ? 0 : 1));
+          say(r.status === 409 ? 'you already voted from this browser, thanks!' : 'thanks for voting! ♥');
+          render();
+          load(); // refresh the real totals in the background
+        } catch (e) { say('couldn\'t send that vote right now :(' + (e && e.code ? ' (error ' + e.code + ')' : ' (no connection?)')); }
+        busy = false;
+      }
+
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (document.getElementById('vote-site').value) return;
+        const d = clean(input.value);
+        if (!d) { say('that doesn\'t look like a domain. try something like khing.dev'); return; }
+        cast(d);
+      });
+
+      document.addEventListener('click', (e) => {
+        if (e.target.closest('[data-open="vote"]')) { say(''); load(); }
       });
     })();
   </script>
