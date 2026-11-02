@@ -12,7 +12,7 @@
 <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32.png" />
 <link rel="apple-touch-icon" href="../apple-touch-icon.png" />
 <script>try{if(localStorage.getItem("theme")==="dark")document.documentElement.classList.add("dark")}catch(e){}
-try{if(localStorage.getItem("room-key")!=="6513342087438648")document.documentElement.classList.add("locked")}catch(e){document.documentElement.classList.add("locked")}</script>
+try{if(sessionStorage.getItem("room-pass")==="1")sessionStorage.removeItem("room-pass");else document.documentElement.classList.add("locked")}catch(e){document.documentElement.classList.add("locked")}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
@@ -600,6 +600,8 @@ tuneBtn.addEventListener('click', async () => {
 stopBtn.addEventListener('click', stopTune);
 
 try { localStorage.setItem('room-seen', '1'); } catch (e) {}
+// coming back through the back button must ask again too
+addEventListener('pageshow', (e) => { if (e.persisted) { root.classList.add('locked'); setTimeout(() => gateIn.focus(), 50); } });
 
 // password gate. a light lock for a cozy page, not real security.
 function cyrb53(str, seed = 0) { let h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed; for (let i = 0, ch; i < str.length; i++) { ch = str.charCodeAt(i); h1 = Math.imul(h1 ^ ch, 2654435761); h2 = Math.imul(h2 ^ ch, 1597334677); } h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909); h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909); return 4294967296 * (2097151 & h2) + (h1 >>> 0); }
@@ -609,7 +611,6 @@ if (root.classList.contains('locked')) setTimeout(() => gateIn.focus(), 50);
 gateForm.addEventListener('submit', (e) => {
   e.preventDefault();
   if (String(cyrb53(gateIn.value.trim().toLowerCase())) === KEY) {
-    try { localStorage.setItem('room-key', KEY); } catch (err) {}
     root.classList.remove('locked'); fit();
   } else {
     $('#gate-err').textContent = "hmm, that's not it"; gateIn.value = '';

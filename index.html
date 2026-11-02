@@ -1712,19 +1712,15 @@ const send = (body) => fetch(GB_URL + '/rest/v1/guestbook', { method: 'POST', he
       const form = document.getElementById('rgate-form'), input = document.getElementById('rgate-in'), err = document.getElementById('rgate-err');
       const open = () => { gate.hidden = false; err.textContent = ''; input.value = ''; setTimeout(() => input.focus(), 30); };
       const close = () => { gate.hidden = true; };
-      house.addEventListener('click', (e) => {
-        let ok = false;
-        try { ok = localStorage.getItem('room-key') === KEY; } catch (x) {}
-        if (ok) return; // already knows the password: just walk in
-        e.preventDefault(); open();
-      });
+      house.addEventListener('click', (e) => { e.preventDefault(); open(); });
+      addEventListener('pageshow', (e) => { if (e.persisted) close(); });
       document.getElementById('rgate-x').addEventListener('click', close);
       gate.addEventListener('pointerdown', (e) => { if (e.target === gate) close(); });
       document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !gate.hidden) close(); });
       form.addEventListener('submit', (e) => {
         e.preventDefault();
         if (String(cyrb53(input.value.trim().toLowerCase())) === KEY) {
-          try { localStorage.setItem('room-key', KEY); } catch (x) {}
+          try { sessionStorage.setItem('room-pass', '1'); } catch (x) {}
           location.href = house.getAttribute('href');
         } else {
           err.textContent = "hmm, that's not it"; input.value = '';
