@@ -177,7 +177,6 @@ html.locked .stage,html.locked .hud,html.locked .wallbg,html.locked .floorbg,htm
 <nav class="hud" aria-label="room controls">
   <a class="pill" href="../" id="back">← desktop</a>
   <button class="pill" id="soundbtn" aria-pressed="true" title="sound on / off">♪ sound on</button>
-  <button class="pill" id="themebtn" aria-pressed="false" title="day / night">☀ day</button>
 </nav>
 
 <main class="stage" id="stage">
@@ -352,11 +351,8 @@ addEventListener('resize', fit); addEventListener('orientationchange', fit);
 fit(); addEventListener('load', fit);
 
 // day / night (shared with the main site)
-const themeBtn = $('#themebtn');
 function paintTheme() {
   const dark = root.classList.contains('dark');
-  themeBtn.textContent = dark ? '☾ night' : '☀ day';
-  themeBtn.setAttribute('aria-pressed', dark);
   $('meta[name="theme-color"]').content = dark ? '#150f2e' : '#eadfff';
 }
 function flipTheme() {
@@ -364,7 +360,6 @@ function flipTheme() {
   try { localStorage.setItem('theme', root.classList.contains('dark') ? 'dark' : 'light'); } catch (e) {}
   paintTheme();
 }
-themeBtn.addEventListener('click', flipTheme);
 $('#win').addEventListener('click', flipTheme);
 paintTheme();
 
@@ -636,6 +631,27 @@ gateForm.addEventListener('submit', (e) => {
   paint();
   const locked = () => root.classList.contains('locked');
   const VOL = 0.22;
+  // click sounds: the same little synthesized blips as the main page
+  function blip(f0, f1, dur, type, vol, delay = 0) {
+    const c = audio(); if (!c) return;
+    const t = c.currentTime + delay, o = c.createOscillator(), g = c.createGain();
+    o.type = type; o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(f1, t + dur);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + 0.008); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g).connect(c.destination); o.start(t); o.stop(t + dur + 0.03);
+  }
+  const SFX = {
+    pop:   () => { const r = 0.94 + Math.random() * 0.12; blip(520 * r, 880 * r, 0.09, 'sine', 0.14); },
+    open:  () => { blip(440, 660, 0.09, 'triangle', 0.12); blip(660, 990, 0.12, 'triangle', 0.1, 0.07); },
+    close: () => blip(620, 300, 0.12, 'triangle', 0.13),
+    day:   () => [988, 1318, 1568].forEach((f, i) => blip(f, f * 1.02, 0.14, 'sine', 0.07, i * 0.06)),
+    night: () => [659, 523, 392].forEach((f, i) => blip(f, f * 0.98, 0.16, 'sine', 0.08, i * 0.07))
+  };
+  const sfx = (n) => { if (!on || locked()) return; try { SFX[n](); } catch (e) {} };
+  $('#win').addEventListener('click', () => sfx(root.classList.contains('dark') ? 'night' : 'day'));
+  $('#board').addEventListener('click', () => sfx('open'));
+  $('#bm-x').addEventListener('click', () => sfx('close'));
+  $('#bm').addEventListener('click', (e) => { if (e.target.closest('.pola')) sfx('pop'); else if (e.target === $('#bm')) sfx('close'); });
+  $('#lb').addEventListener('click', () => sfx('close'));
   function el() {
     if (!a) { a = new Audio('../assets/typing.mp3'); a.loop = true; a.preload = 'auto'; a.volume = VOL; }
     return a;
