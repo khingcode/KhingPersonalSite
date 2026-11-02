@@ -55,7 +55,16 @@ html.dark .lab{border-color:#c9b8ff}
 .rug{position:absolute;left:var(--x);top:var(--y);width:var(--w);height:var(--h);border-radius:50%;background:var(--rug);border:5px dashed var(--rugline);opacity:.9;transition:background .5s}
 @media(max-aspect-ratio:1/1){.rug{left:var(--px);top:var(--py);width:var(--pw);height:var(--ph)}}
 .rug:after{content:"";position:absolute;inset:14px;border-radius:50%;border:2px solid var(--rugline);opacity:.7}
-.coder-unused{}.glow{position:absolute;left:210px;top:-40px;width:190px;height:190px;border-radius:50%;background:radial-gradient(rgba(255,226,122,.6),transparent 65%);opacity:0;transition:opacity .5s;pointer-events:none;z-index:-1}
+.coder-unused{}
+#coder{width:270px;height:269px;--lx:20;--ly:29.4;--lw:11;--lh:5.2}
+#coder .spr,#coder .la,#coder .lb{position:absolute;inset:0}
+#coder .la,#coder .lb{background:url(../assets/coder.webp) 0 0/700% 300% no-repeat}
+#coder .lb{opacity:0}
+#coder .lglow,#coder .lpool,#coder .lbulb{position:absolute;pointer-events:none;opacity:0;transition:opacity .9s ease}
+html.dark #coder .lglow,html.dark #coder .lpool,html.dark #coder .lbulb{opacity:1}
+#coder .lglow{left:calc(var(--lx)*1% - 36%);top:calc(var(--ly)*1% - 30%);width:58%;height:58%;border-radius:50%;background:radial-gradient(circle,rgba(255,214,120,.5) 0%,rgba(255,200,100,.22) 40%,rgba(255,200,100,0) 70%);mix-blend-mode:screen}
+#coder .lpool{left:calc(var(--lx)*1% - 18%);top:calc(var(--ly)*1% + 10.6%);width:44%;height:16%;border-radius:50%;background:radial-gradient(ellipse,rgba(255,220,140,.42),rgba(255,220,140,0) 70%);mix-blend-mode:screen}
+#coder .lbulb{left:calc(var(--lx)*1% - var(--lw)*.46%);top:calc(var(--ly)*1% - var(--lh)*.44%);width:calc(var(--lw)*.92%);height:calc(var(--lh)*.88%);border-radius:50%;transform:rotate(-14deg);background:radial-gradient(ellipse at 45% 50%,#fffbe3 0%,#ffe08a 42%,#f6a93b 100%);box-shadow:0 0 14px 4px rgba(255,214,120,.75)}.glow{position:absolute;left:210px;top:-40px;width:190px;height:190px;border-radius:50%;background:radial-gradient(rgba(255,226,122,.6),transparent 65%);opacity:0;transition:opacity .5s;pointer-events:none;z-index:-1}
 html.dark .glow{opacity:1}
 .steam{animation:steam 2.4s ease-in-out infinite}@keyframes steam{0%,100%{opacity:.25}50%{opacity:.7}}
 .n{opacity:0;transition:opacity .5s}html.dark .n{opacity:1}
@@ -221,6 +230,12 @@ html.locked .stage,html.locked .hud,html.locked .wallbg,html.locked .floorbg,htm
 </svg></div>
 
   <!-- someone working on a laptop (animated) -->
+  <!-- someone working on a laptop (animated; the lamp comes on at night) -->
+  <div class="f" id="coder" style="--x:600px;--y:335px;--px:132px;--py:356px;--ps:.8;--z:4" role="img" aria-label="a guy typing on his computer, a desk lamp beside him">
+    <div class="spr art"><div class="la"></div><div class="lb"></div></div>
+    <div class="lpool"></div><div class="lglow"></div><div class="lbulb"></div>
+  </div>
+
   <!-- grand piano: click to open -->
   <button class="f click" id="grand" style="--x:1010px;--y:330px;--px:122px;--py:584px;--ps:.84;--z:4" aria-label="open the piano">
     <span class="lab">piano ♪</span>
@@ -343,6 +358,33 @@ $('#win').addEventListener('click', flipTheme);
 paintTheme();
 
 // wall clock shows the real time
+// the guy at the laptop: 21 frames, slowly blended from one to the next. the lamp turns on with night mode (css)
+(() => {
+  const box = $('#coder'); if (!box) return;
+  const la = box.querySelector('.la'), lb = box.querySelector('.lb');
+  const LAMP = [[20.0, 29.46, 10.95, 5.38], [20.12, 29.34, 10.73, 5.13], [20.0, 29.34, 10.98, 5.13], [20.0, 29.34, 10.98, 5.13], [19.88, 29.34, 10.73, 5.13], [19.88, 29.34, 10.73, 5.13], [19.63, 29.34, 10.76, 5.13], [20.0, 29.58, 10.98, 5.13], [20.0, 29.58, 10.98, 5.13], [19.76, 29.58, 10.98, 5.13], [19.88, 29.58, 10.73, 5.13], [19.88, 29.58, 10.73, 5.13], [19.76, 29.58, 10.98, 5.13], [19.63, 29.58, 10.73, 5.13], [17.54, 26.65, 10.46, 5.62], [17.07, 26.65, 10.46, 5.62], [17.32, 26.65, 10.49, 5.62], [17.29, 26.41, 10.41, 5.62], [15.8, 28.24, 10.1, 5.38], [16.95, 28.61, 10.24, 5.13], [16.46, 28.85, 10.24, 5.13]];
+  const N = 21, STEP = 520, HOLD = 900, LOOP = (N - 1) * STEP + HOLD + STEP;
+  const pos = (n) => ((n % 7) * 100 / 6) + '% ' + (Math.floor(n / 7) * 50) + '%';
+  la.style.backgroundPosition = pos(0);
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  let cf = -1, cn = -1;
+  const t0 = performance.now();
+  (function tick(now) {
+    const t = Math.max(0, now - t0) % LOOP;
+    let f, nx, fr;
+    if (t < (N - 1) * STEP) { f = Math.floor(t / STEP); nx = f + 1; fr = (t % STEP) / STEP; }
+    else if (t < LOOP - STEP) { f = N - 1; nx = 0; fr = 0; }
+    else { f = N - 1; nx = 0; fr = (t - (LOOP - STEP)) / STEP; }
+    if (f !== cf) { cf = f; la.style.backgroundPosition = pos(f); }
+    if (nx !== cn) { cn = nx; lb.style.backgroundPosition = pos(nx); }
+    const e = fr * fr * (3 - 2 * fr);
+    lb.style.opacity = e.toFixed(3);
+    const A = LAMP[f], B = LAMP[nx];
+    ['lx', 'ly', 'lw', 'lh'].forEach((k, i) => box.style.setProperty('--' + k, (A[i] + (B[i] - A[i]) * e).toFixed(2)));
+    requestAnimationFrame(tick);
+  })(t0);
+})();
+
 function tickClock() {
   const d = new Date(), h = $('#hh'), m = $('#mh'); if (!h) return;
   h.setAttribute('transform', 'rotate(' + (((d.getHours() % 12) + d.getMinutes() / 60) * 30) + ' 40 40)');
