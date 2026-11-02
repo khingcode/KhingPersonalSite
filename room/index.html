@@ -12,10 +12,11 @@
 <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32.png" />
 <link rel="apple-touch-icon" href="../apple-touch-icon.png" />
 <script>try{if(localStorage.getItem("theme")==="dark")document.documentElement.classList.add("dark")}catch(e){}
-try{if(sessionStorage.getItem("room-pass")==="1")sessionStorage.removeItem("room-pass");else document.documentElement.classList.add("locked")}catch(e){document.documentElement.classList.add("locked")}</script>
+try{if(localStorage.getItem("room-key")!=="6513342087438648")document.documentElement.classList.add("locked")}catch(e){document.documentElement.classList.add("locked")}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
+<noscript><link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" /></noscript>
 <link rel="preload" as="image" href="../assets/coder.webp" />
 <style>
 :root{--ink:#4b3f72;--line:#4b3f72;--wall:#eadfff;--wall2:#e2d4ff;--floor:#c9a5f2;--base:#cdb8ff;--paper:#fff;--shadow:rgba(75,63,114,.3);--rug:#ffd6e7;--rugline:#f4a6c4;--fy:520px;--sc:1}
@@ -59,7 +60,8 @@ html.dark .lab{border-color:#c9b8ff}
 .coder-unused{}
 #coder{width:270px;height:268.5px;pointer-events:none;--lx:20;--ly:29.4;--lw:11;--lh:5.2;--sx:75;--sy:36;--sw:26;--sh:20}
 #coder .spr,#coder .la,#coder .lb,#coder .ha,#coder .hb{position:absolute;inset:0}
-#coder .la,#coder .lb,#coder .ha,#coder .hb{background:url(../assets/coder.webp) 0 0/800% 400% no-repeat}
+#coder .la,#coder .lb{background:url(../assets/coder.webp) 0 0/800% 400% no-repeat}
+#coder .ha,#coder .hb{background:0 0/200% 100% no-repeat}
 #coder .lb,#coder .ha,#coder .hb{opacity:0}
 #coder .hit{position:absolute;left:6%;top:6%;width:90%;height:90%;pointer-events:auto;cursor:pointer}
 #coder .lglow,#coder .lpool,#coder .lbulb,#coder .mglow,#coder .mscreen,#coder .mdesk{position:absolute;pointer-events:none;opacity:0;transition:opacity .9s ease}
@@ -373,7 +375,11 @@ paintTheme();
   const SCREEN = [[72.77, 40.05, 23.51, 15.61], [73.04, 38.69, 23.61, 18.33], [72.92, 38.8, 23.82, 18.55], [72.92, 38.8, 23.82, 18.1], [72.81, 38.57, 23.6, 18.1], [72.58, 38.57, 24.04, 18.55], [72.47, 38.46, 24.27, 18.33], [73.15, 38.8, 24.72, 19.0], [73.15, 38.8, 24.27, 19.0], [72.92, 38.8, 24.27, 19.0], [73.37, 38.91, 25.17, 18.78], [73.37, 38.8, 24.72, 19.0], [73.03, 38.8, 25.39, 19.0], [73.93, 38.8, 27.19, 19.0], [71.91, 36.99, 28.99, 21.27], [71.69, 36.99, 28.54, 21.27], [71.46, 36.99, 28.99, 21.27], [71.57, 36.76, 29.21, 21.27], [70.79, 38.35, 30.34, 20.36], [71.35, 38.24, 30.11, 20.14], [76.18, 38.24, 31.24, 20.14], [76.29, 37.22, 25.62, 18.1], [73.82, 37.22, 23.37, 18.1], [72.36, 37.22, 23.6, 18.1], [72.7, 37.22, 25.17, 18.1], [73.93, 37.22, 23.15, 18.1], [72.81, 37.56, 26.29, 17.87], [68.31, 37.56, 21.8, 17.42], [74.49, 37.44, 22.02, 17.65], [74.16, 37.44, 22.25, 17.65], [79.55, 37.56, 32.13, 17.87]];
   const N = 29, HF1 = 29, HF2 = 30, STEP = 520, HSTEP = 120, LOOP = N * STEP;
   const pos = (n) => ((n % 8) * 100 / 7) + '% ' + (Math.floor(n / 8) * 100 / 3) + '%';
-  la.style.backgroundPosition = pos(0); ha.style.backgroundPosition = pos(HF1); hb.style.backgroundPosition = pos(HF2);
+  la.style.backgroundPosition = pos(0);
+  // the two hover frames are a separate, tiny image, fetched a moment after the page is up
+  const loadHover = () => { const u = '../assets/coder-hover.webp'; const im = new Image(); im.onload = () => { ha.style.backgroundImage = hb.style.backgroundImage = 'url(' + u + ')'; }; im.src = u; };
+  ha.style.backgroundPosition = '0% 0%'; hb.style.backgroundPosition = '100% 0%';
+  if ('requestIdleCallback' in window) requestIdleCallback(loadHover, { timeout: 2500 }); else setTimeout(loadHover, 1200);
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   // hover: 0 = working, 1 = looking round, 2 = thumbs-up
   let target = 0, h = 0, touchTimer = 0;
@@ -600,8 +606,6 @@ tuneBtn.addEventListener('click', async () => {
 stopBtn.addEventListener('click', stopTune);
 
 try { localStorage.setItem('room-seen', '1'); } catch (e) {}
-// coming back through the back button must ask again too
-addEventListener('pageshow', (e) => { if (e.persisted) { root.classList.add('locked'); setTimeout(() => gateIn.focus(), 50); } });
 
 // password gate. a light lock for a cozy page, not real security.
 function cyrb53(str, seed = 0) { let h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed; for (let i = 0, ch; i < str.length; i++) { ch = str.charCodeAt(i); h1 = Math.imul(h1 ^ ch, 2654435761); h2 = Math.imul(h2 ^ ch, 1597334677); } h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909); h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909); return 4294967296 * (2097151 & h2) + (h1 >>> 0); }
@@ -611,6 +615,7 @@ if (root.classList.contains('locked')) setTimeout(() => gateIn.focus(), 50);
 gateForm.addEventListener('submit', (e) => {
   e.preventDefault();
   if (String(cyrb53(gateIn.value.trim().toLowerCase())) === KEY) {
+    try { localStorage.setItem('room-key', KEY); } catch (err) {}
     root.classList.remove('locked'); fit();
   } else {
     $('#gate-err').textContent = "hmm, that's not it"; gateIn.value = '';
