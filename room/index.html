@@ -55,7 +55,7 @@ html.dark .lab{border-color:#c9b8ff}
 .rug{position:absolute;left:var(--x);top:var(--y);width:var(--w);height:var(--h);border-radius:50%;background:var(--rug);border:5px dashed var(--rugline);opacity:.9;transition:background .5s}
 @media(max-aspect-ratio:1/1){.rug{left:var(--px);top:var(--py);width:var(--pw);height:var(--ph)}}
 .rug:after{content:"";position:absolute;inset:14px;border-radius:50%;border:2px solid var(--rugline);opacity:.7}
-.glow{position:absolute;left:210px;top:-40px;width:190px;height:190px;border-radius:50%;background:radial-gradient(rgba(255,226,122,.6),transparent 65%);opacity:0;transition:opacity .5s;pointer-events:none;z-index:-1}
+.coder-unused{}.glow{position:absolute;left:210px;top:-40px;width:190px;height:190px;border-radius:50%;background:radial-gradient(rgba(255,226,122,.6),transparent 65%);opacity:0;transition:opacity .5s;pointer-events:none;z-index:-1}
 html.dark .glow{opacity:1}
 .steam{animation:steam 2.4s ease-in-out infinite}@keyframes steam{0%,100%{opacity:.25}50%{opacity:.7}}
 .n{opacity:0;transition:opacity .5s}html.dark .n{opacity:1}
@@ -63,7 +63,8 @@ html.dark .glow{opacity:1}
 .hint2{position:absolute;left:0;right:0;bottom:12px;text-align:center;font-family:'Space Mono',monospace;font-size:.78rem;opacity:.85}
 @media(max-aspect-ratio:1/1){.hint2{bottom:10px;font-size:.7rem}}
 
-/* chibi in the armchair */
+#coder{width:300px;height:264px;background:url(../assets/coder.webp) 0 0/400% 300% no-repeat}
+/* (chibi styles below are no longer used) */
 .seat{position:absolute;left:30px;top:20px;width:110px;z-index:2}
 .seat .sprite{position:relative;width:110px;transition:transform .2s;transform-origin:50% 100%}
 .seat .sprite.hop{animation:hop .5s ease-out}
@@ -220,48 +221,11 @@ html.locked .stage,html.locked .hud,html.locked .wallbg,html.locked .floorbg,htm
 <line id="hh" x1="40" y1="40" x2="40" y2="26" stroke-width="4"/><line id="mh" x1="40" y1="40" x2="40" y2="19" stroke-width="3"/><circle cx="40" cy="40" r="3" fill="#ff9b8a"/>
 </svg></div>
 
-  <!-- desk -->
-  <div class="f art" style="--x:480px;--y:350px;--px:10px;--py:372px;--ps:.74;--z:4" aria-hidden="true"><div class="glow"></div><svg viewBox="0 0 320 200" width="320" height="200" stroke="#3a2a4d" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true">
-<rect x="22" y="152" width="14" height="44" fill="#b98557"/><rect x="284" y="152" width="14" height="44" fill="#b98557"/>
-<rect x="12" y="132" width="296" height="26" rx="4" fill="#c4905c"/>
-<rect x="24" y="138" width="124" height="14" rx="3" fill="#d9a874" stroke-width="2.5"/><rect x="172" y="138" width="124" height="14" rx="3" fill="#d9a874" stroke-width="2.5"/>
-<circle cx="86" cy="145" r="3" fill="#ffd166" stroke-width="2"/><circle cx="234" cy="145" r="3" fill="#ffd166" stroke-width="2"/>
-<rect x="0" y="116" width="320" height="18" rx="5" fill="#e2b886"/><path d="M8 121H312" stroke="#f3d6b0" stroke-width="3" opacity=".9"/>
-<g><rect x="42" y="34" width="104" height="76" rx="6" fill="#d9ccf8"/><rect x="49" y="41" width="90" height="62" rx="3" fill="#251c48" stroke-width="2.5"/>
-<g stroke="none"><rect x="55" y="49" width="30" height="4" rx="2" fill="#ffd166"/><rect x="59" y="58" width="48" height="4" rx="2" fill="#a8f0c0"/><rect x="59" y="67" width="36" height="4" rx="2" fill="#8bc8ff"/><rect x="55" y="76" width="54" height="4" rx="2" fill="#ff9bc0"/><rect x="59" y="85" width="28" height="4" rx="2" fill="#a8f0c0"/><rect x="92" y="85" width="4" height="8" fill="#fff"/></g>
-<path d="M28 110H160L168 116H20Z" fill="#cfc3f5"/></g>
-<g><rect x="176" y="104" width="46" height="12" rx="2" fill="#ff9b8a"/><rect x="182" y="94" width="40" height="10" rx="2" fill="#8bc8ff"/><rect x="178" y="85" width="40" height="9" rx="2" fill="#ffd166"/></g>
-<g><path d="M236 116H276L270 112H242Z" fill="#8f7fe0"/><path d="M256 112L242 74L268 44" fill="none" stroke-width="5"/><path d="M252 40L292 52L282 76L246 62Z" fill="#ffd166"/><path d="M262 70q10 4 20-2" stroke="none" fill="#fff6c8"/></g>
-<g><rect x="293" y="84" width="22" height="32" rx="5" fill="#fff"/><path d="M315 92q10 0 10 9t-10 9" fill="none"/><path class="steam" d="M299 78q-4-6 0-10t0-9M308 78q-4-6 0-10t0-9" fill="none" stroke-width="2.5" opacity=".6"/></g>
-</svg></div>
-
-  <!-- armchair + chibi -->
-  <div class="f" id="chairbox" style="--x:800px;--y:345px;--px:268px;--py:376px;--ps:.82;--z:5">
-    <p class="bub off" id="bub" role="status"></p>
-    <div class="art" style="position:absolute;inset:0"><svg viewBox="0 0 170 215" width="170" height="215" stroke="#3a2a4d" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true">
-<ellipse cx="85" cy="209" rx="82" ry="6" fill="rgba(0,0,0,.14)" stroke="none"/>
-<path d="M20 44Q20 8 58 8H112Q150 8 150 44V150H20Z" fill="#8b5cf6"/>
-<rect x="32" y="22" width="106" height="112" rx="24" fill="#a78bfa" stroke-width="3"/>
-<g fill="#7c4ae0" stroke-width="2.5"><circle cx="64" cy="48" r="4"/><circle cx="106" cy="48" r="4"/><circle cx="85" cy="78" r="4"/><circle cx="64" cy="108" r="4"/><circle cx="106" cy="108" r="4"/></g>
-</svg></div>
-    <div class="seat"><div class="sprite" id="chibi">
-      <img src="../assets/mascot.webp" width="500" height="500" alt="" draggable="false" />
-      <svg viewBox="0 0 1000 1000" fill="#000" stroke="#000" aria-hidden="true">
-        <g data-eye="open"><g><ellipse cx="369" cy="486" rx="20.5" ry="48.5" stroke="none"/><ellipse cx="530" cy="486" rx="20.5" ry="48.5" stroke="none"/></g></g>
-        <g data-eye="happy" class="hidden" fill="none" stroke-width="15" stroke-linecap="round"><path d="M347 508 Q369 456 391 508"/><path d="M508 508 Q530 456 552 508"/></g>
-        <g data-eye="sleepy" class="hidden" fill="none" stroke-width="14" stroke-linecap="round"><path d="M347 490 Q369 520 391 490"/><path d="M508 490 Q530 520 552 490"/></g>
-      </svg>
-    </div></div>
-    <div class="art" style="position:absolute;inset:0;z-index:3;pointer-events:none"><svg viewBox="0 0 170 215" width="170" height="215" stroke="#3a2a4d" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true">
-<path d="M5 98Q5 80 22 80H38V190H9Q5 190 5 184Z" fill="#8b5cf6"/><path d="M165 98Q165 80 148 80H132V190H161Q165 190 165 184Z" fill="#8b5cf6"/>
-<rect x="30" y="128" width="110" height="56" rx="16" fill="#b59cfa"/><path d="M40 168H130" stroke-width="2.5" opacity=".5" fill="none"/>
-<rect x="8" y="184" width="154" height="14" rx="5" fill="#6d46d8"/>
-<rect x="16" y="198" width="12" height="16" rx="2" fill="#8a6a46"/><rect x="142" y="198" width="12" height="16" rx="2" fill="#8a6a46"/>
-</svg></div>
-  </div>
+  <!-- someone working on a laptop (animated) -->
+  <div class="f art" id="coder" style="--x:585px;--y:340px;--px:120px;--py:364px;--ps:.78;--z:4" role="img" aria-label="a guy working on his laptop"></div>
 
   <!-- grand piano: click to open -->
-  <button class="f click" id="grand" style="--x:1010px;--y:330px;--px:120px;--py:560px;--ps:.95;--z:4" aria-label="open the piano">
+  <button class="f click" id="grand" style="--x:1010px;--y:330px;--px:122px;--py:584px;--ps:.84;--z:4" aria-label="open the piano">
     <span class="lab">piano ♪</span>
     <img class="art" src="../assets/piano.webp" width="250" height="221" alt="" draggable="false" />
     <span class="tap">click me!</span>
@@ -382,6 +346,17 @@ $('#win').addEventListener('click', flipTheme);
 paintTheme();
 
 // wall clock shows the real time
+// the guy at the laptop: plays the 12 frames of the sheet, then loops
+(() => {
+  const el = $('#coder'); if (!el) return;
+  const DUR = [700, 600, 650, 650, 1000, 1000, 800, 800, 650, 750, 1000, 1500];
+  let i = 0;
+  const show = (n) => { el.style.backgroundPosition = ((n % 4) * 100 / 3) + '% ' + (Math.floor(n / 4) * 50) + '%'; };
+  show(0);
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  (function next() { i = (i + 1) % 12; show(i); setTimeout(next, DUR[i]); })();
+})();
+
 function tickClock() {
   const d = new Date(), h = $('#hh'), m = $('#mh'); if (!h) return;
   h.setAttribute('transform', 'rotate(' + (((d.getHours() % 12) + d.getMinutes() / 60) * 30) + ' 40 40)');
@@ -508,20 +483,9 @@ function tone(note, dur) {
   env.connect(lp); lp.connect(master);
 }
 
-// chibi reacts
-const chibi = $('#chibi'), bub = $('#bub');
-let calm, talk;
-function eye(name) { chibi.querySelectorAll('[data-eye]').forEach((g) => g.classList.toggle('hidden', g.dataset.eye !== name)); }
-function say(t, ms) { bub.textContent = t; bub.classList.remove('off'); clearTimeout(talk); talk = setTimeout(() => bub.classList.add('off'), ms || 2600); }
-const CHEERS = ['ooh~ ♪', 'keep going!', 'so pretty ♫', 'i love this one', 'play more!', '♪ ♫ ♪'];
-let nPlayed = 0;
-function react() {
-  nPlayed++;
-  eye('happy'); chibi.classList.remove('hop'); void chibi.offsetWidth; chibi.classList.add('hop');
-  if (nPlayed === 1 || nPlayed % 14 === 0) say(CHEERS[(nPlayed / 14 | 0) % CHEERS.length]);
-  clearTimeout(calm); calm = setTimeout(() => eye('open'), 1500);
-}
-setTimeout(() => say('click the piano! ♪', 3200), 900);
+// (the room has no one to react to the piano now)
+function say() {}
+function react() {}
 
 // press / release
 function fx(el) {
@@ -580,8 +544,6 @@ tuneBtn.addEventListener('click', async () => {
 });
 stopBtn.addEventListener('click', stopTune);
 
-// tapping the chibi
-chibi.addEventListener('click', () => { eye('happy'); chibi.classList.remove('hop'); void chibi.offsetWidth; chibi.classList.add('hop'); say(['hi hi!', 'welcome to my room!', 'try the piano ♪', 'look at the wall →'][Math.random() * 4 | 0]); clearTimeout(calm); calm = setTimeout(() => eye('open'), 1500); });
 try { localStorage.setItem('room-seen', '1'); } catch (e) {}
 
 // password gate. a light lock for a cozy page, not real security.
