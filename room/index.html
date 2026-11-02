@@ -92,6 +92,19 @@ html.dark .glow{opacity:1}
 .bub{position:absolute;left:50%;top:-34px;transform:translateX(-50%);z-index:12;background:var(--paper);color:var(--ink);border:3px solid var(--line);border-radius:16px;padding:.35rem .75rem;font-weight:700;font-size:.82rem;box-shadow:3px 3px 0 var(--shadow);white-space:nowrap;transition:opacity .3s;pointer-events:none}
 .bub.off{opacity:0}
 
+/* wall clock: leans and grows when hovered */
+.clk{cursor:pointer;transition:transform .2s cubic-bezier(.3,1.6,.5,1);filter:drop-shadow(0 4px 0 rgba(75,63,114,.18))}
+.clk:hover,.clk:focus-visible{outline:none;transform:scale(calc(var(--s,1)*1.2)) rotate(-10deg)}
+.clk:active{transform:scale(calc(var(--s,1)*1.1)) rotate(-6deg)}
+@media(max-aspect-ratio:1/1){.clk:hover,.clk:focus-visible{transform:scale(calc(var(--ps,1)*1.2)) rotate(-10deg)}.clk:active{transform:scale(calc(var(--ps,1)*1.1)) rotate(-6deg)}}
+/* world clock pop-up */
+.wc-row{display:flex;gap:1.4rem;justify-content:center;flex-wrap:wrap;padding:.4rem .2rem}
+.wc{display:flex;flex-direction:column;align-items:center;gap:.4rem;min-width:9.5rem}
+.wc svg{width:9rem;height:9rem}
+.wc .nm{font-family:'Space Mono',monospace;font-weight:700;font-size:.85rem;background:#8b5cf6;color:#fff;border:2.5px solid #4b3f72;border-radius:999px;padding:.15rem .8rem}
+.wc .dg{font-family:'Space Mono',monospace;font-weight:700;font-size:1.5rem}
+.wc .sm{font-family:'Space Mono',monospace;font-size:.72rem;opacity:.7;margin-top:-.2rem}
+.wc svg{stroke:#3a2a4d}html.dark .wc svg .face{fill:#e9e0ff}
 /* bulletin board pop-up */
 .bm{position:fixed;inset:0;z-index:100;display:none;place-items:center;background:rgba(20,14,46,.6);padding:1rem}
 .bm.show{display:grid}
@@ -157,7 +170,7 @@ html.dark .pm-bar{background:#5b4c96}
 /* password gate */
 .gate{position:fixed;inset:0;z-index:300;display:none;place-items:center;background:var(--wall);padding:1rem}
 html.locked .gate{display:grid}
-html.locked .stage,html.locked .hud,html.locked .wallbg,html.locked .floorbg,html.locked #pm,html.locked #lb,html.locked #bm{display:none!important}
+html.locked .stage,html.locked .hud,html.locked .wallbg,html.locked .floorbg,html.locked #pm,html.locked #lb,html.locked #bm,html.locked #wcm{display:none!important}
 .gate-card{width:min(92vw,24rem);background:var(--paper);border:2px solid var(--line);border-radius:14px;box-shadow:0 6px 0 var(--shadow);overflow:hidden;text-align:center}
 .gate-card .pm-bar{justify-content:flex-start}
 .gate-card form{padding:1.6rem 1.4rem 1.5rem}
@@ -232,11 +245,11 @@ html.locked .stage,html.locked .hud,html.locked .wallbg,html.locked .floorbg,htm
   </button>
 
   <!-- wall clock -->
-  <div class="f art nop" id="clock" style="--x:880px;--y:150px;--z:2" aria-hidden="true"><svg viewBox="0 0 80 80" width="80" height="80" stroke="#3a2a4d" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true">
+  <button class="f art clk" id="clock" style="--x:880px;--y:150px;--px:394px;--py:352px;--ps:.8;--z:3" aria-label="open the world clock" title="what time is it?"><svg viewBox="0 0 80 80" width="80" height="80" stroke="#3a2a4d" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true">
 <circle cx="40" cy="40" r="35" fill="#8a6a46"/><circle cx="40" cy="40" r="28" fill="#fff8ee"/>
 <g stroke-width="2.5"><path d="M40 16v4M40 60v4M16 40h4M60 40h4"/></g>
 <line id="hh" x1="40" y1="40" x2="40" y2="26" stroke-width="4"/><line id="mh" x1="40" y1="40" x2="40" y2="19" stroke-width="3"/><circle cx="40" cy="40" r="3" fill="#ff9b8a"/>
-</svg></div>
+</svg></button>
 
   <!-- someone working on a laptop (animated) -->
   <!-- someone working on a laptop (animated; the lamp comes on at night) -->
@@ -261,6 +274,13 @@ html.locked .stage,html.locked .hud,html.locked .wallbg,html.locked .floorbg,htm
 
   <p class="hint2">click the window, the bulletin board and the piano ♪</p>
 </main>
+
+<div class="bm" id="wcm" role="dialog" aria-modal="true" aria-label="world clock">
+  <div class="bm-card" style="max-width:520px">
+    <div class="pm-bar"><span>what time is it? ✦</span><button id="wcm-x" aria-label="close clocks">[x]</button></div>
+    <div class="bm-body"><div class="wc-row" id="wc-row"></div></div>
+  </div>
+</div>
 
 <div class="bm" id="bm" role="dialog" aria-modal="true" aria-label="bulletin board">
   <div class="bm-card">
@@ -424,6 +444,32 @@ function tickClock() {
 }
 tickClock(); setInterval(tickClock, 20000);
 
+// world clocks: philippines and phnom penh
+const ZONES = [
+  { id: 'ph', name: 'philippines', tz: 'Asia/Manila', off: 'utc+8' },
+  { id: 'pp', name: 'phnom penh', tz: 'Asia/Phnom_Penh', off: 'utc+7' }
+];
+const CLK = (id) => '<svg viewBox="0 0 80 80" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><circle cx="40" cy="40" r="35" fill="#8a6a46"/><circle class="face" cx="40" cy="40" r="28" fill="#fff8ee"/><g stroke-width="2.5"><path d="M40 16v4M40 60v4M16 40h4M60 40h4"/></g><line id="' + id + 'h" x1="40" y1="40" x2="40" y2="26" stroke-width="4"/><line id="' + id + 'm" x1="40" y1="40" x2="40" y2="19" stroke-width="3"/><line id="' + id + 's" x1="40" y1="44" x2="40" y2="17" stroke="#ff9b8a" stroke-width="1.6"/><circle cx="40" cy="40" r="3" fill="#ff9b8a"/></svg>';
+const wcRow = $('#wc-row');
+wcRow.innerHTML = ZONES.map((z) => '<div class="wc">' + CLK(z.id) + '<span class="nm">' + z.name + '</span><span class="dg" id="' + z.id + 'd"></span><span class="sm" id="' + z.id + 'x"></span></div>').join('');
+function tickWorld() {
+  const now = new Date();
+  ZONES.forEach((z) => {
+    const p = {}; new Intl.DateTimeFormat('en-US', { timeZone: z.tz, hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: false, weekday: 'short' }).formatToParts(now).forEach((x) => { p[x.type] = x.value; });
+    const h = (+p.hour) % 24, m = +p.minute, sec = +p.second;
+    $('#' + z.id + 'h').setAttribute('transform', 'rotate(' + (((h % 12) + m / 60) * 30) + ' 40 40)');
+    $('#' + z.id + 'm').setAttribute('transform', 'rotate(' + ((m + sec / 60) * 6) + ' 40 40)');
+    $('#' + z.id + 's').setAttribute('transform', 'rotate(' + (sec * 6) + ' 40 40)');
+    $('#' + z.id + 'd').textContent = ((h % 12) || 12) + ':' + String(m).padStart(2, '0') + ' ' + (h < 12 ? 'am' : 'pm');
+    $('#' + z.id + 'x').textContent = p.weekday.toLowerCase() + ' · ' + z.off;
+  });
+}
+tickWorld(); setInterval(tickWorld, 1000);
+const wcm = $('#wcm');
+$('#clock').addEventListener('click', () => { tickWorld(); wcm.classList.add('show'); });
+$('#wcm-x').addEventListener('click', () => wcm.classList.remove('show'));
+wcm.addEventListener('pointerdown', (e) => { if (e.target === wcm) wcm.classList.remove('show'); });
+
 // the verse
 $('#verse-q').textContent = '“' + VERSE.text + '”';
 $('#verse-ref').textContent = '— ' + VERSE.ref;
@@ -460,6 +506,7 @@ lb.addEventListener('click', () => lb.classList.remove('show'));
 addEventListener('keydown', (e) => {
   if (e.key !== 'Escape') return;
   if (lb.classList.contains('show')) lb.classList.remove('show');
+  else if (wcm.classList.contains('show')) wcm.classList.remove('show');
   else if (bm.classList.contains('show')) bm.classList.remove('show');
   else closePiano();
 });
@@ -650,6 +697,9 @@ gateForm.addEventListener('submit', (e) => {
   $('#win').addEventListener('click', () => sfx(root.classList.contains('dark') ? 'night' : 'day'));
   $('#board').addEventListener('click', () => sfx('open'));
   $('#bm-x').addEventListener('click', () => sfx('close'));
+  $('#clock').addEventListener('click', () => sfx('open'));
+  $('#wcm-x').addEventListener('click', () => sfx('close'));
+  $('#wcm').addEventListener('click', (e) => { if (e.target === $('#wcm')) sfx('close'); });
   $('#bm').addEventListener('click', (e) => { if (e.target.closest('.pola')) sfx('pop'); else if (e.target === $('#bm')) sfx('close'); });
   $('#lb').addEventListener('click', () => sfx('close'));
   function el() {
