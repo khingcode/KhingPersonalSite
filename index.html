@@ -59,6 +59,20 @@
     </div>
   </div>
 
+  <!-- password for my room -->
+  <div id="room-gate" class="rgate" role="dialog" aria-modal="true" aria-label="password" hidden>
+    <div class="rgate-card">
+      <div class="win-bar"><span>my room</span><button class="win-x" type="button" id="rgate-x" aria-label="close">[x]</button></div>
+      <form id="rgate-form" autocomplete="off" class="rgate-form">
+        <p class="rgate-h">knock knock 🚪</p>
+        <p class="rgate-p">what's the password?</p>
+        <input class="gb-field rgate-in" id="rgate-in" type="password" autocomplete="off" autocapitalize="none" spellcheck="false" aria-label="password" />
+        <p class="rgate-err" id="rgate-err" role="alert"></p>
+        <button class="gb-btn" type="submit">come in</button>
+      </form>
+    </div>
+  </div>
+
   <!-- home window -->
   <main class="mx-auto flex min-h-screen max-w-3xl flex-col items-center px-4 pt-16 pb-28 sm:pt-24">
     <section class="win-home w-full" aria-label="home">
@@ -338,7 +352,8 @@
             <summary><span class="dl-v">v2.1</span><span class="dl-t"><span class="dl-row"><b>my room</b><span class="dl-new">latest</span></span><small>a cozy little page of its own</small></span></summary>
             <ul class="dl-list">
               <li>a new <b>house</b> icon in the corner leads to <b>my room</b>, a separate page you can walk into</li>
-              <li>a <b>piano you can play</b>: tap the keys, slide across them, or use your keyboard. there's a little tune too, and the chibi reacts</li>
+              <li>click the <b>grand piano</b> and a <b>piano you can play</b> pops up: tap the keys, slide across them, or use your keyboard. there's a little tune too, and the chibi reacts</li>
+              <li>the house asks for a <b>password</b> before you come in</li>
               <li>a <b>bulletin board</b> of memories (photos are on the way)</li>
               <li>a <b>verse</b> pinned on the wall</li>
               <li>click the <b>window</b> to switch between day and night</li>
@@ -1698,6 +1713,34 @@ const send = (body) => fetch(GB_URL + '/rest/v1/guestbook', { method: 'POST', he
   </script>
 
   <script>
+    // the house asks for a password first. a light lock for a cozy page, not real security.
+    (() => {
+      const KEY = '6513342087438648';
+      const cyrb53 = (str, seed = 0) => { let h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed; for (let i = 0, ch; i < str.length; i++) { ch = str.charCodeAt(i); h1 = Math.imul(h1 ^ ch, 2654435761); h2 = Math.imul(h2 ^ ch, 1597334677); } h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909); h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909); return 4294967296 * (2097151 & h2) + (h1 >>> 0); };
+      const house = document.getElementById('house-btn'), gate = document.getElementById('room-gate');
+      const form = document.getElementById('rgate-form'), input = document.getElementById('rgate-in'), err = document.getElementById('rgate-err');
+      const open = () => { gate.hidden = false; err.textContent = ''; input.value = ''; setTimeout(() => input.focus(), 30); };
+      const close = () => { gate.hidden = true; };
+      house.addEventListener('click', (e) => {
+        let ok = false;
+        try { ok = localStorage.getItem('room-key') === KEY; } catch (x) {}
+        if (ok) return; // already knows the password: just walk in
+        e.preventDefault(); open();
+      });
+      document.getElementById('rgate-x').addEventListener('click', close);
+      gate.addEventListener('pointerdown', (e) => { if (e.target === gate) close(); });
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !gate.hidden) close(); });
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (String(cyrb53(input.value.trim().toLowerCase())) === KEY) {
+          try { localStorage.setItem('room-key', KEY); } catch (x) {}
+          location.href = house.getAttribute('href');
+        } else {
+          err.textContent = "hmm, that's not it"; input.value = '';
+          form.classList.remove('shake'); void form.offsetWidth; form.classList.add('shake'); input.focus();
+        }
+      });
+    })();
     // the little dot on the house goes away once someone has been inside
     try { if (localStorage.getItem('room-seen')) document.getElementById('house-dot').classList.add('seen'); } catch (e) {}
     // devlog alerts: each visitor's browser remembers the last update they saw.

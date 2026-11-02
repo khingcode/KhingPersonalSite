@@ -11,7 +11,8 @@
 <link rel="icon" href="../favicon.ico" sizes="any" />
 <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32.png" />
 <link rel="apple-touch-icon" href="../apple-touch-icon.png" />
-<script>try{if(localStorage.getItem("theme")==="dark")document.documentElement.classList.add("dark")}catch(e){}</script>
+<script>try{if(localStorage.getItem("theme")==="dark")document.documentElement.classList.add("dark")}catch(e){}
+try{if(localStorage.getItem("room-key")!=="6513342087438648")document.documentElement.classList.add("locked")}catch(e){document.documentElement.classList.add("locked")}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
@@ -109,6 +110,7 @@ html.dark .btn{border-color:#c9b8ff}
 .btn:hover{transform:translateY(-2px)}
 .btn.ghost{background:var(--paper);color:var(--ink)}
 @media(hover:none){.k-hint{display:none}}
+@media(max-width:639px){.k-hint{display:none}}
 .wk i,.bk i{font-style:normal}
 .fx{position:absolute;pointer-events:none;font-size:1.3rem;color:#a78bfa;animation:rise 1.1s ease-out forwards;z-index:6}
 @keyframes rise{from{opacity:1;transform:translateY(0) rotate(0)}to{opacity:0;transform:translateY(-70px) rotate(14deg)}}
@@ -156,6 +158,36 @@ html.dark .glow{opacity:1}
 .lb .cap{font-family:'Space Mono',monospace;font-size:.85rem;margin-top:.7rem}
 .lb .cap small{display:block;opacity:.6;margin-top:.2rem}
 @keyframes pop{from{opacity:0;transform:scale(.92)}to{opacity:1}}
+/* grand piano (click to open) */
+.grand{position:relative;display:block;margin:0 auto;width:min(100%,330px);transition:transform .15s;filter:drop-shadow(0 6px 0 rgba(75,63,114,.2));-webkit-tap-highlight-color:transparent}
+.grand img{display:block;width:100%;height:auto}
+.grand:hover,.grand:focus-visible{transform:scale(1.05) rotate(-1.5deg);outline:none}
+.grand:active{transform:scale(.97)}
+.grand .tap{position:absolute;left:50%;bottom:-.5rem;transform:translateX(-50%);font-family:'Space Mono',monospace;font-weight:700;font-size:.75rem;background:#ffd166;color:#4b3f72;border:2.5px solid #4b3f72;border-radius:999px;padding:.15rem .7rem;white-space:nowrap;animation:bob 1.6s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,-4px)}}
+/* piano pop-up */
+.pm{position:fixed;inset:0;z-index:100;display:none;place-items:center;background:rgba(20,14,46,.6);padding:1rem}
+.pm.show{display:grid}
+.pm-card{width:100%;max-width:760px;background:var(--paper);border:2px solid var(--line);border-radius:14px;box-shadow:0 6px 0 var(--shadow);overflow:hidden;animation:pop .22s ease-out}
+.pm-bar{display:flex;align-items:center;justify-content:space-between;background:#4b3f72;color:#fff;padding:.65rem 1rem;font-family:'Space Mono',monospace;font-size:.95rem}
+html.dark .pm-bar{background:#5b4c96}
+.pm-bar button{color:#fff;padding:0 .3rem;border-radius:6px}.pm-bar button:hover{background:rgba(255,255,255,.2)}
+.pm-body{padding:1.1rem 1rem 1.2rem}
+.fx{z-index:200!important}
+/* password gate */
+.gate{position:fixed;inset:0;z-index:300;display:none;place-items:center;background:var(--wall);padding:1rem}
+html.locked .gate{display:grid}
+html.locked .room,html.locked .hud,html.locked .wallbg,html.locked .floorbg,html.locked #pm,html.locked #lb{display:none!important}
+.gate-card{width:min(92vw,24rem);background:var(--paper);border:2px solid var(--line);border-radius:14px;box-shadow:0 6px 0 var(--shadow);overflow:hidden;text-align:center}
+.gate-card .pm-bar{justify-content:flex-start}
+.gate-card form{padding:1.6rem 1.4rem 1.5rem}
+.gate-card h2{font-size:1.5rem;margin-bottom:.3rem}
+.gate-card p{font-size:.9rem;opacity:.75;margin-bottom:1rem}
+.gate-in{width:100%;border:2px solid var(--line);border-radius:.75rem;background:var(--paper);color:var(--ink);padding:.55rem .8rem;font-size:16px;text-align:center;outline:none;font-family:'Space Mono',monospace}
+.gate-in:focus{border-color:#8b5cf6;box-shadow:0 0 0 3px rgba(139,92,246,.25)}
+.gate-err{min-height:1.3rem;margin:.6rem 0 .3rem!important;color:#d6336c;font-weight:700;opacity:1!important}
+.gate-card form.shake{animation:shake .35s}
+@keyframes shake{0%,100%{transform:none}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -219,16 +251,8 @@ html.dark .glow{opacity:1}
     </div>
 
     <div class="piano">
-      <div class="item" style="margin-bottom:.4rem"><span class="lab">piano ♪</span></div>
-      <div class="pbody" id="pbody">
-        <div class="fall"></div>
-        <div class="keys" id="keys" role="group" aria-label="piano keys"></div>
-      </div>
-      <p class="hint"><span class="k-hint">tap the keys or use your keyboard · </span><span class="k-hint2">tap the keys</span></p>
-      <div class="ptools">
-        <button class="btn" id="tune">▶ play a tune</button>
-        <button class="btn ghost" id="stop" hidden>■ stop</button>
-      </div>
+      <div class="item" style="margin-bottom:1.2rem"><span class="lab">piano ♪</span></div>
+      <button class="grand" id="grand" aria-label="open the piano"><img src="../assets/piano.webp" width="260" height="230" alt="" draggable="false" /><span class="tap">click me!</span></button>
     </div>
 
     <div style="display:flex;gap:1rem;align-items:flex-end;justify-content:center">
@@ -250,6 +274,37 @@ html.dark .glow{opacity:1}
 
   <p class="foot">← <a href="../">back to the desktop</a></p>
 </main>
+
+<div class="pm" id="pm" role="dialog" aria-modal="true" aria-label="piano">
+  <div class="pm-card">
+    <div class="pm-bar"><span>piano ♪</span><button id="pm-x" aria-label="close piano">[x]</button></div>
+    <div class="pm-body">
+      <div class="pbody" id="pbody">
+        <div class="fall"></div>
+        <div class="keys" id="keys" role="group" aria-label="piano keys"></div>
+      </div>
+      <p class="hint"><span id="hinttxt">tap the keys or use your keyboard</span></p>
+      <div class="ptools">
+        <button class="btn" id="tune">▶ play a tune</button>
+        <button class="btn ghost" id="stop" hidden>■ stop</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="gate" id="gate" role="dialog" aria-modal="true" aria-label="password">
+  <div class="gate-card">
+    <div class="pm-bar"><span>my room</span></div>
+    <form id="gate-form" autocomplete="off">
+      <h2>knock knock 🚪</h2>
+      <p>what's the password?</p>
+      <input class="gate-in" id="gate-in" type="password" autocomplete="off" autocapitalize="none" spellcheck="false" aria-label="password" />
+      <p class="gate-err" id="gate-err" role="alert"></p>
+      <button class="btn" type="submit">come in</button>
+      <p style="margin:1rem 0 0"><a href="../" style="color:inherit;font-size:.8rem">← back to the desktop</a></p>
+    </form>
+  </div>
+</div>
 
 <div class="lb" id="lb" role="dialog" aria-label="memory" aria-modal="true">
   <div class="card"><div class="ph" id="lb-ph"></div><p class="cap" id="lb-cap"></p></div>
@@ -335,7 +390,7 @@ MEMORIES.forEach((m, i) => {
 });
 const lb = $('#lb');
 lb.addEventListener('click', () => lb.classList.remove('show'));
-addEventListener('keydown', (e) => { if (e.key === 'Escape') lb.classList.remove('show'); });
+addEventListener('keydown', (e) => { if (e.key === 'Escape') { lb.classList.remove('show'); closePiano(); } });
 
 /* ---------- piano ---------- */
 const keysEl = $('#keys');
@@ -373,7 +428,15 @@ function build() {
 build();
 let lastCount = innerWidth < 640;
 addEventListener('resize', () => { const m = innerWidth < 640; if (m !== lastCount) { lastCount = m; build(); } });
-$('.k-hint2').style.display = 'none';
+if (matchMedia('(hover:none)').matches || innerWidth < 640) $('#hinttxt').textContent = 'tap the keys · slide to glide';
+
+// the grand piano opens the keyboard
+const pm = $('#pm');
+function openPiano() { pm.classList.add('show'); audio(); say('play me something! ♪', 2600); }
+function closePiano() { if (!pm.classList.contains('show')) return; pm.classList.remove('show'); stopTune(); [...held].forEach(up); }
+$('#grand').addEventListener('click', openPiano);
+$('#pm-x').addEventListener('click', closePiano);
+pm.addEventListener('pointerdown', (e) => { if (e.target === pm) closePiano(); });
 
 // sound: a small synthesized piano (no audio files needed)
 let ac, master;
@@ -421,7 +484,7 @@ function react() {
   if (nPlayed === 1 || nPlayed % 14 === 0) say(CHEERS[(nPlayed / 14 | 0) % CHEERS.length]);
   clearTimeout(calm); calm = setTimeout(() => eye('open'), 1500);
 }
-setTimeout(() => say('play me something! ♪', 3200), 900);
+setTimeout(() => say('click the piano! ♪', 3200), 900);
 
 // press / release
 function fx(el) {
@@ -457,7 +520,8 @@ keysEl.addEventListener('contextmenu', (e) => e.preventDefault());
 
 // computer keyboard
 addEventListener('keydown', (e) => {
-  if (e.ctrlKey || e.metaKey || e.altKey || e.repeat) return;
+  if (!pm.classList.contains('show') || e.ctrlKey || e.metaKey || e.altKey || e.repeat) return;
+  if (e.target && e.target.tagName === 'INPUT') return;
   const n = kmap[e.key.toLowerCase()]; if (n) { e.preventDefault(); down(n); }
 });
 addEventListener('keyup', (e) => { const n = kmap[e.key.toLowerCase()]; if (n) up(n); });
@@ -482,6 +546,22 @@ stopBtn.addEventListener('click', stopTune);
 // tapping the chibi
 chibi.addEventListener('click', () => { eye('happy'); chibi.classList.remove('hop'); void chibi.offsetWidth; chibi.classList.add('hop'); say(['hi hi!', 'welcome to my room!', 'try the piano ♪', 'look at the wall →'][Math.random() * 4 | 0]); clearTimeout(calm); calm = setTimeout(() => eye('open'), 1500); });
 try { localStorage.setItem('room-seen', '1'); } catch (e) {}
+
+// password gate. a light lock for a cozy page, not real security.
+function cyrb53(str, seed = 0) { let h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed; for (let i = 0, ch; i < str.length; i++) { ch = str.charCodeAt(i); h1 = Math.imul(h1 ^ ch, 2654435761); h2 = Math.imul(h2 ^ ch, 1597334677); } h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909); h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909); return 4294967296 * (2097151 & h2) + (h1 >>> 0); }
+const KEY = '6513342087438648';
+const gateForm = $('#gate-form'), gateIn = $('#gate-in');
+if (root.classList.contains('locked')) setTimeout(() => gateIn.focus(), 50);
+gateForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  if (String(cyrb53(gateIn.value.trim().toLowerCase())) === KEY) {
+    try { localStorage.setItem('room-key', KEY); } catch (err) {}
+    root.classList.remove('locked'); sizeBg();
+  } else {
+    $('#gate-err').textContent = "hmm, that's not it"; gateIn.value = '';
+    gateForm.classList.remove('shake'); void gateForm.offsetWidth; gateForm.classList.add('shake'); gateIn.focus();
+  }
+});
 </script>
 </body>
 </html>
