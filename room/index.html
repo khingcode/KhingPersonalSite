@@ -329,7 +329,7 @@ const MEMORIES = [
   { src: '../assets/room/memory-3.webp', cap: 'Ohana 💜',      date: '' },
   { src: '../assets/room/memory-4.webp', cap: 'yay',           date: '' },
   { src: '../assets/room/memory-5.webp', cap: 'lgbbq',         date: '' },
-  { src: '', cap: 'more soon', date: 'photo coming soon' }
+  { src: '../assets/room/memory-6.webp', cap: 'Jil and Chychy', date: '' }
 ];
 
 /* ============== page ============== */
@@ -627,104 +627,37 @@ gateForm.addEventListener('submit', (e) => {
   }
 });
 
-/* ---------- room sound: typing + ambience (all made in the browser, no audio files) ---------- */
+/* ---------- room sound: a soft typing loop (pauses while you hover the avatar) ---------- */
 (() => {
   const btn = $('#soundbtn');
-  let on = true;
+  let on = true, hovering = false, a = null;
   try { on = localStorage.getItem('room-sound') !== 'off'; } catch (e) {}
-  let ready = false, hovering = false, typingTimer = 0, birdTimer = 0, noiseBuf, amb, mix, dayG, nightG, tg, cricket;
   const paint = () => { btn.textContent = on ? '♪ sound on' : '♪ sound off'; btn.setAttribute('aria-pressed', on); };
   paint();
-  const dark = () => root.classList.contains('dark');
   const locked = () => root.classList.contains('locked');
-
-  function setup() {
-    if (ready) return true;
-    const a = audio(); if (!a) return false;
-    ready = true;
-    // shared noise
-    noiseBuf = a.createBuffer(1, a.sampleRate * 2, a.sampleRate);
-    const d = noiseBuf.getChannelData(0); let last = 0;
-    for (let i = 0; i < d.length; i++) { const w = Math.random() * 2 - 1; last = (last + 0.02 * w) / 1.02; d[i] = last * 3.5; }
-    mix = a.createGain(); mix.gain.value = 0; mix.connect(a.destination);
-    // room tone: soft low air, slightly brighter by day
-    const src = a.createBufferSource(); src.buffer = noiseBuf; src.loop = true;
-    const lp = a.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 420;
-    amb = a.createGain(); amb.gain.value = 0.55; src.connect(lp); lp.connect(amb); amb.connect(mix); src.start();
-    dayG = a.createGain(); nightG = a.createGain(); dayG.connect(mix); nightG.connect(mix);
-    // night: a steady cricket pulse
-    cricket = a.createOscillator(); cricket.type = 'sine'; cricket.frequency.value = 4300;
-    const cg = a.createGain(); cg.gain.value = 0;
-    const lfo = a.createOscillator(); lfo.frequency.value = 22; const lg = a.createGain(); lg.gain.value = 0.5;
-    const lfo2 = a.createOscillator(); lfo2.frequency.value = 0.7; const lg2 = a.createGain(); lg2.gain.value = 0.5;
-    lfo.connect(lg); lg.connect(cg.gain); lfo2.connect(lg2); lg2.connect(cg.gain);
-    const cb = a.createBiquadFilter(); cb.type = 'bandpass'; cb.frequency.value = 4300; cb.Q.value = 3;
-    cricket.connect(cg); cg.connect(cb); const cv = a.createGain(); cv.gain.value = 0.05; cb.connect(cv); cv.connect(nightG);
-    cricket.start(); lfo.start(); lfo2.start();
-    tg = a.createGain(); tg.gain.value = 1; tg.connect(a.destination);
-    applyTheme(); return true;
+  const VOL = 0.22;
+  function el() {
+    if (!a) { a = new Audio('../assets/typing.mp3'); a.loop = true; a.preload = 'auto'; a.volume = VOL; }
+    return a;
   }
-  function applyTheme() {
-    if (!ready) return; const t = ac.currentTime;
-    dayG.gain.setTargetAtTime(dark() ? 0 : 1, t, 0.8); nightG.gain.setTargetAtTime(dark() ? 1 : 0, t, 0.8);
-  }
-  function chirp() {
-    if (!ready || !on || dark() || locked() || document.hidden) return;
-    const a = ac, t = a.currentTime, base = 2300 + Math.random() * 1800, n = 2 + (Math.random() * 3 | 0);
-    for (let i = 0; i < n; i++) {
-      const o = a.createOscillator(), g = a.createGain(), st = t + i * 0.13;
-      o.type = 'sine'; o.frequency.setValueAtTime(base, st); o.frequency.exponentialRampToValueAtTime(base * (1.25 + Math.random() * 0.4), st + 0.09);
-      g.gain.setValueAtTime(0.0001, st); g.gain.exponentialRampToValueAtTime(0.05, st + 0.015); g.gain.exponentialRampToValueAtTime(0.0001, st + 0.1);
-      o.connect(g); g.connect(dayG); o.start(st); o.stop(st + 0.12);
-    }
-  }
-  function birds() { clearTimeout(birdTimer); birdTimer = setTimeout(() => { chirp(); birds(); }, 4500 + Math.random() * 7000); }
-
-  function key() {
-    if (!ready || !on || hovering || locked() || document.hidden) return;
-    const a = ac, t = a.currentTime;
-    const n = a.createBufferSource(); n.buffer = noiseBuf; n.playbackRate.value = 3 + Math.random() * 2;
-    const bp = a.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 1800 + Math.random() * 2600; bp.Q.value = 0.9;
-    const g = a.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.55, t + 0.002); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.045);
-    n.connect(bp); bp.connect(g); g.connect(tg); n.start(t, Math.random() * 1.5, 0.06);
-    const o = a.createOscillator(), og = a.createGain(); o.type = 'sine'; o.frequency.setValueAtTime(170 + Math.random() * 40, t); o.frequency.exponentialRampToValueAtTime(90, t + 0.04);
-    og.gain.setValueAtTime(0.0001, t); og.gain.exponentialRampToValueAtTime(0.18, t + 0.003); og.gain.exponentialRampToValueAtTime(0.0001, t + 0.05);
-    o.connect(og); og.connect(tg); o.start(t); o.stop(t + 0.06);
-  }
-  function typing() {
-    clearTimeout(typingTimer);
-    const burst = 4 + (Math.random() * 9 | 0); let i = 0;
-    (function step() {
-      if (hovering || !on) { typingTimer = setTimeout(typing, 250); return; }
-      key();
-      if (++i < burst) typingTimer = setTimeout(step, 85 + Math.random() * 110);
-      else typingTimer = setTimeout(typing, 500 + Math.random() * 1300);
-    })();
-  }
-  function level() {
-    if (!ready) return;
-    const t = ac.currentTime, loud = on && !locked() && !document.hidden;
-    mix.gain.setTargetAtTime(loud ? (pm.classList.contains('show') ? 0.25 : 1) : 0, t, 0.25);
-    tg.gain.setTargetAtTime(loud ? 1 : 0, t, 0.05);
-  }
-  function start() {
-    if (locked() || !on) return;
-    if (!setup()) return;
-    if (ac.state === 'suspended') ac.resume();
-    level(); applyTheme();
-    if (!typingTimer) typing();
-    if (!birdTimer) birds();
+  function sync() {
+    const want = on && !hovering && !locked() && !document.hidden;
+    if (!a && !want) return;
+    const x = el();
+    x.volume = pm.classList.contains('show') ? VOL * 0.4 : VOL;
+    if (want && x.paused) { const p = x.play(); if (p && p.catch) p.catch(() => {}); }
+    else if (!want && !x.paused) x.pause();
   }
   // browsers only allow sound after a tap or key, so it begins on the first one
-  ['pointerdown', 'keydown', 'touchstart'].forEach((ev) => addEventListener(ev, () => start(), { passive: true }));
+  ['pointerdown', 'keydown', 'touchstart'].forEach((ev) => addEventListener(ev, sync, { passive: true }));
   btn.addEventListener('click', () => {
     on = !on; try { localStorage.setItem('room-sound', on ? 'on' : 'off'); } catch (e) {}
-    paint(); if (on) start(); level();
+    paint(); sync();
   });
-  window.addEventListener('coder-hover', (e) => { hovering = !!e.detail; });
-  new MutationObserver(() => { applyTheme(); level(); if (!locked()) start(); }).observe(root, { attributes: true, attributeFilter: ['class'] });
-  new MutationObserver(level).observe(pm, { attributes: true, attributeFilter: ['class'] });
-  document.addEventListener('visibilitychange', level);
+  window.addEventListener('coder-hover', (e) => { hovering = !!e.detail; sync(); });
+  new MutationObserver(sync).observe(root, { attributes: true, attributeFilter: ['class'] });
+  new MutationObserver(sync).observe(pm, { attributes: true, attributeFilter: ['class'] });
+  document.addEventListener('visibilitychange', sync);
 })();
 </script>
 </body>
