@@ -50,6 +50,13 @@ html.dark .sign h1{color:#fff;-webkit-text-stroke:1px #c4b5fd;text-shadow:0 0 6p
 .lab{position:absolute;left:50%;transform:translateX(-50%);top:-1.15rem;font-family:'Space Mono',monospace;font-weight:700;font-size:.78rem;letter-spacing:.04em;background:#8b5cf6;color:#fff;border:2.5px solid #4b3f72;border-radius:999px;padding:.22rem .8rem;box-shadow:2px 3px 0 var(--shadow);white-space:nowrap;z-index:9;pointer-events:none}
 html.dark .lab{border-color:#c9b8ff}
 .lab:before{content:"";display:inline-block;width:.5rem;height:.5rem;border-radius:50%;background:#ffd166;margin-right:.45rem;vertical-align:1px}
+.pp{display:block;position:relative;padding:5px;background:#f7f2ea;border:3px solid #3a2a4d;border-radius:3px;box-shadow:4px 6px 0 rgba(58,42,77,.2),8px 14px 16px rgba(40,25,80,.28);transform:rotate(-1.2deg)}
+.pp img{display:block;width:150px;height:210px}
+.pp:after{content:"";position:absolute;inset:5px;pointer-events:none;background:linear-gradient(115deg,rgba(255,255,255,.3),rgba(255,255,255,0) 34%,rgba(255,255,255,0) 68%,rgba(255,255,255,.14))}
+.tp{position:absolute;top:-10px;width:40px;height:15px;background:rgba(255,209,102,.82);border:1.5px solid rgba(58,42,77,.3);box-shadow:0 1px 2px rgba(58,42,77,.25);z-index:2}
+.tp.a{left:-15px;transform:rotate(-38deg)}.tp.b{right:-15px;transform:rotate(38deg)}
+html.dark .pp{filter:brightness(.74) saturate(.95)}
+.poster-card img{display:block;width:100%;height:auto;max-height:calc(94dvh - 4.5rem);object-fit:contain;margin:0 auto;border-radius:3px}
 .click{cursor:pointer;transition:transform .15s}
 .click:hover,.click:focus-visible{transform:scale(calc(var(--s,1)*1.04)) rotate(-1deg);outline:none}
 .click:active{transform:scale(calc(var(--s,1)*.97))}
@@ -198,7 +205,7 @@ html.dark .pm-bar{background:#5b4c96}
 /* password gate */
 .gate{position:fixed;inset:0;z-index:300;display:none;place-items:center;background:var(--wall);padding:1rem}
 html.locked .gate{display:grid}
-html.locked .stage,html.locked .hud,html.locked .wallbg,html.locked .floorbg,html.locked #pm,html.locked #lb,html.locked #bm,html.locked #wcm,html.locked #shm,html.locked #nm,html.locked .pnote{display:none!important}
+html.locked .stage,html.locked .hud,html.locked .wallbg,html.locked .floorbg,html.locked #pm,html.locked #lb,html.locked #bm,html.locked #wcm,html.locked #shm,html.locked #nm,html.locked #ppm,html.locked .pnote{display:none!important}
 .gate-card{width:min(92vw,24rem);background:var(--paper);border:2px solid var(--line);border-radius:14px;box-shadow:0 6px 0 var(--shadow);overflow:hidden;text-align:center}
 .gate-card .pm-bar{justify-content:flex-start}
 .gate-card form{padding:1.6rem 1.4rem 1.5rem}
@@ -226,7 +233,7 @@ html.locked .stage,html.locked .hud,html.locked .wallbg,html.locked .floorbg,htm
   <div class="rug" style="--x:300px;--y:560px;--w:680px;--h:110px;--px:50px;--py:700px;--pw:380px;--ph:80px"></div>
 
   <!-- window: click to switch day / night -->
-  <button class="f click art" id="win" style="--x:60px;--y:160px;--px:14px;--py:150px;--ps:.78;--z:2" aria-label="switch between day and night">
+  <button class="f click art" id="win" style="--x:30px;--y:160px;--px:14px;--py:150px;--ps:.78;--z:2" aria-label="switch between day and night">
     <span class="lab">day / night</span><svg viewBox="0 0 240 290" width="240" height="290" stroke="#3a2a4d" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true">
 <defs>
 <linearGradient id="skyd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8fcfff"/><stop offset="1" stop-color="#eaf7ff"/></linearGradient>
@@ -256,7 +263,7 @@ html.locked .stage,html.locked .hud,html.locked .wallbg,html.locked .floorbg,htm
   </button>
 
   <!-- bookshelf -->
-  <button class="f click art" id="shelf" style="--x:330px;--y:213px;--px:20px;--py:392px;--ps:.5;--z:3" aria-label="open the bookshelf">
+  <button class="f click art" id="shelf" style="--x:300px;--y:213px;--px:20px;--py:392px;--ps:.5;--z:3" aria-label="open the bookshelf">
     <span class="lab">bookshelf</span><svg viewBox="-14 -6 168 330" width="168" height="330" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true">
 <defs>
 <linearGradient id="wb-wood" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#a77446"/><stop offset=".5" stop-color="#cf9a64"/><stop offset="1" stop-color="#8f5f36"/></linearGradient>
@@ -282,15 +289,22 @@ html.locked .stage,html.locked .hud,html.locked .wallbg,html.locked .floorbg,htm
 </svg><span class="tap">click me!</span>
   </button>
 
+  <!-- poster: click to view -->
+  <button class="f click" id="poster" style="--x:475px;--y:172px;--ps:.6;--px:366px;--py:340px;--z:3" aria-label="open the poster">
+    <span class="lab">poster</span>
+    <span class="pp"><i class="tp a"></i><i class="tp b"></i><img src="../assets/room/poster-t.webp" width="150" height="210" alt="" draggable="false" /></span>
+    <span class="tap">click me!</span>
+  </button>
+
   <!-- bulletin board: click to open -->
-  <button class="f click" id="board" style="--x:540px;--y:112px;--px:226px;--py:152px;--ps:.84;--z:3" aria-label="open the bulletin board">
+  <button class="f click" id="board" style="--x:660px;--y:112px;--s:.9;--px:226px;--py:140px;--ps:.76;--z:3" aria-label="open the bulletin board">
     <span class="lab">bulletin</span>
     <img class="art" src="../assets/board.webp" width="270" height="209" alt="" draggable="false" />
     <span class="tap">click me!</span>
   </button>
 
   <!-- wall clock -->
-  <button class="f art clk" id="clock" style="--x:880px;--y:150px;--px:394px;--py:352px;--ps:.8;--z:3" aria-label="open the world clock" title="what time is it?"><svg viewBox="0 0 80 80" width="80" height="80" stroke="#3a2a4d" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true">
+  <button class="f art clk" id="clock" style="--x:925px;--y:150px;--px:418px;--py:84px;--ps:.6;--z:3" aria-label="open the world clock" title="what time is it?"><svg viewBox="0 0 80 80" width="80" height="80" stroke="#3a2a4d" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true">
 <circle cx="40" cy="40" r="35" fill="#8a6a46"/><circle cx="40" cy="40" r="28" fill="#fff8ee"/>
 <g stroke-width="2.5"><path d="M40 16v4M40 60v4M16 40h4M60 40h4"/></g>
 <line id="hh" x1="40" y1="40" x2="40" y2="26" stroke-width="4"/><line id="mh" x1="40" y1="40" x2="40" y2="19" stroke-width="3"/><circle cx="40" cy="40" r="3" fill="#ff9b8a"/>
@@ -400,6 +414,13 @@ html.locked .stage,html.locked .hud,html.locked .wallbg,html.locked .floorbg,htm
   <div class="bm-card note-card" style="max-width:440px">
     <div class="pm-bar"><span>a note ✦</span><button id="nm-x" aria-label="close note">[x]</button></div>
     <div class="bm-body"><p class="nbig">if you found this,<br>you can claim <b>50 pesos</b> gcash <span>WAHAHA</span> 💸</p></div>
+  </div>
+</div>
+
+<div class="bm" id="ppm" role="dialog" aria-modal="true" aria-label="the poster">
+  <div class="bm-card poster-card" style="max-width:520px">
+    <div class="pm-bar"><span>poster ✦</span><button id="ppm-x" aria-label="close poster">[x]</button></div>
+    <div class="bm-body"><img id="ppm-img" alt="a poster" /></div>
   </div>
 </div>
 
@@ -735,9 +756,14 @@ plant.addEventListener('click', () => {
 pnote.addEventListener('click', (e) => { e.stopPropagation(); pnote.classList.remove('on'); pnote.tabIndex = -1; nm.classList.add('show'); if (window.__sfx) window.__sfx('open'); });
 $('#nm-x').addEventListener('click', () => { nm.classList.remove('show'); if (window.__sfx) window.__sfx('close'); });
 nm.addEventListener('pointerdown', (e) => { if (e.target === nm) nm.classList.remove('show'); });
+const ppm = $('#ppm'), ppmImg = $('#ppm-img');
+$('#poster').addEventListener('click', () => { if (!ppmImg.src) ppmImg.src = '../assets/room/poster.webp'; ppm.classList.add('show'); if (window.__sfx) window.__sfx('open'); });
+$('#ppm-x').addEventListener('click', () => { ppm.classList.remove('show'); if (window.__sfx) window.__sfx('close'); });
+ppm.addEventListener('pointerdown', (e) => { if (e.target === ppm) ppm.classList.remove('show'); });
 addEventListener('keydown', (e) => {
   if (e.key !== 'Escape') return;
   if (lb.classList.contains('show')) lb.classList.remove('show');
+  else if (ppm.classList.contains('show')) ppm.classList.remove('show');
   else if (nm.classList.contains('show')) nm.classList.remove('show');
   else if (!shbook.hidden) shbook.hidden = true;
   else if (shm.classList.contains('show')) shm.classList.remove('show');
