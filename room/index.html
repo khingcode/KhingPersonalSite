@@ -102,6 +102,7 @@ html.dark .glow{opacity:1}
 /* the guy's speech bubble (shown while he is hovered) */
 .coder-bub{position:absolute;left:52%;bottom:74%;width:max-content;z-index:8;margin:0;white-space:pre-line;text-align:center;line-height:1.25;background:#fff;color:#4b3f72;border:3px solid #4b3f72;border-radius:16px 16px 16px 4px;padding:.35rem .8rem;font-weight:700;font-size:.9rem;box-shadow:3px 3px 0 rgba(75,63,114,.3);opacity:0;transform:translateY(8px) scale(.8);transform-origin:0 100%;transition:opacity .15s,transform .2s cubic-bezier(.3,1.6,.5,1);pointer-events:none}
 .coder-bub.on{opacity:1;transform:none}
+.coder-bub.mur{border-style:dashed;font-weight:600;font-style:italic;box-shadow:none;border-radius:16px 16px 16px 16px}
 #lb-ph img.soft{filter:blur(2px)}#lb-ph img{transition:filter .3s}
 @media(max-aspect-ratio:1/1){.coder-bub{font-size:.78rem;padding:.3rem .65rem;left:48%}}
 html.dark .coder-bub{background:#2a2150;color:#efe8ff;border-color:#9d8bee}
@@ -985,7 +986,27 @@ gateForm.addEventListener('submit', (e) => {
   });
   window.addEventListener('coder-hover', (e) => { hovering = !!e.detail; sync(); });
   const SAYS = ['oh! hey guys!', 'working on something\nright now..!']; let sayI = 0;
-  window.addEventListener('coder-hover', (e) => { const b = document.getElementById('coder-bub'); if (!b) return; if (e.detail) { b.textContent = SAYS[sayI++ % SAYS.length]; } b.classList.toggle('on', !!e.detail); });
+  const MURMURS = ['i hope this works..', 'trying to fix this\nerror..', 'i wonder how my\nsiblings are doing..', 'just one more bug..', 'i should drink some\nwater soon..'];
+  let murI = -1, murT = 0, murOn = false, hov = false;
+  const bubEl = () => document.getElementById('coder-bub');
+  const murStop = () => { clearTimeout(murT); const b = bubEl(); if (murOn && b) { b.classList.remove('on'); } murOn = false; };
+  const murNext = (ms) => { clearTimeout(murT); murT = setTimeout(murmur, ms); };
+  function murmur() {
+    const b = bubEl();
+    const busy = hov || document.hidden || document.documentElement.classList.contains('locked') || document.querySelector('.bm.show');
+    if (!b || busy) { murNext(4000); return; }
+    let i; do { i = Math.floor(Math.random() * MURMURS.length); } while (i === murI && MURMURS.length > 1);
+    murI = i; b.textContent = MURMURS[i]; b.classList.add('mur', 'on'); murOn = true;
+    murT = setTimeout(() => { b.classList.remove('on'); murOn = false; murNext(7000 + Math.random() * 6000); }, 3600);
+  }
+  murNext(5000);
+  window.addEventListener('coder-hover', (e) => {
+    const b = bubEl(); if (!b) return;
+    hov = !!e.detail;
+    if (hov) { murStop(); b.classList.remove('mur'); b.textContent = SAYS[sayI++ % SAYS.length]; }
+    else murNext(8000);
+    b.classList.toggle('on', hov);
+  });
   new MutationObserver(sync).observe(root, { attributes: true, attributeFilter: ['class'] });
   new MutationObserver(sync).observe(pm, { attributes: true, attributeFilter: ['class'] });
   document.addEventListener('visibilitychange', sync);
