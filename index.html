@@ -331,11 +331,23 @@
     <div class="win-bar"><span>devlog</span><button class="win-x" aria-label="close devlog">[x]</button></div>
     <div class="win-body px-6 py-6">
       <p class="text-ink/70">everything i've added to this site, newest first.</p>
-      <p class="mt-1 font-mono text-xs text-ink/50">last updated nov 1, 2026</p>
+      <p class="mt-1 font-mono text-xs text-ink/50">last updated nov 2, 2026</p>
       <ol class="dl-timeline mt-5">
         <li>
           <details class="dl" open>
-            <summary><span class="dl-v">v2.0</span><span class="dl-t"><span class="dl-row"><b>VOTE ON THE DOMAIN</b><span class="dl-new">latest</span></span><small>your vote picks my web address</small></span></summary>
+            <summary><span class="dl-v">v2.1</span><span class="dl-t"><span class="dl-row"><b>my room</b><span class="dl-new">latest</span></span><small>a cozy little page of its own</small></span></summary>
+            <ul class="dl-list">
+              <li>a new <b>house</b> icon in the corner leads to <b>my room</b>, a separate page you can walk into</li>
+              <li>a <b>piano you can play</b>: tap the keys, slide across them, or use your keyboard. there's a little tune too, and the chibi reacts</li>
+              <li>a <b>bulletin board</b> of memories (photos are on the way)</li>
+              <li>a <b>verse</b> pinned on the wall</li>
+              <li>click the <b>window</b> to switch between day and night</li>
+            </ul>
+          </details>
+        </li>
+        <li>
+          <details class="dl">
+            <summary><span class="dl-v">v2.0</span><span class="dl-t"><span class="dl-row"><b>VOTE ON THE DOMAIN</b></span><small>your vote picks my web address</small></span></summary>
             <ul class="dl-list">
               <li><b>VOTE FOR THE DOMAIN OF THE FULL LAUNCH!</b> CHOOSE <b>KHINGKONG.COM</b> OR <b>SUPREMEKHING.COM</b>, OR <b>SUGGEST YOUR OWN</b>. FIND IT IN THE <b>WORK</b> WINDOW, UNDER DEVELOPMENT.</li>
               <li>ONE VOTE EACH. THE RESULTS SHOW AFTER YOU VOTE.</li>
@@ -502,6 +514,18 @@
 
   <!-- mascot -->
   <div id="corner" class="fixed right-3 bottom-3 z-30 flex flex-col items-end sm:right-8 sm:bottom-5">
+    <!-- my room (separate page) -->
+    <a id="house-btn" href="room/" class="house mb-1 mr-1" aria-label="visit khing's room" title="my room">
+      <span id="house-dot" class="house-dot" aria-hidden="true"></span>
+      <svg viewBox="0 0 64 64" width="56" height="56" class="block w-12 select-none sm:w-16" aria-hidden="true">
+        <path d="M6 31 L32 8 L58 31" fill="#8b5cf6" stroke="#4b3f72" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"/>
+        <rect x="14" y="30" width="36" height="26" rx="2" fill="#fff3b8" stroke="#4b3f72" stroke-width="3.5" stroke-linejoin="round"/>
+        <rect x="27" y="40" width="10" height="16" rx="2" fill="#c4a8ff" stroke="#4b3f72" stroke-width="3"/>
+        <rect x="17.5" y="35" width="7" height="7" fill="#bfe3ff" stroke="#4b3f72" stroke-width="2.5"/>
+        <rect x="39.5" y="35" width="7" height="7" fill="#bfe3ff" stroke="#4b3f72" stroke-width="2.5"/>
+        <rect x="41" y="14" width="6" height="11" fill="#ff9b8a" stroke="#4b3f72" stroke-width="3"/>
+      </svg>
+    </a>
     <!-- guestbook book -->
     <button id="book-btn" class="book mb-1 mr-1" data-open="guestbook" aria-label="open guestbook" title="guestbook">
       <span id="gb-badge" class="gb-badge" hidden aria-live="polite"></span>
@@ -1674,6 +1698,8 @@ const send = (body) => fetch(GB_URL + '/rest/v1/guestbook', { method: 'POST', he
   </script>
 
   <script>
+    // the little dot on the house goes away once someone has been inside
+    try { if (localStorage.getItem('room-seen')) document.getElementById('house-dot').classList.add('seen'); } catch (e) {}
     // devlog alerts: each visitor's browser remembers the last update they saw.
     // new versions added at the top of the devlog show up as a red number on the icon.
     (() => {
