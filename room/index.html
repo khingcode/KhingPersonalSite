@@ -94,6 +94,7 @@ html.dark .glow{opacity:1}
 /* the guy's speech bubble (shown while he is hovered) */
 .coder-bub{position:absolute;left:52%;bottom:74%;width:max-content;z-index:8;margin:0;white-space:pre-line;text-align:center;line-height:1.25;background:#fff;color:#4b3f72;border:3px solid #4b3f72;border-radius:16px 16px 16px 4px;padding:.35rem .8rem;font-weight:700;font-size:.9rem;box-shadow:3px 3px 0 rgba(75,63,114,.3);opacity:0;transform:translateY(8px) scale(.8);transform-origin:0 100%;transition:opacity .15s,transform .2s cubic-bezier(.3,1.6,.5,1);pointer-events:none}
 .coder-bub.on{opacity:1;transform:none}
+#lb-ph img.soft{filter:blur(2px)}#lb-ph img{transition:filter .3s}
 @media(max-aspect-ratio:1/1){.coder-bub{font-size:.78rem;padding:.3rem .65rem;left:48%}}
 html.dark .coder-bub{background:#2a2150;color:#efe8ff;border-color:#9d8bee}
 /* wall clock: leans and grows when hovered */
@@ -679,6 +680,7 @@ const CAM = '<svg viewBox="0 0 64 64" fill="none" stroke="#4b3f72" stroke-width=
 const thumb = (u) => u.replace(/\.webp$/, '-t.webp');
 function phHTML(m, big) { return m.src ? '<img src="' + (big ? m.src : thumb(m.src)) + '" alt="' + m.cap + '" decoding="async">' : CAM; }
 const polas = $('#polas');
+const HD = {}; const hd = (u) => HD[u] || (HD[u] = new Promise((ok) => { const i = new Image(); i.onload = i.onerror = () => (i.decode ? i.decode().catch(() => {}).then(ok) : ok()); i.src = u; }));
 MEMORIES.forEach((m, i) => {
   const b = document.createElement('button');
   b.className = 'pola' + (i % 2 ? ' tape' : '');
@@ -687,16 +689,20 @@ MEMORIES.forEach((m, i) => {
   b.innerHTML = '<span class="ph" style="--g:' + GRADS[i % GRADS.length] + '">' + phHTML(m) + '</span><span class="cap">' + m.cap + '</span>';
   b.addEventListener('click', () => {
     $('#lb-ph').style.setProperty('--g', GRADS[i % GRADS.length]);
-    $('#lb-ph').innerHTML = phHTML(m, true);
+    // show the small photo instantly, then swap in the HD one as soon as it has loaded
+    const ph = $('#lb-ph'); ph.innerHTML = phHTML(m);
+    if (m.src) { const im = ph.querySelector('img'); im.classList.add('soft'); hd(m.src).then(() => { if (ph.querySelector('img') === im) { im.src = m.src; im.classList.remove('soft'); } }); }
     $('#lb-cap').innerHTML = m.cap + (m.date ? '<small>' + m.date + '</small>' : '');
     $('#lb').classList.add('show');
   });
+  b.addEventListener('pointerenter', () => m.src && hd(m.src));
+  b.addEventListener('touchstart', () => m.src && hd(m.src), { passive: true });
   polas.appendChild(b);
 });
 const bm = $('#bm'), lb = $('#lb');
 // quietly fetch the small photos once the room is up, so the board opens ready
 (window.requestIdleCallback || ((f) => setTimeout(f, 1500)))(() => MEMORIES.forEach((m) => { if (m.src) { const i = new Image(); i.src = thumb(m.src); } }));
-$('#board').addEventListener('click', () => bm.classList.add('show'));
+$('#board').addEventListener('click', () => { bm.classList.add('show'); MEMORIES.reduce((p, m) => p.then(() => m.src && hd(m.src)), Promise.resolve()); });
 $('#bm-x').addEventListener('click', () => bm.classList.remove('show'));
 bm.addEventListener('pointerdown', (e) => { if (e.target === bm) bm.classList.remove('show'); });
 lb.addEventListener('click', () => lb.classList.remove('show'));
