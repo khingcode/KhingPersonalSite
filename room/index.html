@@ -92,8 +92,9 @@ html.dark .glow{opacity:1}
 .bub.off{opacity:0}
 
 /* the guy's speech bubble (shown while he is hovered) */
-.coder-bub{position:absolute;left:58%;top:-9%;z-index:8;margin:0;white-space:nowrap;background:#fff;color:#4b3f72;border:3px solid #4b3f72;border-radius:16px 16px 16px 4px;padding:.35rem .8rem;font-weight:700;font-size:.9rem;box-shadow:3px 3px 0 rgba(75,63,114,.3);opacity:0;transform:translateY(8px) scale(.8);transform-origin:0 100%;transition:opacity .15s,transform .2s cubic-bezier(.3,1.6,.5,1);pointer-events:none}
+.coder-bub{position:absolute;left:52%;bottom:74%;width:max-content;z-index:8;margin:0;white-space:pre-line;text-align:center;line-height:1.25;background:#fff;color:#4b3f72;border:3px solid #4b3f72;border-radius:16px 16px 16px 4px;padding:.35rem .8rem;font-weight:700;font-size:.9rem;box-shadow:3px 3px 0 rgba(75,63,114,.3);opacity:0;transform:translateY(8px) scale(.8);transform-origin:0 100%;transition:opacity .15s,transform .2s cubic-bezier(.3,1.6,.5,1);pointer-events:none}
 .coder-bub.on{opacity:1;transform:none}
+@media(max-aspect-ratio:1/1){.coder-bub{font-size:.78rem;padding:.3rem .65rem;left:48%}}
 html.dark .coder-bub{background:#2a2150;color:#efe8ff;border-color:#9d8bee}
 /* wall clock: leans and grows when hovered */
 .clk{cursor:pointer;transition:transform .2s cubic-bezier(.3,1.6,.5,1);filter:drop-shadow(0 4px 0 rgba(75,63,114,.18))}
@@ -922,7 +923,7 @@ gateForm.addEventListener('submit', (e) => {
     paint(); sync();
   });
   window.addEventListener('coder-hover', (e) => { hovering = !!e.detail; sync(); });
-  const SAYS = ['oh! hey guys!', 'working on something right now..!']; let sayI = 0;
+  const SAYS = ['oh! hey guys!', 'working on something\nright now..!']; let sayI = 0;
   window.addEventListener('coder-hover', (e) => { const b = document.getElementById('coder-bub'); if (!b) return; if (e.detail) { b.textContent = SAYS[sayI++ % SAYS.length]; } b.classList.toggle('on', !!e.detail); });
   new MutationObserver(sync).observe(root, { attributes: true, attributeFilter: ['class'] });
   new MutationObserver(sync).observe(pm, { attributes: true, attributeFilter: ['class'] });
