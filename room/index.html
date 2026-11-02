@@ -91,6 +91,10 @@ html.dark .glow{opacity:1}
 .bub{position:absolute;left:50%;top:-34px;transform:translateX(-50%);z-index:12;background:var(--paper);color:var(--ink);border:3px solid var(--line);border-radius:16px;padding:.35rem .75rem;font-weight:700;font-size:.82rem;box-shadow:3px 3px 0 var(--shadow);white-space:nowrap;transition:opacity .3s;pointer-events:none}
 .bub.off{opacity:0}
 
+/* the guy's speech bubble (shown while he is hovered) */
+.coder-bub{position:absolute;left:58%;top:-9%;z-index:8;margin:0;white-space:nowrap;background:#fff;color:#4b3f72;border:3px solid #4b3f72;border-radius:16px 16px 16px 4px;padding:.35rem .8rem;font-weight:700;font-size:.9rem;box-shadow:3px 3px 0 rgba(75,63,114,.3);opacity:0;transform:translateY(8px) scale(.8);transform-origin:0 100%;transition:opacity .15s,transform .2s cubic-bezier(.3,1.6,.5,1);pointer-events:none}
+.coder-bub.on{opacity:1;transform:none}
+html.dark .coder-bub{background:#2a2150;color:#efe8ff;border-color:#9d8bee}
 /* wall clock: leans and grows when hovered */
 .clk{cursor:pointer;transition:transform .2s cubic-bezier(.3,1.6,.5,1);filter:drop-shadow(0 4px 0 rgba(75,63,114,.18))}
 .clk:hover,.clk:focus-visible{outline:none;transform:scale(calc(var(--s,1)*1.2)) rotate(-10deg)}
@@ -286,6 +290,7 @@ html.locked .stage,html.locked .hud,html.locked .wallbg,html.locked .floorbg,htm
     <div class="spr art"><div class="la"></div><div class="lb"></div><div class="ha"></div><div class="hb"></div></div>
     <div class="lpool"></div><div class="lglow"></div><div class="lbulb"></div><div class="mglow"></div><div class="mscreen"></div><div class="mdesk"></div>
     <div class="hit" title="say hi"></div>
+    <p class="coder-bub" id="coder-bub" role="status" aria-live="polite">oh! hey guys!</p>
   </div>
 
   <!-- grand piano: click to open -->
@@ -913,6 +918,7 @@ gateForm.addEventListener('submit', (e) => {
     paint(); sync();
   });
   window.addEventListener('coder-hover', (e) => { hovering = !!e.detail; sync(); });
+  window.addEventListener('coder-hover', (e) => { const b = document.getElementById('coder-bub'); if (b) b.classList.toggle('on', !!e.detail); });
   new MutationObserver(sync).observe(root, { attributes: true, attributeFilter: ['class'] });
   new MutationObserver(sync).observe(pm, { attributes: true, attributeFilter: ['class'] });
   document.addEventListener('visibilitychange', sync);
