@@ -12,12 +12,14 @@
 <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32.png" />
 <link rel="apple-touch-icon" href="../apple-touch-icon.png" />
 <script>try{if(localStorage.getItem("theme")==="dark")document.documentElement.classList.add("dark")}catch(e){}
-try{if(localStorage.getItem("room-key")!=="6513342087438648")document.documentElement.classList.add("locked")}catch(e){document.documentElement.classList.add("locked")}</script>
+try{if(sessionStorage.getItem("room-pass")==="1")sessionStorage.removeItem("room-pass");else document.documentElement.classList.add("locked")}catch(e){document.documentElement.classList.add("locked")}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
 <noscript><link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" /></noscript>
 <link rel="preload" as="image" href="../assets/coder.webp" />
+<link rel="preload" as="image" href="../assets/board.webp" />
+<link rel="preload" as="image" href="../assets/piano.webp" />
 <style>
 :root{--ink:#4b3f72;--line:#4b3f72;--wall:#eadfff;--wall2:#e2d4ff;--floor:#c9a5f2;--base:#cdb8ff;--paper:#fff;--shadow:rgba(75,63,114,.3);--rug:#ffd6e7;--rugline:#f4a6c4;--fy:520px;--sc:1}
 html.dark{--ink:#efe8ff;--line:#9d8bee;--wall:#2a2150;--wall2:#251c48;--floor:#3a2d70;--base:#443680;--paper:#2a2150;--shadow:rgba(0,0,0,.4);--rug:#5b3a78;--rugline:#8a5fb0}
@@ -379,7 +381,7 @@ paintTheme();
   // the two hover frames are a separate, tiny image, fetched a moment after the page is up
   const loadHover = () => { const u = '../assets/coder-hover.webp'; const im = new Image(); im.onload = () => { ha.style.backgroundImage = hb.style.backgroundImage = 'url(' + u + ')'; }; im.src = u; };
   ha.style.backgroundPosition = '0% 0%'; hb.style.backgroundPosition = '100% 0%';
-  if ('requestIdleCallback' in window) requestIdleCallback(loadHover, { timeout: 2500 }); else setTimeout(loadHover, 1200);
+  loadHover();
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   // hover: 0 = working, 1 = looking round, 2 = thumbs-up
   let target = 0, h = 0, touchTimer = 0;
@@ -606,6 +608,8 @@ tuneBtn.addEventListener('click', async () => {
 stopBtn.addEventListener('click', stopTune);
 
 try { localStorage.setItem('room-seen', '1'); } catch (e) {}
+// coming back through the back button must ask again too
+addEventListener('pageshow', (e) => { if (e.persisted) { root.classList.add('locked'); setTimeout(() => gateIn.focus(), 50); } });
 
 // password gate. a light lock for a cozy page, not real security.
 function cyrb53(str, seed = 0) { let h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed; for (let i = 0, ch; i < str.length; i++) { ch = str.charCodeAt(i); h1 = Math.imul(h1 ^ ch, 2654435761); h2 = Math.imul(h2 ^ ch, 1597334677); } h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909); h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909); return 4294967296 * (2097151 & h2) + (h1 >>> 0); }
@@ -615,7 +619,6 @@ if (root.classList.contains('locked')) setTimeout(() => gateIn.focus(), 50);
 gateForm.addEventListener('submit', (e) => {
   e.preventDefault();
   if (String(cyrb53(gateIn.value.trim().toLowerCase())) === KEY) {
-    try { localStorage.setItem('room-key', KEY); } catch (err) {}
     root.classList.remove('locked'); fit();
   } else {
     $('#gate-err').textContent = "hmm, that's not it"; gateIn.value = '';

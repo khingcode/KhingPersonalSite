@@ -1710,7 +1710,11 @@ const send = (body) => fetch(GB_URL + '/rest/v1/guestbook', { method: 'POST', he
       const cyrb53 = (str, seed = 0) => { let h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed; for (let i = 0, ch; i < str.length; i++) { ch = str.charCodeAt(i); h1 = Math.imul(h1 ^ ch, 2654435761); h2 = Math.imul(h2 ^ ch, 1597334677); } h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909); h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909); return 4294967296 * (2097151 & h2) + (h1 >>> 0); };
       const house = document.getElementById('house-btn'), gate = document.getElementById('room-gate');
       const form = document.getElementById('rgate-form'), input = document.getElementById('rgate-in'), err = document.getElementById('rgate-err');
-      const open = () => { gate.hidden = false; err.textContent = ''; input.value = ''; setTimeout(() => input.focus(), 30); };
+      // start fetching the room's pictures while they type the password, so it opens ready
+      let warmed = false;
+      const warm = () => { if (warmed) return; warmed = true; ['board', 'piano', 'coder', 'coder-hover'].forEach((n) => { const i = new Image(); i.src = 'assets/' + n + '.webp'; }); };
+      house.addEventListener('pointerenter', warm); house.addEventListener('focus', warm); house.addEventListener('touchstart', warm, { passive: true });
+      const open = () => { warm(); gate.hidden = false; err.textContent = ''; input.value = ''; setTimeout(() => input.focus(), 30); };
       const close = () => { gate.hidden = true; };
       house.addEventListener('click', (e) => { e.preventDefault(); open(); });
       addEventListener('pageshow', (e) => { if (e.persisted) close(); });
