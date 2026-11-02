@@ -176,6 +176,19 @@ html.dark .btn{border-color:#c9b8ff}
 .lb .ph svg{width:30%;opacity:.5}
 .lb .cap{font-family:'Space Mono',monospace;font-size:.85rem;margin-top:.7rem}
 .lb .cap small{display:block;opacity:.6;margin-top:.2rem}
+
+.plantbtn{background:none;border:0;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.plantbtn svg{display:block;transform-origin:50% 100%}.plantbtn:focus-visible{outline:3px dashed #7c5cf0;outline-offset:4px}
+.plantbtn.wob svg{animation:wob .45s ease-out}
+@keyframes wob{0%{transform:rotate(0)}20%{transform:rotate(-7deg) scale(1.03)}45%{transform:rotate(6deg)}70%{transform:rotate(-3deg)}100%{transform:rotate(0)}}
+.pnote{position:fixed;z-index:60;left:max(14px,calc(50% - 560px));bottom:0;width:128px;padding:.9rem .7rem 1rem;border:2px solid var(--line);border-bottom:0;border-radius:8px 8px 0 0;background:#fff6a8;color:#4b3f72;font:700 1rem 'Quicksand',system-ui,sans-serif;text-align:center;cursor:pointer;transform:translateY(105%) rotate(-3deg);transform-origin:50% 100%;transition:transform .55s cubic-bezier(.2,1.3,.4,1);box-shadow:0 -4px 0 var(--shadow);visibility:hidden}
+.pnote.on{transform:translateY(6px) rotate(-3deg);visibility:visible}
+.pnote.on:hover,.pnote.on:focus-visible{transform:translateY(-6px) rotate(-1deg);outline:none}
+.pnote i{position:absolute;left:50%;top:-9px;width:46px;height:16px;margin-left:-23px;background:rgba(255,160,200,.8);transform:rotate(2deg)}
+.pnote small{display:block;font-weight:600;font-size:.7rem;opacity:.7;margin-top:.2rem}
+@media(max-aspect-ratio:1/1){.pnote{left:auto;right:12px}}
+.nbig{margin:0;padding:1.4rem .8rem;font:700 1.35rem/1.5 'Quicksand',system-ui,sans-serif;text-align:center;color:#4b3f72;background:#fff6a8;transform:rotate(-1.5deg);border-radius:6px}
+.nbig b{background:linear-gradient(transparent 55%,#ffc36b 55%)}.nbig span{display:inline-block;font-weight:800;color:#e0457b}
 @keyframes pop{from{opacity:0;transform:scale(.92)}to{opacity:1}}
 /* piano pop-up */
 .pm{position:fixed;inset:0;z-index:100;display:none;place-items:center;background:rgba(20,14,46,.6);padding:1rem}
@@ -189,7 +202,7 @@ html.dark .pm-bar{background:#5b4c96}
 /* password gate */
 .gate{position:fixed;inset:0;z-index:300;display:none;place-items:center;background:var(--wall);padding:1rem}
 html.locked .gate{display:grid}
-html.locked .stage,html.locked .hud,html.locked .wallbg,html.locked .floorbg,html.locked #pm,html.locked #lb,html.locked #bm,html.locked #wcm,html.locked #shm{display:none!important}
+html.locked .stage,html.locked .hud,html.locked .wallbg,html.locked .floorbg,html.locked #pm,html.locked #lb,html.locked #bm,html.locked #wcm,html.locked #shm,html.locked #nm,html.locked .pnote{display:none!important}
 .gate-card{width:min(92vw,24rem);background:var(--paper);border:2px solid var(--line);border-radius:14px;box-shadow:0 6px 0 var(--shadow);overflow:hidden;text-align:center}
 .gate-card .pm-bar{justify-content:flex-start}
 .gate-card form{padding:1.6rem 1.4rem 1.5rem}
@@ -378,14 +391,23 @@ html.locked .stage,html.locked .hud,html.locked .wallbg,html.locked .floorbg,htm
     <span class="tap">click me!</span>
   </button>
 
-  <div class="f art" style="--x:36px;--y:440px;--px:384px;--py:560px;--ps:.85;--z:3" aria-hidden="true"><svg viewBox="0 0 100 150" width="100" height="150" stroke="#3a2a4d" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true">
+  <button class="f art plantbtn" id="plant" aria-label="the plant" style="--x:36px;--y:440px;--px:384px;--py:560px;--ps:.85;--z:3"><svg viewBox="0 0 100 150" width="100" height="150" stroke="#3a2a4d" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true">
 <g fill="#6fd0a3"><path d="M50 98C32 82 18 56 26 28C46 42 56 70 50 98Z"/><path d="M50 98C46 70 48 40 62 12C72 40 66 74 50 98Z"/><path d="M50 98C66 82 86 64 84 34C62 44 46 70 50 98Z"/><path d="M50 98C24 96 6 84 4 62C28 62 46 78 50 98Z"/></g>
 <g fill="none" stroke-width="2" opacity=".5"><path d="M50 98C40 76 34 56 28 32M50 98C50 70 54 40 62 16M50 98C64 76 74 56 82 38"/></g>
 <path d="M22 100H78L70 146H30Z" fill="#e98a78"/><rect x="18" y="94" width="64" height="12" rx="4" fill="#f2a08f"/>
-</svg></div>
+</svg></button>
 
   <p class="hint2">click the window, the bulletin board and the piano ♪</p>
 </main>
+
+<button class="pnote" id="pnote" aria-label="a note slid out of the plant. read it" tabindex="-1"><i></i><b>psst..</b><small>tap me</small></button>
+
+<div class="bm" id="nm" role="dialog" aria-modal="true" aria-label="a note">
+  <div class="bm-card note-card" style="max-width:440px">
+    <div class="pm-bar"><span>a note ✦</span><button id="nm-x" aria-label="close note">[x]</button></div>
+    <div class="bm-body"><p class="nbig">if you found this,<br>you can claim <b>50 pesos</b> gcash <span>WAHAHA</span> 💸</p></div>
+  </div>
+</div>
 
 <div class="bm" id="shm" role="dialog" aria-modal="true" aria-label="the bookshelf">
   <div class="bm-card" style="max-width:700px">
@@ -707,9 +729,23 @@ $('#board').addEventListener('click', () => { bm.classList.add('show'); MEMORIES
 $('#bm-x').addEventListener('click', () => bm.classList.remove('show'));
 bm.addEventListener('pointerdown', (e) => { if (e.target === bm) bm.classList.remove('show'); });
 lb.addEventListener('click', () => lb.classList.remove('show'));
+
+/* ---------- plant: 3 quick pokes and a note slides up ---------- */
+const nm = $('#nm'), pnote = $('#pnote'), plant = $('#plant');
+let pokes = 0, pokeT = 0;
+plant.addEventListener('click', () => {
+  plant.classList.remove('wob'); void plant.offsetWidth; plant.classList.add('wob');
+  clearTimeout(pokeT); pokes++;
+  if (pokes >= 3) { pokes = 0; pnote.classList.add('on'); pnote.tabIndex = 0; if (window.__sfx) window.__sfx('open'); }
+  else pokeT = setTimeout(() => (pokes = 0), 1500);
+});
+pnote.addEventListener('click', () => { pnote.classList.remove('on'); pnote.tabIndex = -1; nm.classList.add('show'); if (window.__sfx) window.__sfx('open'); });
+$('#nm-x').addEventListener('click', () => { nm.classList.remove('show'); if (window.__sfx) window.__sfx('close'); });
+nm.addEventListener('pointerdown', (e) => { if (e.target === nm) nm.classList.remove('show'); });
 addEventListener('keydown', (e) => {
   if (e.key !== 'Escape') return;
   if (lb.classList.contains('show')) lb.classList.remove('show');
+  else if (nm.classList.contains('show')) nm.classList.remove('show');
   else if (!shbook.hidden) shbook.hidden = true;
   else if (shm.classList.contains('show')) shm.classList.remove('show');
   else if (wcm.classList.contains('show')) wcm.classList.remove('show');
@@ -900,6 +936,7 @@ gateForm.addEventListener('submit', (e) => {
     night: () => [659, 523, 392].forEach((f, i) => blip(f, f * 0.98, 0.16, 'sine', 0.08, i * 0.07))
   };
   const sfx = (n) => { if (!on || locked()) return; try { SFX[n](); } catch (e) {} };
+  window.__sfx = sfx;
   $('#win').addEventListener('click', () => sfx(root.classList.contains('dark') ? 'night' : 'day'));
   $('#board').addEventListener('click', () => sfx('open'));
   $('#bm-x').addEventListener('click', () => sfx('close'));
