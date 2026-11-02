@@ -60,9 +60,9 @@ html.dark .lab{border-color:#c9b8ff}
 @media(max-aspect-ratio:1/1){.rug{left:var(--px);top:var(--py);width:var(--pw);height:var(--ph)}}
 .rug:after{content:"";position:absolute;inset:14px;border-radius:50%;border:2px solid var(--rugline);opacity:.7}
 .coder-unused{}
-#coder{width:270px;height:268.5px;pointer-events:none;--lx:20;--ly:29.4;--lw:11;--lh:5.2;--sx:75;--sy:36;--sw:26;--sh:20}
+#coder{width:270px;height:272px;pointer-events:none;--lx:20;--ly:29.4;--lw:11;--lh:5.2;--sx:75;--sy:36;--sw:26;--sh:20}
 #coder .spr,#coder .la,#coder .lb,#coder .ha,#coder .hb{position:absolute;inset:0}
-#coder .la,#coder .lb{background:url(../assets/coder.webp) 0 0/800% 400% no-repeat}
+#coder .la,#coder .lb{background:url(../assets/coder.webp) 0 0/400% 300% no-repeat}
 #coder .ha,#coder .hb{background:0 0/200% 100% no-repeat}
 #coder .lb,#coder .ha,#coder .hb{opacity:0}
 #coder .hit{position:absolute;left:6%;top:6%;width:90%;height:90%;pointer-events:auto;cursor:pointer}
@@ -368,15 +368,15 @@ $('#win').addEventListener('click', flipTheme);
 paintTheme();
 
 // wall clock shows the real time
-// the guy at the laptop: 29 frames blended one into the next, looping without a pause. the lamp and the monitor glow come on with night mode (css).
+// the guy at the laptop: 12 frames blended one into the next, looping without a pause. the lamp and the monitor glow come on with night mode (css).
 // hover him (or tap him on a phone) and he turns round and gives a thumbs-up, and stays that way while the cursor stays on him.
 (() => {
   const box = $('#coder'); if (!box) return;
   const la = box.querySelector('.la'), lb = box.querySelector('.lb'), ha = box.querySelector('.ha'), hb = box.querySelector('.hb'), hit = box.querySelector('.hit');
-  const LAMP = [[22.02, 32.47, 10.09, 4.98], [22.13, 32.35, 9.89, 4.75], [22.02, 32.35, 10.11, 4.75], [22.02, 32.35, 10.11, 4.75], [21.91, 32.35, 9.89, 4.75], [21.91, 32.35, 9.89, 4.75], [21.69, 32.35, 9.91, 4.75], [22.02, 32.58, 10.11, 4.75], [22.02, 32.58, 10.11, 4.75], [21.8, 32.58, 10.11, 4.75], [21.91, 32.58, 9.89, 4.75], [21.91, 32.58, 9.89, 4.75], [21.8, 32.58, 10.11, 4.75], [21.69, 32.58, 9.89, 4.75], [19.75, 29.86, 9.64, 5.2], [19.33, 29.86, 9.64, 5.2], [19.55, 29.86, 9.66, 5.2], [19.53, 29.64, 9.6, 5.2], [18.16, 31.33, 9.3, 4.98], [19.21, 31.67, 9.44, 4.75], [18.76, 31.9, 9.44, 4.75], [21.24, 27.83, 10.34, 5.2], [21.2, 27.83, 10.2, 5.2], [21.2, 27.83, 10.2, 5.2], [21.12, 27.83, 10.11, 5.2], [21.2, 27.83, 10.2, 5.2], [21.2, 27.83, 10.2, 5.2], [21.2, 27.83, 10.2, 5.2], [19.44, 28.6, 8.54, 5.05], [20.09, 28.17, 9.82, 4.98], [21.91, 32.35, 9.89, 4.98]];
-  const SCREEN = [[72.77, 40.05, 23.51, 15.61], [73.04, 38.69, 23.61, 18.33], [72.92, 38.8, 23.82, 18.55], [72.92, 38.8, 23.82, 18.1], [72.81, 38.57, 23.6, 18.1], [72.58, 38.57, 24.04, 18.55], [72.47, 38.46, 24.27, 18.33], [73.15, 38.8, 24.72, 19.0], [73.15, 38.8, 24.27, 19.0], [72.92, 38.8, 24.27, 19.0], [73.37, 38.91, 25.17, 18.78], [73.37, 38.8, 24.72, 19.0], [73.03, 38.8, 25.39, 19.0], [73.93, 38.8, 27.19, 19.0], [71.91, 36.99, 28.99, 21.27], [71.69, 36.99, 28.54, 21.27], [71.46, 36.99, 28.99, 21.27], [71.57, 36.76, 29.21, 21.27], [70.79, 38.35, 30.34, 20.36], [71.35, 38.24, 30.11, 20.14], [76.18, 38.24, 31.24, 20.14], [76.29, 37.22, 25.62, 18.1], [73.82, 37.22, 23.37, 18.1], [72.36, 37.22, 23.6, 18.1], [72.7, 37.22, 25.17, 18.1], [73.93, 37.22, 23.15, 18.1], [72.81, 37.56, 26.29, 17.87], [68.31, 37.56, 21.8, 17.42], [74.49, 37.44, 22.02, 17.65], [74.16, 37.44, 22.25, 17.65], [79.55, 37.56, 32.13, 17.87]];
-  const N = 29, HF1 = 29, HF2 = 30, STEP = 520, HSTEP = 120, LOOP = N * STEP;
-  const pos = (n) => ((n % 8) * 100 / 7) + '% ' + (Math.floor(n / 8) * 100 / 3) + '%';
+  const LAMP = [[21.08, 33.26, 12.05, 5.69], [20.92, 33.37, 11.95, 5.47], [20.69, 33.14, 12.18, 5.92], [20.69, 33.37, 12.18, 5.47], [21.03, 32.92, 11.95, 5.92], [20.9, 32.92, 11.77, 5.92], [20.6, 33.14, 12.02, 5.92], [20.69, 32.92, 12.18, 5.92], [21.03, 32.92, 11.95, 5.92], [21.01, 33.03, 11.98, 5.69], [20.57, 33.03, 11.95, 5.69], [20.57, 33.14, 11.95, 5.92], [17.33, 27.9, 10.05, 5.01], [20.79, 33.09, 11.95, 5.92]];
+  const SCREEN = [[67.01, 44.42, 23.45, 17.08], [67.1, 44.4, 23.4, 17.3], [67.36, 44.19, 24.14, 17.08], [67.13, 44.53, 23.22, 17.31], [67.13, 44.31, 23.22, 17.31], [67.36, 44.31, 23.22, 17.31], [67.01, 44.53, 23.91, 17.31], [67.04, 44.31, 23.4, 17.31], [67.01, 44.31, 23.45, 17.31], [67.1, 44.4, 23.4, 17.3], [67.13, 44.31, 23.68, 17.31], [67.01, 44.53, 23.45, 17.31], [72.64, 37.24, 22.76, 17.77], [67.13, 44.31, 23.45, 17.31]];
+  const N = 12, HF1 = 12, HF2 = 13, STEP = 520, HSTEP = 120, LOOP = N * STEP;
+  const pos = (n) => ((n % 4) * 100 / 3) + '% ' + (Math.floor(n / 4) * 50) + '%';
   la.style.backgroundPosition = pos(0);
   // the two hover frames are a separate, tiny image, fetched a moment after the page is up
   const loadHover = () => { const u = '../assets/coder-hover.webp'; const im = new Image(); im.onload = () => { ha.style.backgroundImage = hb.style.backgroundImage = 'url(' + u + ')'; }; im.src = u; };
@@ -608,7 +608,6 @@ tuneBtn.addEventListener('click', async () => {
 stopBtn.addEventListener('click', stopTune);
 
 try { localStorage.setItem('room-seen', '1'); } catch (e) {}
-// coming back through the back button must ask again too
 addEventListener('pageshow', (e) => { if (e.persisted) { root.classList.add('locked'); setTimeout(() => gateIn.focus(), 50); } });
 
 // password gate. a light lock for a cozy page, not real security.
