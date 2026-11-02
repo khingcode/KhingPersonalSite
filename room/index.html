@@ -447,7 +447,7 @@ tickClock(); setInterval(tickClock, 20000);
 // world clocks: philippines and phnom penh
 const ZONES = [
   { id: 'ph', name: 'philippines', tz: 'Asia/Manila', off: 'utc+8' },
-  { id: 'pp', name: 'phnom penh', tz: 'Asia/Phnom_Penh', off: 'utc+7' }
+  { id: 'pp', name: 'cambodia', tz: 'Asia/Phnom_Penh', off: 'utc+7' }
 ];
 const CLK = (id) => '<svg viewBox="0 0 80 80" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><circle cx="40" cy="40" r="35" fill="#8a6a46"/><circle class="face" cx="40" cy="40" r="28" fill="#fff8ee"/><g stroke-width="2.5"><path d="M40 16v4M40 60v4M16 40h4M60 40h4"/></g><line id="' + id + 'h" x1="40" y1="40" x2="40" y2="26" stroke-width="4"/><line id="' + id + 'm" x1="40" y1="40" x2="40" y2="19" stroke-width="3"/><line id="' + id + 's" x1="40" y1="44" x2="40" y2="17" stroke="#ff9b8a" stroke-width="1.6"/><circle cx="40" cy="40" r="3" fill="#ff9b8a"/></svg>';
 const wcRow = $('#wc-row');
