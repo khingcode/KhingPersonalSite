@@ -922,6 +922,8 @@ gateForm.addEventListener('submit', (e) => {
   new MutationObserver(sync).observe(root, { attributes: true, attributeFilter: ['class'] });
   new MutationObserver(sync).observe(pm, { attributes: true, attributeFilter: ['class'] });
   document.addEventListener('visibilitychange', sync);
+  // start straight away: allowed when they just came from the main site (same origin); otherwise the first tap or key starts it
+  sync(); addEventListener('load', sync); addEventListener('pageshow', sync);
 })();
 </script>
 </body>
