@@ -591,6 +591,7 @@ paintTheme();
   let cf = -1, cn = -1, last = performance.now();
   const t0 = last;
   (function tick(now) {
+    if (document.hidden) { last = now; requestAnimationFrame(tick); return; }
     const dt = Math.max(0, now - last); last = now;
     h += clamp(target - h, -dt / HSTEP, dt / HSTEP);
     const t = Math.max(0, now - t0) % LOOP;
@@ -674,7 +675,8 @@ const GRADS = [
 ];
 const ROT = [-3, 2.5, -1.5, 3, -2.5, 1.5];
 const CAM = '<svg viewBox="0 0 64 64" fill="none" stroke="#4b3f72" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"><path d="M8 20h12l4-6h16l4 6h12v32H8z"/><circle cx="32" cy="36" r="9"/></svg>';
-function phHTML(m) { return m.src ? '<img src="' + m.src + '" alt="' + m.cap + '" loading="lazy" decoding="async">' : CAM; }
+const thumb = (u) => u.replace(/\.webp$/, '-t.webp');
+function phHTML(m, big) { return m.src ? '<img src="' + (big ? m.src : thumb(m.src)) + '" alt="' + m.cap + '" decoding="async">' : CAM; }
 const polas = $('#polas');
 MEMORIES.forEach((m, i) => {
   const b = document.createElement('button');
@@ -684,13 +686,15 @@ MEMORIES.forEach((m, i) => {
   b.innerHTML = '<span class="ph" style="--g:' + GRADS[i % GRADS.length] + '">' + phHTML(m) + '</span><span class="cap">' + m.cap + '</span>';
   b.addEventListener('click', () => {
     $('#lb-ph').style.setProperty('--g', GRADS[i % GRADS.length]);
-    $('#lb-ph').innerHTML = phHTML(m);
+    $('#lb-ph').innerHTML = phHTML(m, true);
     $('#lb-cap').innerHTML = m.cap + (m.date ? '<small>' + m.date + '</small>' : '');
     $('#lb').classList.add('show');
   });
   polas.appendChild(b);
 });
 const bm = $('#bm'), lb = $('#lb');
+// quietly fetch the small photos once the room is up, so the board opens ready
+(window.requestIdleCallback || ((f) => setTimeout(f, 1500)))(() => MEMORIES.forEach((m) => { if (m.src) { const i = new Image(); i.src = thumb(m.src); } }));
 $('#board').addEventListener('click', () => bm.classList.add('show'));
 $('#bm-x').addEventListener('click', () => bm.classList.remove('show'));
 bm.addEventListener('pointerdown', (e) => { if (e.target === bm) bm.classList.remove('show'); });
@@ -900,7 +904,7 @@ gateForm.addEventListener('submit', (e) => {
   $('#bm').addEventListener('click', (e) => { if (e.target.closest('.pola')) sfx('pop'); else if (e.target === $('#bm')) sfx('close'); });
   $('#lb').addEventListener('click', () => sfx('close'));
   function el() {
-    if (!a) { a = new Audio('../assets/typing.mp3'); a.loop = true; a.preload = 'auto'; a.volume = VOL; }
+    if (!a) { a = new Audio('../assets/typing.mp3'); a.loop = true; a.preload = 'auto'; a.setAttribute('playsinline', ''); a.volume = VOL; }
     return a;
   }
   function sync() {
