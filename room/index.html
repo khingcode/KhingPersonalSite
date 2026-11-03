@@ -17,7 +17,7 @@ try{if(sessionStorage.getItem("room-pass")==="1")sessionStorage.removeItem("room
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
 <noscript><link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" /></noscript>
-<link rel="preload" as="image" href="../assets/coder-v2.webp" />
+<link rel="preload" as="image" href="../assets/coder.webp" />
 <link rel="preload" as="image" href="../assets/board.webp" />
 <style>
 :root{--ink:#4b3f72;--line:#4b3f72;--wall:#e8e2d6;--wall2:#e1dacd;--floor:#b8885c;--base:#f3eee4;--paper:#fff;--shadow:rgba(75,63,114,.3);--rug:#a79fb8;--rugline:#7d7494;--fy:520px;--sc:1}
@@ -73,10 +73,9 @@ html.dark .pp{filter:brightness(.74) saturate(.95)}
 @media(max-aspect-ratio:1/1){.rug{left:var(--px);top:var(--py);width:var(--pw);height:var(--ph)}}
 .rug:after{content:"";position:absolute;inset:14px;border-radius:50%;border:2px solid var(--rugline);opacity:.7}
 .coder-unused{}
-#coder{width:318px;height:267px;margin-left:0;pointer-events:none;--lx:20;--ly:29.4;--lw:11;--lh:5.2;--sx:75;--sy:36;--sw:26;--sh:20}
+#coder{width:270px;height:267px;pointer-events:none;--lx:20;--ly:29.4;--lw:11;--lh:5.2;--sx:75;--sy:36;--sw:26;--sh:20}
 #coder .spr,#coder .la,#coder .lb,#coder .ha,#coder .hb{position:absolute;inset:0}
-#coder .la,#coder .lb{background:0 0/400% 400% no-repeat}
-#coder[data-v="v1"]{width:270px}#coder[data-v="v1"] .la,#coder[data-v="v1"] .lb{background-size:400% 300%}
+#coder .la,#coder .lb{background:url(../assets/coder.webp) 0 0/400% 300% no-repeat}
 #coder .ha,#coder .hb{background:0 0/200% 100% no-repeat}
 #coder .lb,#coder .ha,#coder .hb{opacity:0}
 @keyframes flick{0%,100%{opacity:1}50%{opacity:.9}}
@@ -319,7 +318,7 @@ html.locked .stage,html.locked .hud,html.locked .wallbg,html.locked .floorbg,htm
 
   <!-- someone working on a laptop (animated) -->
   <!-- someone working on a laptop (animated; the lamp comes on at night) -->
-  <div class="f" id="coder" data-v="v2" style="--x:608px;--y:335px;--px:124px;--py:336px;--ps:.8;--z:4" role="img" aria-label="a guy typing on his computer, a desk lamp beside him">
+  <div class="f" id="coder" style="--x:600px;--y:335px;--px:132px;--py:336px;--ps:.8;--z:4" role="img" aria-label="a guy typing on his computer, a desk lamp beside him">
     <div class="spr art"><div class="la"></div><div class="lb"></div><div class="ha"></div><div class="hb"></div></div>
     <div class="lpool"></div><div class="lglow"></div><div class="lbulb"></div><div class="mglow"></div><div class="mscreen"></div><div class="mdesk"></div>
     <div class="hit" title="say hi"></div>
@@ -613,24 +612,13 @@ paintTheme();
 (() => {
   const box = $('#coder'); if (!box) return;
   const la = box.querySelector('.la'), lb = box.querySelector('.lb'), ha = box.querySelector('.ha'), hb = box.querySelector('.hb'), hit = box.querySelector('.hit');
-  // two avatar sheets. AVATAR = 'v2' is the current one (16 frames, a can of soda on the desk); set it to 'v1' to bring the original 12 frames straight back.
-  const AVATAR = 'v2';
-  const V1 = { sheet: '../assets/coder.webp', hover: '../assets/coder-hover.webp', cols: 4, rows: 3, N: 12,
-    LAMP: [[31.17, 32.14, 11.49, 5.64], [30.91, 32.22, 11.64, 5.47], [30.74, 32.05, 11.66, 5.81], [30.74, 32.14, 11.66, 5.64], [31.01, 31.88, 11.81, 5.81], [30.91, 31.95, 11.66, 5.68], [30.76, 31.88, 11.62, 5.81], [30.74, 31.88, 11.66, 5.81], [31.08, 31.88, 11.66, 5.81], [30.86, 31.88, 11.54, 5.81], [30.66, 31.88, 11.49, 5.81], [30.66, 31.97, 11.49, 5.64], [27.6, 26.3, 9.0, 5.0], [10.8, 19.6, 4.5, 3.2]],
-    SCREEN: [[76.1, 43.16, 22.64, 17.09], [76.1, 43.2, 22.7, 17.1], [76.36, 42.99, 23.49, 16.75], [76.18, 43.33, 22.47, 17.09], [76.1, 43.16, 22.64, 17.09], [76.18, 43.16, 22.8, 17.09], [76.1, 43.25, 23.31, 17.26], [76.01, 43.25, 22.47, 17.26], [76.1, 43.08, 22.64, 17.26], [76.1, 43.2, 22.7, 17.1], [76.18, 43.25, 23.14, 17.26], [76.01, 43.25, 22.8, 17.26], [81.5, 37.01, 22.3, 17.78], [77.62, 37.18, 32.09, 17.78]] };
-  const V2L = [21.5, 42.4, 14, 9], V2S = [72.3, 45.4, 27, 20.5];
-  const V2 = { sheet: '../assets/coder-v2.webp', hover: '../assets/coder-hover2.webp', cols: 4, rows: 4, N: 16,
-    LAMP: [...Array(16).fill(V2L), [21.21, 26.3, 7.65, 5.0], [6.93, 19.6, 3.83, 3.2]],
-    SCREEN: [...Array(16).fill(V2S), [67.0, 37.01, 18.96, 17.78], [63.7, 37.18, 27.3, 17.78]] };
-  const CFG = AVATAR === 'v1' ? V1 : V2;
-  box.dataset.v = AVATAR;
-  la.style.backgroundImage = lb.style.backgroundImage = 'url(' + CFG.sheet + ')';
-  const LAMP = CFG.LAMP, SCREEN = CFG.SCREEN;
-  const N = CFG.N, HF1 = N, HF2 = N + 1, STEP = 520, HSTEP = 120, LOOP = N * STEP;
-  const pos = (n) => ((n % CFG.cols) * 100 / (CFG.cols - 1)) + '% ' + (Math.floor(n / CFG.cols) * 100 / (CFG.rows - 1)) + '%';
+  const LAMP = [[31.17, 32.14, 11.49, 5.64], [30.91, 32.22, 11.64, 5.47], [30.74, 32.05, 11.66, 5.81], [30.74, 32.14, 11.66, 5.64], [31.01, 31.88, 11.81, 5.81], [30.91, 31.95, 11.66, 5.68], [30.76, 31.88, 11.62, 5.81], [30.74, 31.88, 11.66, 5.81], [31.08, 31.88, 11.66, 5.81], [30.86, 31.88, 11.54, 5.81], [30.66, 31.88, 11.49, 5.81], [30.66, 31.97, 11.49, 5.64], [27.6, 26.3, 9.0, 5.0], [10.8, 19.6, 4.5, 3.2]];
+  const SCREEN = [[76.1, 43.16, 22.64, 17.09], [76.1, 43.2, 22.7, 17.1], [76.36, 42.99, 23.49, 16.75], [76.18, 43.33, 22.47, 17.09], [76.1, 43.16, 22.64, 17.09], [76.18, 43.16, 22.8, 17.09], [76.1, 43.25, 23.31, 17.26], [76.01, 43.25, 22.47, 17.26], [76.1, 43.08, 22.64, 17.26], [76.1, 43.2, 22.7, 17.1], [76.18, 43.25, 23.14, 17.26], [76.01, 43.25, 22.8, 17.26], [81.5, 37.01, 22.3, 17.78], [77.62, 37.18, 32.09, 17.78]];
+  const N = 12, HF1 = 12, HF2 = 13, STEP = 520, HSTEP = 120, LOOP = N * STEP;
+  const pos = (n) => ((n % 4) * 100 / 3) + '% ' + (Math.floor(n / 4) * 50) + '%';
   la.style.backgroundPosition = pos(0);
   // the two hover frames are a separate, tiny image, fetched a moment after the page is up
-  const loadHover = () => { const u = CFG.hover; const im = new Image(); im.onload = () => { ha.style.backgroundImage = hb.style.backgroundImage = 'url(' + u + ')'; }; im.src = u; };
+  const loadHover = () => { const u = '../assets/coder-hover.webp'; const im = new Image(); im.onload = () => { ha.style.backgroundImage = hb.style.backgroundImage = 'url(' + u + ')'; }; im.src = u; };
   ha.style.backgroundPosition = '0% 0%'; hb.style.backgroundPosition = '100% 0%';
   loadHover();
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
