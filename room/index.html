@@ -57,17 +57,13 @@ html.dark .lab{border-color:#c9b8ff}
 .tp.a{left:-15px;transform:rotate(-38deg)}.tp.b{right:-15px;transform:rotate(38deg)}
 html.dark .pp{filter:brightness(.74) saturate(.95)}
 .poster-card img{display:block;width:100%;height:auto;max-height:calc(94dvh - 4.5rem);object-fit:contain;margin:0 auto;border-radius:3px}
-.dice{cursor:pointer;padding:0;line-height:0}
-.dice svg{transition:transform .15s;transform-origin:50% 92%}
-.dice:hover svg,.dice:focus-visible svg{transform:scale(1.08) rotate(-4deg)}
-.dice:focus-visible{outline:none}
-.dice.roll svg{animation:d20roll .85s cubic-bezier(.3,.6,.4,1)}
-@keyframes d20roll{0%{transform:translateY(0) rotate(0)}30%{transform:translateY(-34px) rotate(300deg) scale(1.15)}60%{transform:translateY(-6px) rotate(560deg)}78%{transform:translateY(-12px) rotate(680deg)}100%{transform:translateY(0) rotate(720deg)}}
-.dbub{position:absolute;left:50%;bottom:100%;transform:translate(-50%,6px);margin-bottom:6px;opacity:0;pointer-events:none;white-space:nowrap;font:700 12px/1 'Space Mono',monospace;background:#fff;color:#4b3f72;border:2px solid #4b3f72;border-radius:8px;padding:5px 8px;line-height:1.1;transition:opacity .2s,transform .2s;z-index:9}
-.dbub.on{opacity:1;transform:translate(-50%,0)}
-.dbub b{color:#7c3aed}
-html.dark .dbub{background:#2a2150;color:#efe8ff;border-color:#9d8bee}
-@media(prefers-reduced-motion:reduce){.dice.roll svg{animation:none}}
+#d20{cursor:pointer;outline:none}
+#d20 .dy{transform-box:fill-box;transform-origin:50% 92%;transition:transform .15s}
+#d20:hover .dy,#d20:focus-visible .dy{transform:scale(1.08) rotate(-4deg)}
+#d20.roll .dy{animation:d20roll .85s cubic-bezier(.3,.6,.4,1)}
+@keyframes d20roll{0%{transform:translateY(0) rotate(0)}30%{transform:translateY(-34px) rotate(300deg) scale(1.12)}60%{transform:translateY(-6px) rotate(560deg)}78%{transform:translateY(-12px) rotate(680deg)}100%{transform:translateY(0) rotate(720deg)}}
+#d20-bub{opacity:0;transition:opacity .2s;pointer-events:none}#d20-bub.on{opacity:1}
+@media(prefers-reduced-motion:reduce){#d20.roll .dy{animation:none}}
 .click{cursor:pointer;transition:transform .15s}
 .click:hover,.click:focus-visible{transform:scale(calc(var(--s,1)*1.04)) rotate(-1deg);outline:none}
 .click:active{transform:scale(calc(var(--s,1)*.97))}
@@ -300,10 +296,6 @@ html.locked .stage,html.locked .hud,html.locked .wallbg,html.locked .floorbg,htm
 <g transform="translate(76 40) rotate(4)" stroke-width="2"><rect x="0" y="0" width="22" height="20" rx="1.5" fill="#fff3b8"/><path d="M4 6H18M4 11H15" stroke="#2e2142" stroke-width="1.4" fill="none"/></g>
 </svg>
   </button>
-  <!-- twenty-sided die on the shelf -->
-  <button class="f dice" id="d20" style="--x:372px;--y:323px;--px:56px;--py:447px;--ps:.5;--z:4" aria-label="roll the twenty-sided die">
-    <span class="dbub" id="d20-bub" aria-live="polite"></span><svg class="art" viewBox="0 0 64 64" width="44" height="44" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><ellipse cx="32" cy="61.5" rx="22" ry="2.6" fill="#000" opacity=".22"/><g id="d20-body"><polygon points="32,3 57.1,17.5 57.1,46.5 32,61 6.9,46.5 6.9,17.5" fill="#6d28d9"/><polygon points="32,3 6.9,17.5 32,16" fill="#6d28d9"/><polygon points="32,3 57.1,17.5 32,16" fill="#8b5cf6"/><polygon points="6.9,17.5 32,16 18.1,40" fill="#8b5cf6"/><polygon points="57.1,17.5 32,16 45.9,40" fill="#6d28d9"/><polygon points="6.9,17.5 18.1,40 6.9,46.5" fill="#5b21b6"/><polygon points="57.1,17.5 45.9,40 57.1,46.5" fill="#5b21b6"/><polygon points="6.9,46.5 18.1,40 32,61" fill="#6d28d9"/><polygon points="57.1,46.5 45.9,40 32,61" fill="#8b5cf6"/><polygon points="18.1,40 45.9,40 32,61" fill="#7c3aed"/><polygon points="32,16 45.9,40 18.1,40" fill="#7c3aed"/><path d="M32 3L57.1 17.5V46.5L32 61L6.9 46.5V17.5Z" fill="none" stroke="#2e2142" stroke-width="2.6"/><path d="M32 3V16M57.1 17.5L32 16M6.9 17.5L32 16M32 16L45.9 40L18.1 40ZM57.1 17.5L45.9 40M57.1 46.5L45.9 40M32 61L45.9 40M6.9 17.5L18.1 40M6.9 46.5L18.1 40M32 61L18.1 40M18.1 40H45.9" fill="none" stroke="#2e2142" stroke-width="1.6"/><path d="M12 19L30 7" stroke="#fff" stroke-width="1.8" opacity=".35" fill="none"/><g fill="#ffd84a" font-family="Space Mono,monospace" font-weight="700" text-anchor="middle"><text x="23.6" y="14.6" font-size="6.5">8</text><text x="40.4" y="14.6" font-size="6.5">14</text><text x="19" y="27" font-size="6.5">2</text><text x="45" y="27" font-size="6.5">18</text><text x="10.8" y="36.8" font-size="6.5">6</text><text x="53.2" y="36.8" font-size="6.5">12</text><text x="19" y="51.5" font-size="6.5">4</text><text x="45" y="51.5" font-size="6.5">16</text><text x="32" y="49.5" font-size="6.5">10</text><text id="d20-n" x="32" y="36.5" font-size="12.5">20</text></g></g></svg>
-  </button>
 
   <!-- poster: click to view -->
   <button class="f click" id="poster" style="--x:489px;--y:190px;--ps:.5;--px:386px;--py:372px;--z:3" aria-label="open the poster">
@@ -442,6 +434,8 @@ html.locked .stage,html.locked .hud,html.locked .wallbg,html.locked .floorbg,htm
 <rect x="96" y="305" width="34" height="6" rx="2" fill="#d8d2c4" opacity=".5"/>
 </g><g><rect x="250" y="379" width="86" height="16" rx="2" fill="#a0875a" stroke="#2e2142" stroke-width="2.6"/><rect x="258" y="364" width="74" height="15" rx="2" fill="#6f8a86" stroke="#2e2142" stroke-width="2.6"/><rect x="250" y="379" width="86" height="4" fill="#d8d2c4" opacity=".5"/><rect x="258" y="364" width="74" height="4" fill="#d8d2c4" opacity=".5"/></g>
 <!-- handhelds, all piled up -->
+<g id="d20" tabindex="0" role="button" aria-label="roll the twenty-sided die" transform="translate(272 150) scale(.86)"><g class="dy"><ellipse cx="32" cy="61.5" rx="22" ry="2.6" fill="#000" opacity=".22"/><g id="d20-body"><polygon points="32,3 57.1,17.5 57.1,46.5 32,61 6.9,46.5 6.9,17.5" fill="#6d28d9"/><polygon points="32,3 6.9,17.5 32,16" fill="#6d28d9"/><polygon points="32,3 57.1,17.5 32,16" fill="#8b5cf6"/><polygon points="6.9,17.5 32,16 18.1,40" fill="#8b5cf6"/><polygon points="57.1,17.5 32,16 45.9,40" fill="#6d28d9"/><polygon points="6.9,17.5 18.1,40 6.9,46.5" fill="#5b21b6"/><polygon points="57.1,17.5 45.9,40 57.1,46.5" fill="#5b21b6"/><polygon points="6.9,46.5 18.1,40 32,61" fill="#6d28d9"/><polygon points="57.1,46.5 45.9,40 32,61" fill="#8b5cf6"/><polygon points="18.1,40 45.9,40 32,61" fill="#7c3aed"/><polygon points="32,16 45.9,40 18.1,40" fill="#7c3aed"/><path d="M32 3L57.1 17.5V46.5L32 61L6.9 46.5V17.5Z" fill="none" stroke="#2e2142" stroke-width="2.6"/><path d="M32 3V16M57.1 17.5L32 16M6.9 17.5L32 16M32 16L45.9 40L18.1 40ZM57.1 17.5L45.9 40M57.1 46.5L45.9 40M32 61L45.9 40M6.9 17.5L18.1 40M6.9 46.5L18.1 40M32 61L18.1 40M18.1 40H45.9" fill="none" stroke="#2e2142" stroke-width="1.6"/><path d="M12 19L30 7" stroke="#fff" stroke-width="1.8" opacity=".35" fill="none"/><g fill="#ffd84a" font-family="Space Mono,monospace" font-weight="700" text-anchor="middle"><text x="23.6" y="14.6" font-size="6.5">8</text><text x="40.4" y="14.6" font-size="6.5">14</text><text x="19" y="27" font-size="6.5">2</text><text x="45" y="27" font-size="6.5">18</text><text x="10.8" y="36.8" font-size="6.5">6</text><text x="53.2" y="36.8" font-size="6.5">12</text><text x="19" y="51.5" font-size="6.5">4</text><text x="45" y="51.5" font-size="6.5">16</text><text x="32" y="49.5" font-size="6.5">10</text><text id="d20-n" x="32" y="36.5" font-size="12.5">20</text></g></g></g></g>
+<g id="d20-bub" transform="translate(299 124)" aria-live="polite"><rect x="-58" y="-20" width="116" height="22" rx="7" fill="#fff" stroke="#2e2142" stroke-width="2"/><text id="d20-t" x="0" y="-5" text-anchor="middle" font-family="Space Mono,monospace" font-weight="700" font-size="11" fill="#4b3f72" stroke="none"></text></g>
 <g id="sh-games" transform="translate(582 205) scale(.66) translate(-548 -205)">
 <ellipse cx="404" cy="205" rx="150" ry="6" fill="#000" opacity=".4" filter="url(#sp-blur2)"/>
 <g transform="translate(312 120) rotate(-5 75 62) scale(1.14)">
@@ -678,33 +672,29 @@ tickClock(); setInterval(tickClock, 20000);
 // bookshelf pop-up: two dusty shelves, two books you can open
 const shm = $('#shm'), shbook = $('#shbook');
 const BOOKS = { wimpy: { icon: "<svg viewBox=\"0 0 120 160\" stroke-linejoin=\"round\" stroke-linecap=\"round\"><rect x=\"6\" y=\"6\" width=\"108\" height=\"148\" rx=\"6\" fill=\"#f4d34a\" stroke=\"#2e2142\" stroke-width=\"4\"/><rect x=\"6\" y=\"6\" width=\"12\" height=\"148\" rx=\"4\" fill=\"#000\" opacity=\".12\"/><rect x=\"26\" y=\"16\" width=\"80\" height=\"32\" rx=\"3\" fill=\"#d63b3b\" stroke=\"#2e2142\" stroke-width=\"2.4\"/><text x=\"66\" y=\"30\" text-anchor=\"middle\" font-size=\"11\" font-weight=\"700\" font-family=\"Space Mono,monospace\" fill=\"#fff\">DIARY</text><text x=\"66\" y=\"43\" text-anchor=\"middle\" font-size=\"7.5\" font-weight=\"700\" font-family=\"Space Mono,monospace\" fill=\"#fff\">of a Wimpy Kid</text><image href=\"../assets/wimpy.webp\" x=\"22\" y=\"58\" width=\"76\" height=\"71\" preserveAspectRatio=\"xMidYMid meet\"/></svg>", cap: 'diary of a wimpy kid' }, bible: { icon: "<svg viewBox=\"0 0 120 160\" stroke-linejoin=\"round\" stroke-linecap=\"round\"><rect x=\"6\" y=\"6\" width=\"108\" height=\"148\" rx=\"6\" fill=\"#241d26\" stroke=\"#2e2142\" stroke-width=\"4\"/><rect x=\"6\" y=\"6\" width=\"12\" height=\"148\" rx=\"4\" fill=\"#fff\" opacity=\".1\"/><rect x=\"24\" y=\"18\" width=\"78\" height=\"3\" fill=\"#e0a93c\"/><rect x=\"24\" y=\"138\" width=\"78\" height=\"3\" fill=\"#e0a93c\"/><path d=\"M63 40V102M42 58H84\" stroke=\"#e0a93c\" stroke-width=\"7\" fill=\"none\"/><text x=\"63\" y=\"124\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\" font-family=\"Space Mono,monospace\" fill=\"#e0a93c\">HOLY BIBLE</text></svg>", cap: 'the bible' } };
-// twenty-sided die: click to roll
+// twenty-sided die on the pop-up shelf: click to roll
 (() => {
-  const d = $('#d20'), nEl = $('#d20-n'), bub = $('#d20-bub');
+  const d = $('#d20'), nEl = $('#d20-n'), bub = $('#d20-bub'), bt = $('#d20-t');
   let busy = false, hideT = 0;
-  const LINES = n => n === 20 ? 'natural 20! ✦' : n === 1 ? 'a 1... oof' : n >= 15 ? 'nice roll' : n <= 5 ? 'ouch' : 'not bad';
-  d.addEventListener('click', () => {
+  const LINES = n => n === 20 ? 'nat 20! ✦' : n === 1 ? 'a 1... oof' : n >= 15 ? 'nice roll' : n <= 5 ? 'ouch' : 'not bad';
+  const roll = () => {
     if (busy) return;
     busy = true; clearTimeout(hideT); bub.classList.remove('on');
-    d.classList.remove('roll'); void d.offsetWidth; d.classList.add('roll');
+    d.classList.remove('roll'); void d.getBoundingClientRect(); d.classList.add('roll');
     const t0 = performance.now();
-    const tick = () => {
-      nEl.textContent = 1 + Math.floor(Math.random() * 20);
-      if (window.__sfx) window.__sfx('pop');
-    };
+    const tick = () => { nEl.textContent = 1 + Math.floor(Math.random() * 20); if (window.__sfx) window.__sfx('pop'); };
     tick();
-    const iv = setInterval(() => { if (performance.now() - t0 > 700) return; tick(); }, 90);
+    const iv = setInterval(() => { if (performance.now() - t0 < 700) tick(); }, 90);
     setTimeout(() => {
       clearInterval(iv);
       const n = 1 + Math.floor(Math.random() * 20);
-      nEl.textContent = n;
-      bub.innerHTML = '<b>' + n + '</b> · ' + LINES(n);
-      bub.classList.add('on');
+      nEl.textContent = n; bt.textContent = n + ' · ' + LINES(n); bub.classList.add('on');
       if (window.__sfx) window.__sfx(n === 20 ? 'day' : 'open');
-      busy = false;
-      hideT = setTimeout(() => bub.classList.remove('on'), 2600);
+      busy = false; hideT = setTimeout(() => bub.classList.remove('on'), 2600);
     }, 850);
-  });
+  };
+  d.addEventListener('click', roll);
+  d.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); roll(); } });
 })();
 
 $('#shelf').addEventListener('click', () => shm.classList.add('show'));
