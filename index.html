@@ -25,12 +25,56 @@
   <link rel="apple-touch-icon" href="apple-touch-icon.png" />
   <script>try{if(localStorage.getItem("theme")==="dark")document.documentElement.classList.add("dark")}catch(e){}</script>
   <link rel="stylesheet" href="styles.css" />
+  <style>
+    #boot{position:fixed;inset:0;z-index:100000;display:none;align-items:center;justify-content:center;background:#e9dcff;color:#3b2a66;font-family:"Space Mono",ui-monospace,monospace;opacity:1;transition:opacity .45s ease}
+    html.dark #boot{background:#150f2e;color:#e9dcff}
+    #boot.show{display:flex}
+    #boot.out{opacity:0;pointer-events:none}
+    #boot .bx{width:min(320px,82vw);text-align:center}
+    #boot .bt{font-size:15px;font-weight:700;letter-spacing:.02em;margin:0 0 14px}
+    #boot .bt i{font-style:normal;display:inline-block;animation:bootdots 1.2s steps(4,end) infinite;overflow:hidden;vertical-align:bottom;width:0}
+    #boot .bar{height:16px;border:2px solid currentColor;border-radius:4px;padding:2px;background:rgba(255,255,255,.35)}
+    html.dark #boot .bar{background:rgba(255,255,255,.06)}
+    #boot .bar b{display:block;height:100%;width:6%;background:repeating-linear-gradient(90deg,currentColor 0 10px,transparent 10px 13px);transition:width .6s ease-out}
+    #boot .bs{font-size:11px;opacity:.7;margin:12px 0 0}
+    @keyframes bootdots{to{width:1.6em}}
+    @media (prefers-reduced-motion:reduce){#boot{transition:none}#boot .bt i{animation:none;width:1.6em}#boot .bar b{transition:none}}
+  </style>
   <link rel="preconnect" href="https://wecbthkbjftpxonlqfee.supabase.co" crossorigin />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
 </head>
 <body class="min-h-screen overflow-x-hidden font-sans text-ink antialiased selection:bg-pink-200">
+
+  <!-- loading screen: only appears if the page is slow to load (slow connections) -->
+  <div id="boot" role="status" aria-live="polite" aria-label="loading">
+    <div class="bx">
+      <p class="bt">booting khing's desktop<i>...</i></p>
+      <div class="bar"><b></b></div>
+      <p class="bs">slow connection? hang tight, almost there</p>
+    </div>
+  </div>
+  <script>
+  (function(){
+    var b=document.getElementById('boot'); if(!b) return;
+    var bar=b.querySelector('.bar b'), shown=0, done=0, t0=0, pct=6, tick;
+    function hide(){
+      if(done) return; done=1; clearInterval(tick);
+      if(!shown){ b.parentNode&&b.parentNode.removeChild(b); return; }
+      if(bar) bar.style.width='100%';
+      var wait=Math.max(0,700-(Date.now()-t0));
+      setTimeout(function(){ b.classList.add('out'); setTimeout(function(){ b.parentNode&&b.parentNode.removeChild(b); },500); },wait+150);
+    }
+    setTimeout(function(){
+      if(done||document.readyState==='complete') return;
+      shown=1; t0=Date.now(); b.classList.add('show');
+      tick=setInterval(function(){ pct+=(92-pct)*0.12; if(bar) bar.style.width=pct.toFixed(1)+'%'; },500);
+    },800);
+    window.addEventListener('load',hide);
+    setTimeout(hide,12000);
+  })();
+  </script>
 
   <!-- sky -->
   <div class="sky fixed inset-0 -z-20" aria-hidden="true"></div>
