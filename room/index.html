@@ -18,7 +18,6 @@ try{if(sessionStorage.getItem("room-pass")==="1")sessionStorage.removeItem("room
 <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&family=Space+Mono:wght@400;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'" />
 <noscript><link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&family=Space+Mono:wght@400;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet" /></noscript>
 <link rel="preload" as="image" href="../assets/coder.webp" />
-<link rel="preload" as="image" href="../assets/board.webp" />
 <style>
 :root{--ink:#4b3f72;--line:#4b3f72;--wall:#e8e2d6;--wall2:#e1dacd;--floor:#b8885c;--base:#f3eee4;--paper:#fff;--shadow:rgba(75,63,114,.3);--rug:#a79fb8;--rugline:#7d7494;--fy:520px;--sc:1}
 html.dark{--ink:#efe8ff;--line:#9d8bee;--wall:#2d2a33;--wall2:#28252e;--floor:#3b2d23;--base:#4a423c;--paper:#2a2150;--shadow:rgba(0,0,0,.4);--rug:#4a4563;--rugline:#6b6585}
@@ -377,7 +376,63 @@ html.locked .stage,html.locked .hud,html.locked .wallbg,html.locked .floorbg,htm
   <!-- bulletin board: click to open -->
   <button class="f click" id="board" style="--x:690px;--y:150px;--s:.68;--px:250px;--py:190px;--ps:.56;--z:3" aria-label="open the bulletin board">
     <span class="lab">bulletin</span>
-    <img class="art" src="../assets/board.webp" width="270" height="209" alt="" draggable="false" />
+    <svg class="art" viewBox="0 0 270 209" width="270" height="209" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true">
+<defs>
+<filter id="bb-b" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="2.2"/></filter>
+<filter id="bb-b2" x="-10%" y="-10%" width="120%" height="130%"><feGaussianBlur stdDeviation="4"/></filter>
+<filter id="bb-cork" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".6" numOctaves="4" seed="7" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 .30  0 0 0 0 .17  0 0 0 0 .06  0 0 0 1.6 -.55"/></filter>
+<filter id="bb-cork2" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="19" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 .95  0 0 0 0 .78  0 0 0 0 .52  0 0 0 1.4 -.62"/></filter>
+<filter id="bb-wg" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".012 .4" numOctaves="3" seed="4" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 .15  0 0 0 0 .08  0 0 0 0 .03  0 0 0 1.3 -.5"/></filter>
+<linearGradient id="bb-fr" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a56b3b"/><stop offset=".5" stop-color="#8a5629"/><stop offset="1" stop-color="#6b4020"/></linearGradient>
+<radialGradient id="bb-cg" cx=".3" cy=".2" r=".9"><stop offset="0" stop-color="#d6a56d"/><stop offset=".6" stop-color="#c18f58"/><stop offset="1" stop-color="#a9773f"/></radialGradient>
+<linearGradient id="bb-paper" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fffefa"/><stop offset="1" stop-color="#eee9dd"/></linearGradient>
+<linearGradient id="bb-gl" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".22"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".08"/></linearGradient>
+<linearGradient id="bb-sticky" x1="0" y1="0" x2=".3" y2="1"><stop offset="0" stop-color="#fff6b0"/><stop offset=".7" stop-color="#fbe985"/><stop offset="1" stop-color="#f1db6a"/></linearGradient>
+<linearGradient id="bb-card" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fbf6ea"/><stop offset="1" stop-color="#ebe3d0"/></linearGradient>
+<radialGradient id="bb-pin-r" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#ff8a80"/><stop offset=".5" stop-color="#d33a3a"/><stop offset="1" stop-color="#6e1414"/></radialGradient>
+<radialGradient id="bb-pin-b" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#8fb9f2"/><stop offset=".5" stop-color="#2f6fc4"/><stop offset="1" stop-color="#16315f"/></radialGradient>
+<radialGradient id="bb-pin-y" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#fff0a0"/><stop offset=".5" stop-color="#e0b72a"/><stop offset="1" stop-color="#6e5410"/></radialGradient>
+<clipPath id="bb-c62"><rect x="-27" y="4" width="54" height="54"/></clipPath>
+<clipPath id="bb-c56"><rect x="-24" y="4" width="48" height="48"/></clipPath>
+<clipPath id="bb-in"><rect x="17" y="19" width="222" height="168"/></clipPath>
+</defs>
+<!-- shadow on the wall -->
+<rect x="12" y="16" width="244" height="190" rx="4" fill="#1d1233" opacity=".38" filter="url(#bb-b2)"/>
+<!-- wooden frame -->
+<rect x="6" y="8" width="244" height="190" rx="3" fill="url(#bb-fr)"/>
+<rect x="6" y="8" width="244" height="190" rx="3" filter="url(#bb-wg)" opacity=".8"/>
+<path d="M8 9.5H248" stroke="#ffe2b0" stroke-opacity=".5" stroke-width="1.2" fill="none"/><path d="M8 196.5H248" stroke="#000" stroke-opacity=".4" stroke-width="1.2" fill="none"/>
+<rect x="6.5" y="8.5" width="243" height="189" rx="2.6" fill="none" stroke="#3a210f" stroke-opacity=".7" stroke-width="1"/>
+<path d="M6 8l11 11M250 8l-11 11M6 198l11-11M250 198l-11-11" stroke="#000" stroke-opacity=".28" stroke-width=".9" fill="none"/>
+<!-- cork -->
+<rect x="17" y="19" width="222" height="168" fill="url(#bb-cg)"/>
+<rect x="17" y="19" width="222" height="168" filter="url(#bb-cork)" opacity=".95"/>
+<rect x="17" y="19" width="222" height="168" filter="url(#bb-cork2)" opacity=".7"/>
+<g clip-path="url(#bb-in)"><rect x="17" y="19" width="222" height="7" fill="#000" opacity=".4" filter="url(#bb-b)"/><rect x="17" y="19" width="6" height="168" fill="#000" opacity=".25" filter="url(#bb-b)"/><rect x="233" y="19" width="6" height="168" fill="#000" opacity=".2" filter="url(#bb-b)"/><rect x="17" y="182" width="222" height="5" fill="#000" opacity=".18" filter="url(#bb-b)"/></g>
+<rect x="16.5" y="18.5" width="223" height="169" fill="none" stroke="#000" stroke-opacity=".45" stroke-width="1"/>
+<!-- sticky note with scribbles -->
+<g transform="translate(52 34) rotate(-5)">
+<rect width="64" height="64" fill="#000" opacity=".35" filter="url(#bb-b)" transform="translate(2.5 4.5)"/>
+<rect width="64" height="64" fill="url(#bb-sticky)"/>
+<path d="M64 64V52L52 64Z" fill="#e5d15c"/><path d="M52 64L64 52" stroke="#000" stroke-opacity=".2" stroke-width=".6"/>
+<g stroke="#2f2a55" stroke-width="1.5" fill="none" opacity=".75"><path d="M9 20Q14 17 19 20T29 20T39 19T50 20"/><path d="M9 30Q15 27 21 30T32 30T44 29"/><path d="M9 40Q13 37 18 40T27 40T35 39"/></g>
+<ellipse cx="33.5" cy="9" rx="3.6" ry="2.6" fill="#000" opacity=".35" filter="url(#bb-b)"/><circle cx="32" cy="6" r="3.8" fill="url(#bb-pin-r)"/><circle cx="30.8" cy="4.7" r=".9" fill="#fff" opacity=".85"/>
+</g>
+<!-- photos -->
+<g transform="translate(160 32) rotate(4)"><rect x="-31.0" y="0" width="62" height="70" fill="#000" opacity=".35" filter="url(#bb-b)" transform="translate(2.5 4)"/><rect x="-31.0" y="0" width="62" height="70" fill="url(#bb-paper)"/><rect x="-27.0" y="4" width="54" height="54" fill="#cfc8bb"/><image href="../assets/room/memory-1-t.webp" x="-27.0" y="4" width="54" height="54" preserveAspectRatio="xMidYMid slice" clip-path="url(#bb-c62)"/><rect x="-27.0" y="4" width="54" height="54" fill="none" stroke="#000" stroke-opacity=".25" stroke-width=".6"/><rect x="-27.0" y="4" width="54" height="54" fill="url(#bb-gl)"/><path d="M-25.0 64Q-8 61 0 64T23.0 63" stroke="#2f2a55" stroke-width="1" fill="none" opacity=".55"/><ellipse cx="1.5" cy="8" rx="3.6" ry="2.6" fill="#000" opacity=".35" filter="url(#bb-b)"/><circle cx="0" cy="5" r="3.8" fill="url(#bb-pin-b)"/><circle cx="-1.2" cy="3.7" r=".9" fill="#fff" opacity=".85"/></g>
+<g transform="translate(206 102) rotate(-6)"><rect x="-31.0" y="0" width="62" height="70" fill="#000" opacity=".35" filter="url(#bb-b)" transform="translate(2.5 4)"/><rect x="-31.0" y="0" width="62" height="70" fill="url(#bb-paper)"/><rect x="-27.0" y="4" width="54" height="54" fill="#cfc8bb"/><image href="../assets/room/memory-5-t.webp" x="-27.0" y="4" width="54" height="54" preserveAspectRatio="xMidYMid slice" clip-path="url(#bb-c62)"/><rect x="-27.0" y="4" width="54" height="54" fill="none" stroke="#000" stroke-opacity=".25" stroke-width=".6"/><rect x="-27.0" y="4" width="54" height="54" fill="url(#bb-gl)"/><path d="M-25.0 64Q-8 61 0 64T23.0 63" stroke="#2f2a55" stroke-width="1" fill="none" opacity=".55"/><g transform="translate(0 -3)"><rect x="-13" y="-4" width="26" height="9" fill="#eee4bd" opacity=".85" transform="rotate(-3)"/></g></g>
+<!-- index card -->
+<g transform="translate(70 112) rotate(3)">
+<rect width="68" height="46" fill="#000" opacity=".35" filter="url(#bb-b)" transform="translate(2.5 4)"/>
+<rect width="68" height="46" fill="url(#bb-card)"/>
+<path d="M0 12H68" stroke="#c0453d" stroke-opacity=".55" stroke-width=".8"/>
+<g stroke="#4a6cb0" stroke-opacity=".35" stroke-width=".6"><path d="M0 20H68M0 27H68M0 34H68M0 41H68"/></g>
+<g stroke="#2f2a55" stroke-width="1.2" fill="none" opacity=".7"><path d="M7 8Q12 5 18 8T30 8"/><path d="M7 24Q13 21 19 24T31 24T42 23"/><path d="M7 31Q12 28 17 31T27 31"/></g>
+<ellipse cx="35.5" cy="8" rx="3.6" ry="2.6" fill="#000" opacity=".35" filter="url(#bb-b)"/><circle cx="34" cy="5" r="3.8" fill="url(#bb-pin-y)"/><circle cx="32.8" cy="3.7" r=".9" fill="#fff" opacity=".85"/>
+</g>
+<!-- a loose pushpin -->
+<ellipse cx="31.5" cy="173" rx="3.6" ry="2.6" fill="#000" opacity=".35" filter="url(#bb-b)"/><circle cx="30" cy="170" r="3.8" fill="url(#bb-pin-b)"/><circle cx="28.8" cy="168.7" r=".9" fill="#fff" opacity=".85"/>
+</svg>
     
   </button>
 
