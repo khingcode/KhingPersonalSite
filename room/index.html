@@ -1660,7 +1660,7 @@ gateForm.addEventListener('submit', (e) => {
     paint(); sync();
   });
   window.addEventListener('coder-hover', (e) => { hovering = !!e.detail; sync(); });
-  const SAYS = ['oh! hey guys!', 'working on something\nright now..!']; let sayI = 0;
+  const SAYS = ['oh! hey guys!', 'working on something\nright now..!', "There's a secret note\nsomewhere in this room btw!"]; let sayI = 0;
   const MURMURS = ['i hope this works..', 'trying to fix this\nerror..', 'i wonder how my\nsiblings are doing..', 'just one more bug..', 'i should drink some\nwater soon..'];
   let murI = -1, murT = 0, murOn = false, hov = false;
   const bubEl = () => document.getElementById('coder-bub');
