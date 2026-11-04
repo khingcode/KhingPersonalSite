@@ -1747,6 +1747,7 @@ const send = (body) => fetch(GB_URL + '/rest/v1/guestbook', { method: 'POST', he
   <script>
     // the house asks for a password first. a light lock for a cozy page, not real security.
     (() => {
+      const PASSWORD_ON = false; // PASSWORD SWITCH: set to true to bring back the knock-knock password (password: understand)
       const KEY = '6513342087438648';
       const cyrb53 = (str, seed = 0) => { let h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed; for (let i = 0, ch; i < str.length; i++) { ch = str.charCodeAt(i); h1 = Math.imul(h1 ^ ch, 2654435761); h2 = Math.imul(h2 ^ ch, 1597334677); } h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909); h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909); return 4294967296 * (2097151 & h2) + (h1 >>> 0); };
       const house = document.getElementById('house-btn'), gate = document.getElementById('room-gate');
@@ -1757,7 +1758,7 @@ const send = (body) => fetch(GB_URL + '/rest/v1/guestbook', { method: 'POST', he
       house.addEventListener('pointerenter', warm); house.addEventListener('focus', warm); house.addEventListener('touchstart', warm, { passive: true });
       const open = () => { warm(); gate.hidden = false; err.textContent = ''; input.value = ''; setTimeout(() => input.focus(), 30); };
       const close = () => { gate.hidden = true; };
-      house.addEventListener('click', (e) => { e.preventDefault(); open(); });
+      house.addEventListener('click', (e) => { if (!PASSWORD_ON) return; e.preventDefault(); open(); });
       addEventListener('pageshow', (e) => { if (e.persisted) close(); });
       document.getElementById('rgate-x').addEventListener('click', close);
       gate.addEventListener('pointerdown', (e) => { if (e.target === gate) close(); });
