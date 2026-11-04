@@ -150,19 +150,19 @@ html.dark .coder-bub{background:#2a2150;color:#efe8ff;border-color:#9d8bee}
 .leaf.torn{clip-path:polygon(0 0,19% 0,21% 5%,18% 11%,22% 17%,19% 24%,23% 31%,19% 38%,22% 45%,18% 52%,21% 59%,19% 66%,23% 73%,19% 80%,22% 87%,18% 94%,20% 100%,0 100%);transition:transform .85s cubic-bezier(.45,.1,.2,1),box-shadow .85s,clip-path 1.1s ease .15s}
 .leaf.torn:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent 12%,rgba(255,255,255,.75) 17%,transparent 24%);pointer-events:none}
 .leaf.pg:not(.torn){clip-path:polygon(0 0,100% 0,100% 5%,100% 11%,100% 17%,100% 24%,100% 31%,100% 38%,100% 45%,100% 52%,100% 59%,100% 66%,100% 73%,100% 80%,100% 87%,100% 94%,100% 100%,0 100%)}
-#rugspot{width:120px;height:70px}
-#rugspot .rflap{position:absolute;left:0;top:0;pointer-events:none;opacity:0;transform-origin:8% 60%;transition:opacity .25s,transform .35s cubic-bezier(.3,1.4,.5,1)}
-#rugbtn{position:absolute;inset:0;background:none;border:0;padding:0;cursor:pointer;border-radius:40%}
-#rugbtn:focus-visible{outline:none}
-#rugspot:hover .rflap,#rugbtn:focus-visible+.rflap,#rugspot.out .rflap{opacity:1;transform:translateY(-3px) rotate(-2.5deg)}
-#rugspot.out #rugbtn{pointer-events:none}
-#scrap{position:absolute;left:16px;top:44px;width:64px;height:56px;background:none;border:0;padding:0;cursor:pointer;opacity:0;pointer-events:none;transform:translateY(-14px) scale(.5);transform-origin:50% 0;filter:drop-shadow(0 2px 2px rgba(0,0,0,.4))}
+.rug{transition:transform .4s cubic-bezier(.3,1.3,.5,1),filter .4s}
+.rug{transform-origin:100% 50%}
+.rug.lift{transform:skewY(1.8deg) scaleX(.99);filter:drop-shadow(-6px 12px 6px rgba(0,0,0,.45))}
+.rughit{position:absolute;left:var(--x);top:var(--y);width:var(--w);height:var(--h);clip-path:ellipse(50% 50% at 50% 50%);background:none;border:0;padding:0;cursor:pointer}
+.rughit:focus-visible{outline:none}
+@media(max-aspect-ratio:1/1){.rughit{left:var(--px);top:var(--py);width:var(--pw);height:var(--ph)}}
+.rughit.done{pointer-events:none}
+#scrap{background:none;border:0;padding:0;cursor:pointer;width:64px;height:56px;opacity:0;pointer-events:none;filter:drop-shadow(0 2px 2px rgba(0,0,0,.4));transition:none}
 #scrap svg{display:block;overflow:visible}
-#rugspot.out #scrap{pointer-events:auto;animation:scrapPop .6s cubic-bezier(.3,1.5,.5,1) forwards}
-#rugspot.out #scrap:hover,#rugspot.out #scrap:focus-visible{outline:none;filter:drop-shadow(0 3px 3px rgba(0,0,0,.45)) brightness(1.04);transform:translateY(0) scale(1.08) rotate(2deg)}
-@keyframes scrapPop{0%{opacity:0;transform:translateY(-14px) scale(.5)}60%{opacity:1;transform:translateY(8px) scale(1.12)}100%{opacity:1;transform:translateY(0) scale(1)}}
-@media(max-aspect-ratio:1/1){#rugspot .rflap{transform:rotate(3deg)}#rugspot:hover .rflap,#rugspot.out .rflap{transform:translateY(-3px) rotate(.5deg)}}
-@media(prefers-reduced-motion:reduce){#rugspot.out #scrap{animation:none;opacity:1;transform:none}}
+#scrap.out{pointer-events:auto;animation:scrapPop .7s cubic-bezier(.3,1.5,.5,1) forwards}
+#scrap.out:hover,#scrap.out:focus-visible{outline:none;filter:drop-shadow(0 3px 3px rgba(0,0,0,.45)) brightness(1.05)}
+@keyframes scrapPop{0%{opacity:0;transform:translate(20px,-6px) scale(.5)}55%{opacity:1;transform:translate(-30px,32px) scale(1.12)}100%{opacity:1;transform:translate(-24px,28px) scale(1)}}
+@media(prefers-reduced-motion:reduce){#scrap.out{animation:none;opacity:1;transform:translate(-24px,28px)}.rug{transition:none}}
 .cv{background:linear-gradient(90deg,#c9a925,#f4d34a 7%,#f7dc62 60%,#e6c53c);color:#2e2142;border:0}
 .cvin{position:absolute;inset:0;padding:6cqw 8cqw;display:flex;flex-direction:column;align-items:center}
 .cv:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.3),rgba(0,0,0,.05) 8%,transparent 12%);pointer-events:none}
@@ -315,12 +315,10 @@ html.locked .stage,html.locked .hud,html.locked .wallbg,html.locked .floorbg,htm
 <main class="stage" id="stage">
   <header class="sign"><h1>welcome to my room</h1><p>make yourself at home :)</p></header>
 
+  <button class="f" id="scrap" tabindex="-1" style="--x:316px;--y:604px;--s:1;--px:60px;--py:724px;--ps:.8;--z:0" aria-label="a torn page from the diary. pick it up"><svg viewBox="0 0 64 56" width="64" height="56" aria-hidden="true"><g transform="rotate(-9 32 28)"><path d="M8 6L52 8L58 20L52 28L57 38L46 34L40 44L32 35L24 42L17 33L8 38L11 22Z" fill="#f7f4ea" stroke="#cfc9b8" stroke-width="1" stroke-linejoin="round"/><path d="M12 16H54M12 22H55M13 28H50M15 34H42" stroke="#7d9bd6" stroke-width="1" opacity=".7"/><path d="M16 14Q23 11 31 14" stroke="#1f1f24" stroke-width="1.2" fill="none" opacity=".75"/></g></svg></button>
   <div class="rug" style="--x:300px;--y:560px;--w:680px;--h:110px;--px:50px;--py:700px;--pw:380px;--ph:80px"></div>
-  <div class="f" id="rugspot" style="--x:330px;--y:596px;--s:1;--px:62px;--py:722px;--ps:.8;--z:2">
-    <svg class="rflap" viewBox="0 0 120 70" width="120" height="70" aria-hidden="true"><g class="rfl"><path d="M10 43Q60 51 112 59L117 66Q60 58 8 50Z" fill="#aaa4be" stroke="rgba(0,0,0,.3)" stroke-width="1.1" stroke-linejoin="round"/><path d="M8 50Q60 58 117 66L117 70Q60 62 8 55Z" fill="rgba(0,0,0,.3)"/></g></svg>
-    <button id="rugbtn" aria-label="the rug's corner looks a little lifted. look under it"></button>
-    <button id="scrap" tabindex="-1" aria-label="a torn page from the diary. pick it up"><svg viewBox="0 0 64 56" width="64" height="56" aria-hidden="true"><g transform="rotate(-9 32 28)"><path d="M8 6L52 8L58 20L52 28L57 38L46 34L40 44L32 35L24 42L17 33L8 38L11 22Z" fill="#f7f4ea" stroke="#cfc9b8" stroke-width="1" stroke-linejoin="round"/><path d="M12 16H54M12 22H55M13 28H50M15 34H42" stroke="#7d9bd6" stroke-width="1" opacity=".7"/><path d="M16 14Q23 11 31 14" stroke="#1f1f24" stroke-width="1.2" fill="none" opacity=".75"/></g></svg></button>
-  </div>
+  <button class="rughit" id="rughit" style="--x:300px;--y:560px;--w:680px;--h:110px;--px:50px;--py:700px;--pw:380px;--ph:80px" aria-label="the rug looks a little loose. lift it"></button>
+  
 
   <!-- window: click to switch day / night -->
   <button class="f click art" id="win" style="--x:30px;--y:160px;--px:14px;--py:150px;--ps:.78;--z:2" aria-label="switch between day and night">
@@ -1246,10 +1244,16 @@ function wrGo(d) {
 function openWimpy() { wrCur = 0; wrDraw(); wr.classList.add('show'); }
 function closeWimpy() { wr.classList.remove('show'); }
 // the torn-out page 67 is hiding under the rug. finding it puts it back in the book
-$('#rugbtn').addEventListener('click', () => { $('#rugspot').classList.add('out'); $('#scrap').tabIndex = 0; if (window.__sfx) window.__sfx('pop'); });
-$('#scrap').addEventListener('click', () => {
+// the whole rug lifts when you hover it. click it and the torn page slides out from under it
+const rug = $('.rug'), rugHit = $('#rughit'), scrap = $('#scrap');
+rugHit.addEventListener('pointerenter', () => rug.classList.add('lift'));
+rugHit.addEventListener('pointerleave', () => { if (!scrap.classList.contains('out')) rug.classList.remove('lift'); });
+rugHit.addEventListener('focus', () => rug.classList.add('lift'));
+rugHit.addEventListener('blur', () => { if (!scrap.classList.contains('out')) rug.classList.remove('lift'); });
+rugHit.addEventListener('click', () => { rug.classList.add('lift'); rugHit.classList.add('done'); scrap.classList.add('out'); scrap.tabIndex = 0; if (window.__sfx) window.__sfx('pop'); });
+scrap.addEventListener('click', () => {
   const leaf = wrLeaves[wrLeaves.length - 1];
-  $('#rugspot').remove();
+  rug.classList.remove('lift'); scrap.remove(); rugHit.remove();
   wrCur = wrLeaves.length - 2; wrDraw(); wr.classList.add('show');
   setTimeout(() => { leaf.classList.remove('torn'); wrCur = wrLeaves.length - 1; wrDraw(); if (window.__sfx) window.__sfx('open'); }, 650);
 });
