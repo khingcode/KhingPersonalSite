@@ -153,9 +153,9 @@ html.dark .coder-bub{background:#2a2150;color:#efe8ff;border-color:#9d8bee}
 .rug{transition:transform .4s cubic-bezier(.3,1.3,.5,1),filter .4s}
 .rug{transform-origin:100% 50%}
 .rug.lift{transform:skewY(1.8deg) scaleX(.99);filter:drop-shadow(-6px 12px 6px rgba(0,0,0,.45))}
-.rughit{position:absolute;left:var(--x);top:var(--y);width:var(--w);height:var(--h);clip-path:ellipse(50% 50% at 50% 50%);background:none;border:0;padding:0;cursor:pointer}
+.rughit{position:absolute;left:var(--x);top:var(--y);width:calc(var(--w)*.34);height:var(--h);clip-path:ellipse(calc(var(--w)/2) calc(var(--h)/2) at calc(var(--w)/2) 50%);background:none;border:0;padding:0;cursor:pointer}
 .rughit:focus-visible{outline:none}
-@media(max-aspect-ratio:1/1){.rughit{left:var(--px);top:var(--py);width:var(--pw);height:var(--ph)}}
+@media(max-aspect-ratio:1/1){.rughit{left:var(--px);top:var(--py);width:calc(var(--pw)*.34);height:var(--ph);clip-path:ellipse(calc(var(--pw)/2) calc(var(--ph)/2) at calc(var(--pw)/2) 50%)}}
 .rughit.done{pointer-events:none}
 #scrap{background:none;border:0;padding:0;cursor:pointer;width:64px;height:56px;opacity:0;pointer-events:none;filter:drop-shadow(0 2px 2px rgba(0,0,0,.4));transition:none}
 #scrap svg{display:block;overflow:visible}
