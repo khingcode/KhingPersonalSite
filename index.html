@@ -43,7 +43,7 @@
   <link rel="preconnect" href="https://wecbthkbjftpxonlqfee.supabase.co" crossorigin />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&family=Space+Mono:wght@400;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
 <style>
 .house-open{position:absolute;left:-.95rem;top:-.35rem;z-index:3;padding:0 .3rem;border-radius:9999px;background:#ef4444;color:#fff;border:1.5px solid #fff;font:700 .5rem/.9rem 'Space Mono',monospace;letter-spacing:.02em;white-space:nowrap;box-shadow:0 2px 0 rgba(75,63,114,.35);transform:rotate(-12deg);pointer-events:none;animation:float 3s ease-in-out .3s infinite}
 @media(prefers-reduced-motion:reduce){.house-open{animation:none}}
@@ -180,12 +180,12 @@
         </div>
       </div>
       <div class="space-y-5 px-6 py-6 leading-relaxed text-ink/80 sm:space-y-5 sm:px-12 sm:py-8 sm:text-lg">
-        <p>hi! i'm khing, a <span class="hl">cinematographer</span> and <span class="hl">web developer</span>.</p>
+        <p data-i18n="intro">hi! i'm khing, a <span class="hl">cinematographer</span> and <span class="hl">web developer</span>.</p>
         <p>things i like:</p>
         <ul class="list-disc space-y-2 pl-6 sm:space-y-2 sm:pl-8 marker:text-violet-400">
-          <li>Hanging out with my <span class="hl">siblings</span></li>
-          <li>My Walk and Faith in <span class="hl">God</span></li>
-          <li><span class="hl">Purple</span> Fanta</li>
+          <li data-i18n="like1">Hanging out with my <span class="hl">siblings</span></li>
+          <li data-i18n="like2">My Walk and Faith in <span class="hl">God</span></li>
+          <li data-i18n="like3"><span class="hl">Purple</span> Fanta</li>
         </ul>
         <section aria-labelledby="edu-h">
           <h3 id="edu-h" class="font-mono text-xl font-bold uppercase tracking-tight text-ink">education</h3>
@@ -199,10 +199,10 @@
         <section aria-labelledby="lang-h">
           <h3 id="lang-h" class="font-mono text-xl font-bold uppercase tracking-tight text-ink">language proficiency</h3>
           <div class="mt-3 border-l-4 border-violet-200 py-1 pl-4">
-            <p class="text-lg text-ink">i speak <span class="text-violet-500">English</span> and <span class="text-violet-500">Filipino (Tagalog)</span>.</p>
+            <p class="text-lg text-ink" data-i18n="speak">i speak <span class="text-violet-500">English</span> and <span class="text-violet-500">Filipino (Tagalog)</span>.</p>
           </div>
         </section>
-        <p>want to say hi? send me a message in <button class="link" data-open="contact">contact</button> :)</p>
+        <p data-i18n="hello">want to say hi? send me a message in <button class="link" data-open="contact">contact</button> :)</p>
       </div>
     </div>
   </section>
@@ -1847,5 +1847,6 @@ const send = (body) => fetch(GB_URL + '/rest/v1/guestbook', { method: 'POST', he
       next(true);
     })();
   </script>
+  <script src="i18n.js"></script>
 </body>
 </html>
