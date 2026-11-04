@@ -126,6 +126,38 @@ html.dark .coder-bub{background:#2a2150;color:#efe8ff;border-color:#9d8bee}
 .wc .dg{font-family:'Space Mono',monospace;font-weight:700;font-size:1.5rem}
 .wc .sm{font-family:'Space Mono',monospace;font-size:.72rem;opacity:.7;margin-top:-.2rem}
 .wc svg{stroke:#3a2a4d}html.dark .wc svg .face{fill:#e9e0ff}
+/* diary reader */
+.wr-card{width:100%;max-width:480px;max-height:96vh;max-height:96dvh;display:flex;flex-direction:column;background:var(--paper);border:2px solid var(--line);border-radius:14px;box-shadow:0 6px 0 var(--shadow);overflow:hidden;animation:pop .22s ease-out}
+.wr-body{overflow:auto;padding:1rem 1rem .8rem;background:radial-gradient(ellipse at 50% 40%,#4a3f5c,#2b2338 78%)}
+.wr-book{position:relative;container-type:inline-size;width:min(100%,380px);aspect-ratio:3/4;margin:0 auto;perspective:1800px;filter:drop-shadow(0 10px 14px rgba(0,0,0,.5))}
+.leaf{position:absolute;inset:0;transform-origin:left center;transition:transform .85s cubic-bezier(.45,.1,.2,1),box-shadow .85s;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:2px 7px 7px 2px;overflow:hidden;cursor:pointer;user-select:none;-webkit-user-select:none}
+.leaf.fl{transform:rotateY(-172deg);pointer-events:none;box-shadow:-10px 0 24px rgba(0,0,0,.35)}
+.pg{background:linear-gradient(90deg,transparent 13cqw,rgba(214,70,70,.5) 13cqw 13.5cqw,transparent 13.5cqw),repeating-linear-gradient(180deg,transparent 0 6.4cqw,rgba(76,116,196,.38) 6.4cqw 6.8cqw),linear-gradient(90deg,#e9e5d8,#fbf9f1 6%,#f7f4ea);background-position:0 0,0 14.6cqw,0 0;background-size:100% 100%,100% 100%,100% 100%;color:#1f1f24;font-family:Caveat,'Bradley Hand','Segoe Print',cursive;font-size:5.6cqw;line-height:6.8cqw}
+.pg:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.18),transparent 7%),linear-gradient(0deg,rgba(0,0,0,.06),transparent 10%);pointer-events:none}
+.pg .holes{position:absolute;left:3.2cqw;top:0;bottom:0;display:flex;flex-direction:column;justify-content:space-around;padding:12cqw 0}
+.pg .holes i{display:block;width:4cqw;height:4cqw;border-radius:50%;background:radial-gradient(circle at 40% 40%,#3a3550,#2b2338);box-shadow:inset 0 1px 2px rgba(0,0,0,.6),0 1px 0 rgba(255,255,255,.6)}
+.dt{position:absolute;left:16cqw;top:3.4cqw;margin:0;font:700 7.4cqw/8cqw Caveat,'Bradley Hand',cursive;letter-spacing:.05em;color:#1f1f24}
+.tx{position:absolute;left:16cqw;right:6cqw;top:14.6cqw}
+.tx p{margin:0 0 3.4cqw;text-indent:2cqw}.tx ol{margin:0;padding-left:6cqw}.tx li{margin:0}
+.tx .lst{font-weight:700;text-indent:0}
+.tx u{text-decoration:none;border-bottom:.5cqw solid #1f1f24}
+.dd{position:absolute;right:5cqw;bottom:11cqw;width:50cqw;height:auto;overflow:visible}
+.pg:nth-of-type(3) .dd{width:34cqw;right:8cqw;bottom:14cqw}
+.pn{position:absolute;right:5cqw;bottom:2.4cqw;font:700 5cqw Caveat,cursive;color:#3a3a44}
+.pn-big{font-size:11.5cqw;right:4.5cqw;bottom:1.2cqw;color:#1f1f24;border:.7cqw solid #c0392b;border-radius:50%;width:15cqw;height:15cqw;display:grid;place-items:center;line-height:1;background:rgba(255,255,255,.55);transform:rotate(-6deg)}
+.tx mark{color:#1f1f24;background:linear-gradient(104deg,rgba(255,225,70,0) .6%,rgba(255,225,70,.95) 2.5%,rgba(255,215,40,.9) 96%,rgba(255,225,70,0) 99%);padding:.4cqw .8cqw;border-radius:1cqw;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.cv{background:linear-gradient(90deg,#c9a925,#f4d34a 7%,#f7dc62 60%,#e6c53c);color:#2e2142;border:0}
+.cvin{position:absolute;inset:0;padding:6cqw 8cqw;display:flex;flex-direction:column;align-items:center}
+.cv:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.3),rgba(0,0,0,.05) 8%,transparent 12%);pointer-events:none}
+.cvt{width:100%;background:#d63b3b;border:.8cqw solid #2e2142;border-radius:1.4cqw;text-align:center;color:#fff;padding:2cqw 0 1.6cqw;font-family:'Space Mono',monospace;transform:rotate(-1.2deg);box-shadow:.8cqw 1.2cqw 0 rgba(0,0,0,.2)}
+.cvt b{display:block;font-size:10cqw;line-height:1.1;letter-spacing:.06em}.cvt span{display:block;font-size:5.4cqw;font-weight:700}
+.cv img{width:78%;height:auto;margin-top:6cqw;filter:drop-shadow(0 1.2cqw 1.2cqw rgba(0,0,0,.25));pointer-events:none}
+.cvh{position:absolute;bottom:4cqw;margin:0;font:700 4.4cqw Caveat,cursive;opacity:.7}
+.wr-nav{display:flex;align-items:center;justify-content:center;gap:1rem;margin-top:.9rem;color:#efe8ff;font:700 .85rem 'Space Mono',monospace}
+.wr-nav button{width:2.4rem;height:2.4rem;border-radius:50%;border:2px solid #9d8bee;background:#3c3160;color:#efe8ff;font-size:.9rem;cursor:pointer;padding:0}
+.wr-nav button:disabled{opacity:.3;cursor:default}
+.wr-nav span{min-width:6.5rem;text-align:center}
+.wr-hint{margin:.5rem 0 0;text-align:center;font:.7rem 'Space Mono',monospace;color:#b9acdf;opacity:.8}
 /* bookshelf pop-up */
 .shbody{position:relative;padding:1.1rem;background:radial-gradient(ellipse at 50% 35%,#4a3f5c,#2b2338 75%)}
 #shsvg{display:block;width:100%;height:auto;max-height:78vh;max-height:78dvh}
@@ -183,6 +215,10 @@ html.dark .coder-bub{background:#2a2150;color:#efe8ff;border-color:#9d8bee}
 .note .q{font-family:Caveat,'Bradley Hand','Segoe Print',cursive;font-size:1.4rem;font-weight:700;line-height:1.25;color:#2f2a55}
 .note .ref{display:block;margin-top:.7rem;font-family:'Space Mono',monospace;font-size:.78rem;font-weight:700;color:#8b5cf6}
 .note .tiny{display:block;font-family:'Space Mono',monospace;font-size:.62rem;opacity:.55;margin-top:.15rem}
+.nstack{display:grid;gap:2.4rem;align-content:center;justify-items:center}
+.note2{--pin:#2f6fc4;width:min(100%,205px);padding:1.3rem 1rem 1.1rem;background:linear-gradient(172deg,#ffffff,#f6f4ee 70%,#ebe8df);transform:rotate(2.2deg)}
+.note2 .q{font-size:1.18rem;line-height:1.2;text-align:center}
+.note2:after{background:linear-gradient(135deg,transparent 50%,rgba(0,0,0,.16) 51%,#dedad0 54%,#fbfaf6)}
 /* piano */
 .piano{width:100%;max-width:720px;margin:0 auto}
 .pbody{position:relative;background:#2b2140;border:4px solid #4b3f72;border-radius:16px 16px 6px 6px;padding:.9rem .9rem 0;box-shadow:0 8px 0 var(--shadow)}
@@ -237,7 +273,7 @@ html.dark .pm-bar{background:#5b4c96}
 /* password gate */
 .gate{position:fixed;inset:0;z-index:300;display:none;place-items:center;background:var(--wall);padding:1rem}
 html.locked .gate{display:grid}
-html.locked .stage,html.locked .hud,html.locked .wallbg,html.locked .floorbg,html.locked #pm,html.locked #lb,html.locked #bm,html.locked #wcm,html.locked #shm,html.locked #fm,html.locked #nm,html.locked #ppm,html.locked .pnote{display:none!important}
+html.locked .stage,html.locked .hud,html.locked .wallbg,html.locked .floorbg,html.locked #pm,html.locked #lb,html.locked #bm,html.locked #wcm,html.locked #shm,html.locked #wr,html.locked #fm,html.locked #nm,html.locked #ppm,html.locked .pnote{display:none!important}
 .gate-card{width:min(92vw,24rem);background:var(--paper);border:2px solid var(--line);border-radius:14px;box-shadow:0 6px 0 var(--shadow);overflow:hidden;text-align:center}
 .gate-card .pm-bar{justify-content:flex-start}
 .gate-card form{padding:1.6rem 1.4rem 1.5rem}
@@ -787,6 +823,17 @@ html.locked .stage,html.locked .hud,html.locked .wallbg,html.locked .floorbg,htm
   </div>
 </div>
 
+<div class="bm" id="wr" role="dialog" aria-modal="true" aria-label="diary of a wimpy kid">
+  <div class="wr-card">
+    <div class="pm-bar"><span>diary of a wimpy kid ✦</span><button id="wr-x" aria-label="close the book">[x]</button></div>
+    <div class="wr-body">
+      <div class="wr-book" id="wr-book"><section class="leaf cv" data-page="0" aria-label="cover"><div class="cvin"><div class="cvt"><b>DIARY</b><span>of a Wimpy Kid</span></div><img src="../assets/wimpy.webp" alt="" draggable="false" /><p class="cvh">tap the page to open</p></div></section><section class="leaf pg" data-page="14" aria-label="page 14"><span class="holes" aria-hidden="true"><i></i><i></i><i></i></span><h3 class="dt">MONDAY</h3><div class="tx"><p>School lunch update: the cafeteria served something called "mystery bake" today. Nobody knows what the mystery is, and I'm pretty sure the cooks don't either.</p><p>Mom packed me a banana again. That's <u>two weeks</u> of bananas. At this rate I'm going to grow a tail.</p></div><svg class="dd" viewBox="0 0 220 120" fill="none" stroke="#1f1f24" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="46" cy="30" r="11" fill="#fff"/><circle cx="42" cy="28" r="1.3" fill="#1f1f24" stroke="none"/><circle cx="50" cy="28" r="1.3" fill="#1f1f24" stroke="none"/><path d="M42 35Q46 32 50 35"/><path d="M46 41V68M46 50L32 60M46 50L60 58M46 68L37 88M46 68L55 88"/><path d="M64 52Q92 40 120 58Q128 68 118 72Q96 70 70 60Z" fill="#fff"/><path d="M118 72Q124 74 126 68" /><circle cx="94" cy="58" r="1.2" fill="#1f1f24" stroke="none"/><circle cx="104" cy="60" r="1.2" fill="#1f1f24" stroke="none"/><path d="M92 64Q98 68 105 65"/><path d="M150 26Q150 12 168 12H196Q212 12 212 26T196 40H176L162 52L164 40Q150 40 150 26Z" fill="#fff"/><text x="156" y="32" font-family="Caveat,cursive" font-size="17" font-weight="700" fill="#1f1f24" stroke="none">AGAIN??</text><path d="M64 60Q80 54 90 56" stroke-width="1.6"/></svg><span class="pn">14</span></section><section class="leaf pg" data-page="29" aria-label="page 29"><span class="holes" aria-hidden="true"><i></i><i></i><i></i></span><h3 class="dt">TUESDAY</h3><div class="tx"><p>My big brother says he's "in a band." The band is him. The band practices in the garage, which is right under my room.</p><p>Today's song had exactly 3 notes. He played them for two hours. When I asked if there was a 4th note he said I "don't understand art."</p></div><svg class="dd" viewBox="0 0 220 120" fill="none" stroke="#1f1f24" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="52" cy="30" r="11" fill="#fff"/><circle cx="48" cy="28" r="1.3" fill="#1f1f24" stroke="none"/><circle cx="56" cy="28" r="1.3" fill="#1f1f24" stroke="none"/><path d="M48 35Q52 38 56 35"/><path d="M52 41V68M52 50L38 60M52 50L66 58M52 68L43 88M52 68L61 88"/><path d="M40 14L38 4M46 11L47 1M54 11L57 2M61 15L67 8"/><ellipse cx="96" cy="72" rx="20" ry="13" fill="#fff" transform="rotate(-24 96 72)"/><circle cx="96" cy="72" r="4" fill="#fff"/><path d="M110 62L150 36"/><path d="M148 34L158 30" stroke-width="3"/><rect x="170" y="62" width="38" height="46" rx="3" fill="#fff"/><circle cx="189" cy="85" r="10"/><circle cx="189" cy="85" r="2.5" fill="#1f1f24" stroke="none"/><path d="M164 44L176 54L166 56L180 66" stroke-width="1.8"/><text x="112" y="22" font-family="Caveat,cursive" font-size="20" font-weight="700" fill="#1f1f24" stroke="none" transform="rotate(-8 112 22)">BWANG.</text></svg><span class="pn">29</span></section><section class="leaf pg" data-page="45" aria-label="page 45"><span class="holes" aria-hidden="true"><i></i><i></i><i></i></span><h3 class="dt">WEDNESDAY</h3><div class="tx"><p class="lst">Things I am apparently not allowed to do anymore:</p><ol><li>use the stairs as a slide</li><li>"borrow" the remote</li><li>tell the dog he's not a real wolf</li><li>eat cereal for dinner (3 nights in a row is "too many")</li></ol></div><svg class="dd" viewBox="0 0 120 100" fill="none" stroke="#1f1f24" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="56" cy="50" r="34" fill="#fff"/><path d="M34 70L50 70L50 56L66 56L66 42L82 42"/><path d="M30 28L84 72" stroke-width="3.2"/><circle cx="92" cy="30" r="1.2" fill="#1f1f24" stroke="none"/></svg><span class="pn">45</span></section><section class="leaf pg last" data-page="67" aria-label="page 67"><span class="holes" aria-hidden="true"><i></i><i></i><i></i></span><h3 class="dt">THURSDAY</h3><div class="tx"><p>Mom gave me ONE job today: water the plant in the living room before she gets home. Easy, right?</p><p>Wrong. This plant is weird. I wrote this on my hand so I wouldn't forget: <mark>try touching the plant 3 times</mark>. Not twice. THREE. Don't ask me how I know.</p><p>Anyway, I forgot to actually water it. Whoops.</p></div><svg class="dd" viewBox="0 0 230 130" fill="none" stroke="#1f1f24" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M70 70H112L106 118H76Z" fill="#fff"/><rect x="66" y="62" width="50" height="12" rx="3" fill="#fff"/><path d="M91 62Q70 40 66 14Q86 22 91 62"/><path d="M91 62Q92 30 104 4Q114 32 91 62"/><path d="M91 62Q112 46 128 36Q122 62 91 62"/><circle cx="84" cy="93" r="1.4" fill="#1f1f24" stroke="none"/><circle cx="98" cy="93" r="1.4" fill="#1f1f24" stroke="none"/><path d="M86 100Q91 105 96 100"/><path d="M150 24L170 36" stroke-width="2"/><path d="M142 14Q148 22 158 22" /><text x="160" y="18" font-family="Caveat,cursive" font-size="17" font-weight="700" fill="#1f1f24" stroke="none">3x!!</text><path d="M150 88H196M150 98H196M150 108H196" stroke-width="1.4" opacity="0"/><path d="M168 70L168 84M176 70L176 84M184 70L184 84M164 78L190 78" stroke-width="2.4"/></svg><span class="pn pn-big">67</span></section></div>
+      <div class="wr-nav"><button id="wr-prev" aria-label="previous page">◀</button><span id="wr-count" aria-live="polite">cover</span><button id="wr-next" aria-label="next page">▶</button></div>
+      <p class="wr-hint">tap the page, swipe, or use ← →</p>
+    </div>
+  </div>
+</div>
+
 <div class="bm" id="fm" role="dialog" aria-modal="true" aria-label="the mini fridge">
   <div class="bm-card" style="max-width:560px">
     <div class="pm-bar"><span>the mini fridge ✦</span><button id="fm-x" aria-label="close the fridge">[x]</button></div>
@@ -999,7 +1046,7 @@ html.locked .stage,html.locked .hud,html.locked .wallbg,html.locked .floorbg,htm
     <div class="pm-bar"><span>bulletin board ✦</span><button id="bm-x" aria-label="close bulletin board">[x]</button></div>
     <div class="bm-body bbody">
       <div class="cork">
-        <div class="note"><p class="q" id="verse-q"></p><span class="ref" id="verse-ref"></span><span class="tiny" id="verse-tr"></span></div>
+        <div class="nstack"><div class="note"><p class="q" id="verse-q"></p><span class="ref" id="verse-ref"></span><span class="tiny" id="verse-tr"></span></div><div class="note note2"><p class="q">Reminder: read page 67.. ?</p></div></div>
         <div class="polas" id="polas"></div>
       </div>
     </div>
@@ -1158,6 +1205,34 @@ function tickClock() {
 tickClock(); setInterval(tickClock, 20000);
 
 
+// the diary of a wimpy kid: a little book with pages that flip
+const wr = $('#wr'), wrLeaves = [...wr.querySelectorAll('.leaf')]; // cover first, then pages in order
+let wrCur = 0;
+wrLeaves.forEach((l, i) => { l.style.zIndex = wrLeaves.length - i; });
+function wrDraw() {
+  wrLeaves.forEach((l, i) => l.classList.toggle('fl', i < wrCur));
+  const pg = wrCur ? wrLeaves[wrCur].dataset.page : '';
+  $('#wr-count').textContent = wrCur === 0 ? 'cover' : 'page ' + pg;
+  $('#wr-prev').disabled = wrCur === 0; $('#wr-next').disabled = wrCur === wrLeaves.length - 1;
+}
+function wrGo(d) {
+  const n = wrCur + d; if (n < 0 || n > wrLeaves.length - 1) return;
+  wrCur = n; wrDraw(); if (window.__sfx) window.__sfx('pop');
+}
+function openWimpy() { wrCur = 0; wrDraw(); wr.classList.add('show'); }
+function closeWimpy() { wr.classList.remove('show'); }
+$('#wr-prev').addEventListener('click', () => wrGo(-1));
+$('#wr-next').addEventListener('click', () => wrGo(1));
+$('#wr-x').addEventListener('click', closeWimpy);
+wr.addEventListener('pointerdown', (e) => { if (e.target === wr) closeWimpy(); });
+let wrX = null;
+$('#wr-book').addEventListener('pointerdown', (e) => { wrX = e.clientX; });
+$('#wr-book').addEventListener('pointerup', (e) => {
+  if (wrX === null) return; const dx = e.clientX - wrX; wrX = null;
+  if (Math.abs(dx) > 40) return wrGo(dx < 0 ? 1 : -1);
+  const r = $('#wr-book').getBoundingClientRect(); wrGo(e.clientX > r.left + r.width * 0.35 ? 1 : -1);
+});
+addEventListener('keydown', (e) => { if (!wr.classList.contains('show')) return; if (e.key === 'ArrowRight') wrGo(1); else if (e.key === 'ArrowLeft') wrGo(-1); });
 // bookshelf pop-up: two dusty shelves, two books you can open
 const shm = $('#shm'), shbook = $('#shbook');
 const BOOKS = { wimpy: { icon: "<svg viewBox=\"0 0 120 160\" stroke-linejoin=\"round\" stroke-linecap=\"round\"><rect x=\"6\" y=\"6\" width=\"108\" height=\"148\" rx=\"6\" fill=\"#f4d34a\" stroke=\"#2e2142\" stroke-width=\"4\"/><rect x=\"6\" y=\"6\" width=\"12\" height=\"148\" rx=\"4\" fill=\"#000\" opacity=\".12\"/><rect x=\"26\" y=\"16\" width=\"80\" height=\"32\" rx=\"3\" fill=\"#d63b3b\" stroke=\"#2e2142\" stroke-width=\"2.4\"/><text x=\"66\" y=\"30\" text-anchor=\"middle\" font-size=\"11\" font-weight=\"700\" font-family=\"Space Mono,monospace\" fill=\"#fff\">DIARY</text><text x=\"66\" y=\"43\" text-anchor=\"middle\" font-size=\"7.5\" font-weight=\"700\" font-family=\"Space Mono,monospace\" fill=\"#fff\">of a Wimpy Kid</text><image href=\"../assets/wimpy.webp\" x=\"22\" y=\"58\" width=\"76\" height=\"71\" preserveAspectRatio=\"xMidYMid meet\"/></svg>", cap: 'diary of a wimpy kid' }, bible: { icon: "<svg viewBox=\"0 0 120 160\" stroke-linejoin=\"round\" stroke-linecap=\"round\"><rect x=\"6\" y=\"6\" width=\"108\" height=\"148\" rx=\"6\" fill=\"#241d26\" stroke=\"#2e2142\" stroke-width=\"4\"/><rect x=\"6\" y=\"6\" width=\"12\" height=\"148\" rx=\"4\" fill=\"#fff\" opacity=\".1\"/><rect x=\"24\" y=\"18\" width=\"78\" height=\"3\" fill=\"#e0a93c\"/><rect x=\"24\" y=\"138\" width=\"78\" height=\"3\" fill=\"#e0a93c\"/><path d=\"M63 40V102M42 58H84\" stroke=\"#e0a93c\" stroke-width=\"7\" fill=\"none\"/><text x=\"63\" y=\"124\" text-anchor=\"middle\" font-size=\"12\" font-weight=\"700\" font-family=\"Space Mono,monospace\" fill=\"#e0a93c\">HOLY BIBLE</text></svg>", cap: 'the bible' } };
@@ -1189,7 +1264,7 @@ const BOOKS = { wimpy: { icon: "<svg viewBox=\"0 0 120 160\" stroke-linejoin=\"r
 $('#shelf').addEventListener('click', () => shm.classList.add('show'));
 $('#shm-x').addEventListener('click', () => { shbook.hidden = true; shm.classList.remove('show'); });
 shm.addEventListener('pointerdown', (e) => { if (e.target === shm) { shbook.hidden = true; shm.classList.remove('show'); } });
-function openBook(k) { $('#shicon').innerHTML = BOOKS[k].icon; $('#shcap').textContent = BOOKS[k].cap; shbook.hidden = false; }
+function openBook(k) { if (k === 'wimpy') { openWimpy(); return; } $('#shicon').innerHTML = BOOKS[k].icon; $('#shcap').textContent = BOOKS[k].cap; shbook.hidden = false; }
 [['bk-wimpy', 'wimpy'], ['bk-bible', 'bible']].forEach(([id, k]) => {
   const el = document.getElementById(id);
   el.addEventListener('click', () => openBook(k));
@@ -1311,7 +1386,8 @@ $('#ppm-x').addEventListener('click', () => { ppm.classList.remove('show'); if (
 ppm.addEventListener('pointerdown', (e) => { if (e.target === ppm) ppm.classList.remove('show'); });
 addEventListener('keydown', (e) => {
   if (e.key !== 'Escape') return;
-  if (lb.classList.contains('show')) lb.classList.remove('show');
+  if (wr.classList.contains('show')) closeWimpy();
+  else if (lb.classList.contains('show')) lb.classList.remove('show');
   else if (ppm.classList.contains('show')) ppm.classList.remove('show');
   else if (nm.classList.contains('show')) nm.classList.remove('show');
   else if (!shbook.hidden) shbook.hidden = true;
