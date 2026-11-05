@@ -1262,11 +1262,17 @@ rugHit.addEventListener('click', () => { rug.classList.add('lift'); rugHit.class
 scrap.addEventListener('click', () => {
   const leaf = wrLeaves[wrLeaves.length - 1];
   rug.classList.remove('lift'); scrap.remove(); rugHit.remove();
-  page67Found = true;
+  page67Found = true; try { localStorage.setItem('page67', '1'); } catch (e) {}
   leaf.classList.remove('torn'); leaf.classList.add('taped'); // already torn-and-taped the moment the book turns to it
   wrCur = wrLeaves.length - 2; wrDraw(); wr.classList.add('show');
   setTimeout(() => { wrCur = wrLeaves.length - 1; wrDraw(); if (window.__sfx) window.__sfx('open'); }, 650);
 });
+// a returning visitor who already found it: put the page back quietly, no rug lift, no pop
+try { if (localStorage.getItem('page67') === '1') {
+  const leaf = wrLeaves[wrLeaves.length - 1];
+  scrap.remove(); rugHit.remove(); page67Found = true;
+  leaf.classList.remove('torn'); leaf.classList.add('taped'); wrDraw();
+} } catch (e) {}
 $('#wr-prev').addEventListener('click', () => wrGo(-1));
 $('#wr-next').addEventListener('click', () => wrGo(1));
 $('#wr-x').addEventListener('click', closeWimpy);
