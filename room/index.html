@@ -309,9 +309,21 @@ html.locked .stage,html.locked .hud,html.locked .wallbg,html.locked .floorbg,htm
 .gate-card form.shake{animation:shake .35s}
 @keyframes shake{0%,100%{transform:none}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+/* slow-load screen: only appears if the room is still loading after a moment */
+#ld{position:fixed;inset:0;z-index:99999;display:none;flex-direction:column;align-items:center;justify-content:center;gap:.9rem;background:var(--wall);color:var(--ink);font-family:'Space Mono',monospace;font-weight:700;font-size:.9rem;opacity:1;transition:opacity .35s}
+#ld.show{display:flex}#ld.out{opacity:0;pointer-events:none}
+#ld .hs{width:44px;height:44px;border:4px solid var(--line);border-radius:12px;background:var(--paper);box-shadow:3px 3px 0 var(--shadow);animation:ldb 1s ease-in-out infinite}
+#ld .dots i{display:inline-block;animation:ldd 1.2s infinite;font-style:normal}#ld .dots i:nth-child(2){animation-delay:.2s}#ld .dots i:nth-child(3){animation-delay:.4s}
+@keyframes ldb{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-10px) rotate(4deg)}}
+@keyframes ldd{0%,60%,100%{opacity:.2}30%{opacity:1}}
+@media(prefers-reduced-motion:reduce){#ld .hs,#ld .dots i{animation:none}}
 </style>
 </head>
 <body>
+<div id="ld" role="status" aria-live="polite"><div class="hs" aria-hidden="true"></div><div>loading khing's room<span class="dots"><i>.</i><i>.</i><i>.</i></span></div></div>
+<script>(function(){var d=document.getElementById('ld'),done=false,shown=0;function hide(){if(done)return;done=true;if(!shown){d.remove();return}var w=Math.max(0,500-(Date.now()-shown));setTimeout(function(){d.classList.add('out');setTimeout(function(){d.remove()},400)},w)}
+setTimeout(function(){if(!done){shown=Date.now();d.classList.add('show')}},700);
+if(document.readyState==='complete')hide();else addEventListener('load',hide);setTimeout(hide,12000)})()</script>
 <div class="wallbg"></div><div class="floorbg"></div>
 
 <nav class="hud" aria-label="room controls">
